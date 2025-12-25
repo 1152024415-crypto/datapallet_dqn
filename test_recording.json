@@ -1,0 +1,394 @@
+[
+  {
+    "timestamp": "2025-12-24T15:24:06.604069",
+    "id": "activity_mode",
+    "value": [
+      2,
+      10
+    ]
+  },
+  {
+    "timestamp": "2025-12-24T15:24:06.604069",
+    "id": "Light_Intensity",
+    "value": 3
+  },
+  {
+    "timestamp": "2025-12-24T15:24:06.604069",
+    "id": "Sound_Intensity",
+    "value": 1
+  },
+  {
+    "timestamp": "2025-12-24T15:24:06.604069",
+    "id": "Location",
+    "value": 14
+  },
+  {
+    "timestamp": "2025-12-24T15:24:06.604069",
+    "id": "Scence",
+    "value": 0
+  },
+  {
+    "timestamp": "2025-12-24T15:24:06.904580",
+    "id": "activity_mode",
+    "value": [
+      5,
+      2
+    ]
+  },
+  {
+    "timestamp": "2025-12-24T15:24:06.904580",
+    "id": "Light_Intensity",
+    "value": 1
+  },
+  {
+    "timestamp": "2025-12-24T15:24:06.904580",
+    "id": "Sound_Intensity",
+    "value": 5
+  },
+  {
+    "timestamp": "2025-12-24T15:24:06.904580",
+    "id": "Location",
+    "value": 1
+  },
+  {
+    "timestamp": "2025-12-24T15:24:06.904580",
+    "id": "Scence",
+    "value": 1
+  },
+  {
+    "timestamp": "2025-12-24T15:24:07.205113",
+    "id": "activity_mode",
+    "value": [
+      3,
+      5
+    ]
+  },
+  {
+    "timestamp": "2025-12-24T15:24:07.205113",
+    "id": "Light_Intensity",
+    "value": 4
+  },
+  {
+    "timestamp": "2025-12-24T15:24:07.205113",
+    "id": "Sound_Intensity",
+    "value": 5
+  },
+  {
+    "timestamp": "2025-12-24T15:24:07.205113",
+    "id": "Location",
+    "value": 1
+  },
+  {
+    "timestamp": "2025-12-24T15:24:07.205113",
+    "id": "Scence",
+    "value": 2
+  },
+  {
+    "timestamp": "2025-12-24T15:24:07.505802",
+    "id": "activity_mode",
+    "value": [
+      0,
+      15
+    ]
+  },
+  {
+    "timestamp": "2025-12-24T15:24:07.505802",
+    "id": "Light_Intensity",
+    "value": 2
+  },
+  {
+    "timestamp": "2025-12-24T15:24:07.505802",
+    "id": "Sound_Intensity",
+    "value": 5
+  },
+  {
+    "timestamp": "2025-12-24T15:24:07.505802",
+    "id": "Location",
+    "value": 13
+  },
+  {
+    "timestamp": "2025-12-24T15:24:07.505802",
+    "id": "Scence",
+    "value": 2
+  },
+  {
+    "timestamp": "2025-12-24T15:24:07.806161",
+    "id": "activity_mode",
+    "value": [
+      15,
+      13
+    ]
+  },
+  {
+    "timestamp": "2025-12-24T15:24:07.806161",
+    "id": "Light_Intensity",
+    "value": 0
+  },
+  {
+    "timestamp": "2025-12-24T15:24:07.806161",
+    "id": "Sound_Intensity",
+    "value": 5
+  },
+  {
+    "timestamp": "2025-12-24T15:24:07.806161",
+    "id": "Location",
+    "value": 3
+  },
+  {
+    "timestamp": "2025-12-24T15:24:07.806161",
+    "id": "Scence",
+    "value": 0
+  },
+  {
+    "timestamp": "2025-12-24T15:24:08.106675",
+    "id": "activity_mode",
+    "value": [
+      7,
+      0
+    ]
+  },
+  {
+    "timestamp": "2025-12-24T15:24:08.106675",
+    "id": "Light_Intensity",
+    "value": 1
+  },
+  {
+    "timestamp": "2025-12-24T15:24:08.106675",
+    "id": "Sound_Intensity",
+    "value": 4
+  },
+  {
+    "timestamp": "2025-12-24T15:24:08.106675",
+    "id": "Location",
+    "value": 4
+  },
+  {
+    "timestamp": "2025-12-24T15:24:08.106675",
+    "id": "Scence",
+    "value": 0
+  },
+  {
+    "timestamp": "2025-12-24T15:24:08.407672",
+    "id": "activity_mode",
+    "value": [
+      14,
+      4
+    ]
+  },
+  {
+    "timestamp": "2025-12-24T15:24:08.407672",
+    "id": "Light_Intensity",
+    "value": 3
+  },
+  {
+    "timestamp": "2025-12-24T15:24:08.407672",
+    "id": "Sound_Intensity",
+    "value": 3
+  },
+  {
+    "timestamp": "2025-12-24T15:24:08.407672",
+    "id": "Location",
+    "value": 19
+  },
+  {
+    "timestamp": "2025-12-24T15:24:08.407672",
+    "id": "Scence",
+    "value": 2
+  },
+  {
+    "timestamp": "2025-12-24T15:24:08.708050",
+    "id": "activity_mode",
+    "value": [
+      6,
+      3
+    ]
+  },
+  {
+    "timestamp": "2025-12-24T15:24:08.708050",
+    "id": "Light_Intensity",
+    "value": 5
+  },
+  {
+    "timestamp": "2025-12-24T15:24:08.708050",
+    "id": "Sound_Intensity",
+    "value": 2
+  },
+  {
+    "timestamp": "2025-12-24T15:24:08.708050",
+    "id": "Location",
+    "value": 9
+  },
+  {
+    "timestamp": "2025-12-24T15:24:08.708050",
+    "id": "Scence",
+    "value": 1
+  },
+  {
+    "timestamp": "2025-12-24T15:24:09.008444",
+    "id": "activity_mode",
+    "value": [
+      8,
+      13
+    ]
+  },
+  {
+    "timestamp": "2025-12-24T15:24:09.008444",
+    "id": "Light_Intensity",
+    "value": 4
+  },
+  {
+    "timestamp": "2025-12-24T15:24:09.008444",
+    "id": "Sound_Intensity",
+    "value": 0
+  },
+  {
+    "timestamp": "2025-12-24T15:24:09.008444",
+    "id": "Location",
+    "value": 9
+  },
+  {
+    "timestamp": "2025-12-24T15:24:09.008444",
+    "id": "Scence",
+    "value": 0
+  },
+  {
+    "timestamp": "2025-12-24T15:24:09.309215",
+    "id": "activity_mode",
+    "value": [
+      0,
+      10
+    ]
+  },
+  {
+    "timestamp": "2025-12-24T15:24:09.309215",
+    "id": "Light_Intensity",
+    "value": 2
+  },
+  {
+    "timestamp": "2025-12-24T15:24:09.309215",
+    "id": "Sound_Intensity",
+    "value": 0
+  },
+  {
+    "timestamp": "2025-12-24T15:24:09.309215",
+    "id": "Location",
+    "value": 1
+  },
+  {
+    "timestamp": "2025-12-24T15:24:09.309215",
+    "id": "Scence",
+    "value": 2
+  },
+  {
+    "timestamp": "2025-12-24T15:24:09.610085",
+    "id": "activity_mode",
+    "value": [
+      0,
+      2
+    ]
+  },
+  {
+    "timestamp": "2025-12-24T15:24:09.710414",
+    "id": "Light_Intensity",
+    "value": 1
+  },
+  {
+    "timestamp": "2025-12-24T15:24:09.810878",
+    "id": "Sound_Intensity",
+    "value": 5
+  },
+  {
+    "timestamp": "2025-12-24T15:24:09.911270",
+    "id": "Location",
+    "value": 6
+  },
+  {
+    "timestamp": "2025-12-24T15:24:10.011476",
+    "id": "Scence",
+    "value": 1
+  },
+  {
+    "timestamp": "2025-12-24T15:24:10.111866",
+    "id": "activity_mode",
+    "value": [
+      15,
+      7
+    ]
+  },
+  {
+    "timestamp": "2025-12-24T15:24:10.212406",
+    "id": "Light_Intensity",
+    "value": 2
+  },
+  {
+    "timestamp": "2025-12-24T15:24:10.312865",
+    "id": "Sound_Intensity",
+    "value": 4
+  },
+  {
+    "timestamp": "2025-12-24T15:24:10.413365",
+    "id": "Location",
+    "value": 12
+  },
+  {
+    "timestamp": "2025-12-24T15:24:10.513637",
+    "id": "Scence",
+    "value": 0
+  },
+  {
+    "timestamp": "2025-12-24T15:24:10.614015",
+    "id": "activity_mode",
+    "value": [
+      12,
+      13
+    ]
+  },
+  {
+    "timestamp": "2025-12-24T15:24:10.714155",
+    "id": "Light_Intensity",
+    "value": 4
+  },
+  {
+    "timestamp": "2025-12-24T15:24:10.814537",
+    "id": "Sound_Intensity",
+    "value": 4
+  },
+  {
+    "timestamp": "2025-12-24T15:24:10.914659",
+    "id": "Location",
+    "value": 4
+  },
+  {
+    "timestamp": "2025-12-24T15:24:11.014926",
+    "id": "Scence",
+    "value": 2
+  },
+  {
+    "timestamp": "2025-12-24T15:24:11.115734",
+    "id": "activity_mode",
+    "value": [
+      3,
+      7
+    ]
+  },
+  {
+    "timestamp": "2025-12-24T15:24:11.216319",
+    "id": "Light_Intensity",
+    "value": 0
+  },
+  {
+    "timestamp": "2025-12-24T15:24:11.316847",
+    "id": "Sound_Intensity",
+    "value": 4
+  },
+  {
+    "timestamp": "2025-12-24T15:24:11.417061",
+    "id": "Location",
+    "value": 9
+  },
+  {
+    "timestamp": "2025-12-24T15:24:11.517620",
+    "id": "Scence",
+    "value": 1
+  }
+]
