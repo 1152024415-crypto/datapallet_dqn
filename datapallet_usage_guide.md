@@ -58,13 +58,20 @@ dp.setup(my_callback, data_id="activity_mode")
 success, value = dp.get("activity_mode")
 if success:
     print(f"当前姿态: {value}")
+else:
+    print("获取数据失败，可能数据无效或不存在")
 
-# 获取所有有效数据
+# 获取所有数据（包括尝试从测试床获取无效数据）
 success, all_data = dp.get(None)
 if success:
+    print(f"成功获取 {len(all_data)} 种数据:")
     for data_id, value in all_data.items():
-        print(f"{data_id}: {value}")
+        print(f"  {data_id}: {value}")
+else:
+    print("无法获取任何数据")
 ```
+
+**重要改进**：`get(None)` 现在不仅返回有效数据，对于无效数据还会尝试从测试床获取最新值。这意味着即使数据在托盘中已过期，只要测试床有最新数据，仍然可以获取到。
 
 ### 4. 获取数据详细信息
 

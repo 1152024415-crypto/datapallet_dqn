@@ -263,19 +263,36 @@ class DataPallet:
         获取数据
         
         Args:
-            data_id: 数据ID，如果为None则获取所有有效数据
+            data_id: 数据ID，如果为None则获取所有数据（包括尝试从测试床获取无效数据）
             
         Returns:
             (success, value): 成功标志和数据值
         """
         with self.lock:
             if data_id is None:
-                # 获取所有有效数据
+                # 获取所有数据，对于无效的数据尝试从测试床获取
                 result = {}
+                
                 for did, item in self.data_store.items():
                     if item.is_valid():
+                        # 数据有效，直接使用
                         result[did] = item.value
-                return True, result
+                    elif self.testbed is not None:
+                        # 数据无效，尝试从测试床获取最新数据
+                        try:
+                            success, value = self.testbed.get_latest_data(did)
+                            if success:
+                                # 更新数据托盘并返回获取到的值
+                                self._update_data(did, value, datetime.now())
+                                result[did] = value
+                        except Exception as e:
+                            print(f"从测试床获取数据失败 ({did}): {e}")
+                
+                # 如果至少获取到一些数据，返回成功
+                if result:
+                    return True, result
+                else:
+                    return False, None
             
             # 检查数据是否存在
             if data_id not in self.data_store:

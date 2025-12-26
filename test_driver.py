@@ -88,41 +88,16 @@ class TestCallbackHandler:
                     print(f"  └─ 主动获取结果: 无有效场景数据")
                     
             else:  # fetch_type == "all"
-                # 随机选择两种获取方式之一
-                import random
-                fetch_mode = random.choice(["all_valid", "each_individually"])
-                
-                if fetch_mode == "all_valid":
-                    print(f"  └─ [主动获取演示 #{self.active_fetch_count}] 获取托盘全部有效信息...")
-                    success, all_data = self.datapallet.get(None)
-                    if success and isinstance(all_data, dict):
-                        print(f"  └─ 主动获取结果: 共获取 {len(all_data)} 种有效数据")
-                        for data_id, value in all_data.items():
-                            formatted_value = to_str(data_id, value)
-                            print(f"  └─   - {data_id}: {formatted_value}")
-                    else:
-                        print(f"  └─ 主动获取结果: 无有效数据")
-                else:  # fetch_mode == "each_individually"
-                    print(f"  └─ [主动获取演示 #{self.active_fetch_count}] 分别获取所有数据类型的最新信息...")
-                    # 分别获取各种数据类型，展示主动获取能力
-                    data_types = ["activity_mode", "Light_Intensity", "Sound_Intensity", "Location", "Scence"]
-                    fetched_count = 0
-                    valid_count = 0
-                    
-                    for data_id in data_types:
-                        success, value = self.datapallet.get(data_id)
-                        if success:
-                            fetched_count += 1
-                            formatted_value = to_str(data_id, value)
-                            status = "有效"
-                            valid_count += 1
-                        else:
-                            formatted_value = "获取失败"
-                            status = "无效"
-                        print(f"  └─   - {data_id}: {formatted_value} ({status})")
-                    
-                    print(f"  └─ 主动获取结果: 成功获取 {fetched_count}/{len(data_types)} 种数据，其中 {valid_count} 种为有效数据")
-    
+                print(f"  └─ [主动获取演示 #{self.active_fetch_count}] 获取托盘全部有效信息...")
+                success, all_data = self.datapallet.get(None)
+                if success and isinstance(all_data, dict):
+                    print(f"  └─ 主动获取结果: 共获取 {len(all_data)} 种有效数据")
+                    for data_id, value in all_data.items():
+                        formatted_value = to_str(data_id, value)
+                        print(f"  └─   - {data_id}: {formatted_value}")
+                else:
+                    print(f"  └─ 主动获取结果: 无有效数据")
+
     def get_stats(self) -> Dict[str, Any]:
         """获取统计信息"""
         with self.lock:
