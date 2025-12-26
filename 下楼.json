@@ -1,0 +1,1552 @@
+[
+  {
+    "timestamp": "2025-12-26T16:16:39.488481",
+    "id": "activity_mode",
+    "value": "站立"
+  },
+  {
+    "timestamp": "2025-12-26T16:16:39.488481",
+    "id": "Light_Intensity",
+    "value": "明亮"
+  },
+  {
+    "timestamp": "2025-12-26T16:16:39.488481",
+    "id": "Sound_Intensity",
+    "value": "正常"
+  },
+  {
+    "timestamp": "2025-12-26T16:16:39.488481",
+    "id": "Location",
+    "value": "工作场所"
+  },
+  {
+    "timestamp": "2025-12-26T16:16:39.488481",
+    "id": "Scence",
+    "value": {
+      "scene_type": 1,
+      "scene_type_str": "其他",
+      "has_image": true,
+      "image_size": 402730,
+      "image_path": "scene_images\\其他.png"
+    }
+  },
+  {
+    "timestamp": "2025-12-26T16:16:40.488481",
+    "id": "activity_mode",
+    "value": "慢走"
+  },
+  {
+    "timestamp": "2025-12-26T16:16:40.488481",
+    "id": "Light_Intensity",
+    "value": "明亮"
+  },
+  {
+    "timestamp": "2025-12-26T16:16:40.488481",
+    "id": "Sound_Intensity",
+    "value": "正常"
+  },
+  {
+    "timestamp": "2025-12-26T16:16:40.488481",
+    "id": "Location",
+    "value": "工作场所"
+  },
+  {
+    "timestamp": "2025-12-26T16:16:40.488481",
+    "id": "Scence",
+    "value": {
+      "scene_type": 1,
+      "scene_type_str": "其他",
+      "has_image": true,
+      "image_size": 402730,
+      "image_path": "scene_images\\其他.png"
+    }
+  },
+  {
+    "timestamp": "2025-12-26T16:16:41.488481",
+    "id": "activity_mode",
+    "value": "慢走"
+  },
+  {
+    "timestamp": "2025-12-26T16:16:41.488481",
+    "id": "Light_Intensity",
+    "value": "明亮"
+  },
+  {
+    "timestamp": "2025-12-26T16:16:41.488481",
+    "id": "Sound_Intensity",
+    "value": "正常"
+  },
+  {
+    "timestamp": "2025-12-26T16:16:41.488481",
+    "id": "Location",
+    "value": "工作场所"
+  },
+  {
+    "timestamp": "2025-12-26T16:16:41.488481",
+    "id": "Scence",
+    "value": {
+      "scene_type": 1,
+      "scene_type_str": "其他",
+      "has_image": true,
+      "image_size": 402730,
+      "image_path": "scene_images\\其他.png"
+    }
+  },
+  {
+    "timestamp": "2025-12-26T16:16:42.488481",
+    "id": "activity_mode",
+    "value": "慢走"
+  },
+  {
+    "timestamp": "2025-12-26T16:16:42.488481",
+    "id": "Light_Intensity",
+    "value": "明亮"
+  },
+  {
+    "timestamp": "2025-12-26T16:16:42.488481",
+    "id": "Sound_Intensity",
+    "value": "正常"
+  },
+  {
+    "timestamp": "2025-12-26T16:16:42.488481",
+    "id": "Location",
+    "value": "工作场所"
+  },
+  {
+    "timestamp": "2025-12-26T16:16:42.488481",
+    "id": "Scence",
+    "value": {
+      "scene_type": 1,
+      "scene_type_str": "其他",
+      "has_image": true,
+      "image_size": 402730,
+      "image_path": "scene_images\\其他.png"
+    }
+  },
+  {
+    "timestamp": "2025-12-26T16:16:43.488481",
+    "id": "activity_mode",
+    "value": "慢走"
+  },
+  {
+    "timestamp": "2025-12-26T16:16:43.488481",
+    "id": "Light_Intensity",
+    "value": "明亮"
+  },
+  {
+    "timestamp": "2025-12-26T16:16:43.488481",
+    "id": "Sound_Intensity",
+    "value": "正常"
+  },
+  {
+    "timestamp": "2025-12-26T16:16:43.488481",
+    "id": "Location",
+    "value": "工作场所"
+  },
+  {
+    "timestamp": "2025-12-26T16:16:43.488481",
+    "id": "Scence",
+    "value": {
+      "scene_type": 1,
+      "scene_type_str": "其他",
+      "has_image": true,
+      "image_size": 402730,
+      "image_path": "scene_images\\其他.png"
+    }
+  },
+  {
+    "timestamp": "2025-12-26T16:16:44.488481",
+    "id": "activity_mode",
+    "value": "慢走"
+  },
+  {
+    "timestamp": "2025-12-26T16:16:44.488481",
+    "id": "Light_Intensity",
+    "value": "明亮"
+  },
+  {
+    "timestamp": "2025-12-26T16:16:44.488481",
+    "id": "Sound_Intensity",
+    "value": "正常"
+  },
+  {
+    "timestamp": "2025-12-26T16:16:44.488481",
+    "id": "Location",
+    "value": "工作场所"
+  },
+  {
+    "timestamp": "2025-12-26T16:16:44.488481",
+    "id": "Scence",
+    "value": {
+      "scene_type": 1,
+      "scene_type_str": "其他",
+      "has_image": true,
+      "image_size": 402730,
+      "image_path": "scene_images\\其他.png"
+    }
+  },
+  {
+    "timestamp": "2025-12-26T16:16:45.488481",
+    "id": "activity_mode",
+    "value": "慢走"
+  },
+  {
+    "timestamp": "2025-12-26T16:16:45.488481",
+    "id": "Light_Intensity",
+    "value": "明亮"
+  },
+  {
+    "timestamp": "2025-12-26T16:16:45.488481",
+    "id": "Sound_Intensity",
+    "value": "正常"
+  },
+  {
+    "timestamp": "2025-12-26T16:16:45.488481",
+    "id": "Location",
+    "value": "工作场所"
+  },
+  {
+    "timestamp": "2025-12-26T16:16:45.488481",
+    "id": "Scence",
+    "value": {
+      "scene_type": 1,
+      "scene_type_str": "其他",
+      "has_image": true,
+      "image_size": 402730,
+      "image_path": "scene_images\\其他.png"
+    }
+  },
+  {
+    "timestamp": "2025-12-26T16:16:46.488481",
+    "id": "activity_mode",
+    "value": "慢走"
+  },
+  {
+    "timestamp": "2025-12-26T16:16:46.488481",
+    "id": "Light_Intensity",
+    "value": "明亮"
+  },
+  {
+    "timestamp": "2025-12-26T16:16:46.488481",
+    "id": "Sound_Intensity",
+    "value": "正常"
+  },
+  {
+    "timestamp": "2025-12-26T16:16:46.488481",
+    "id": "Location",
+    "value": "工作场所"
+  },
+  {
+    "timestamp": "2025-12-26T16:16:46.488481",
+    "id": "Scence",
+    "value": {
+      "scene_type": 1,
+      "scene_type_str": "其他",
+      "has_image": true,
+      "image_size": 402730,
+      "image_path": "scene_images\\其他.png"
+    }
+  },
+  {
+    "timestamp": "2025-12-26T16:16:47.488481",
+    "id": "activity_mode",
+    "value": "站立"
+  },
+  {
+    "timestamp": "2025-12-26T16:16:47.488481",
+    "id": "Light_Intensity",
+    "value": "正常"
+  },
+  {
+    "timestamp": "2025-12-26T16:16:47.488481",
+    "id": "Sound_Intensity",
+    "value": "正常"
+  },
+  {
+    "timestamp": "2025-12-26T16:16:47.488481",
+    "id": "Location",
+    "value": "其他"
+  },
+  {
+    "timestamp": "2025-12-26T16:16:47.488481",
+    "id": "Scence",
+    "value": {
+      "scene_type": 1,
+      "scene_type_str": "其他",
+      "has_image": true,
+      "image_size": 402730,
+      "image_path": "scene_images\\其他.png"
+    }
+  },
+  {
+    "timestamp": "2025-12-26T16:16:48.488481",
+    "id": "activity_mode",
+    "value": "站立"
+  },
+  {
+    "timestamp": "2025-12-26T16:16:48.488481",
+    "id": "Light_Intensity",
+    "value": "正常"
+  },
+  {
+    "timestamp": "2025-12-26T16:16:48.488481",
+    "id": "Sound_Intensity",
+    "value": "正常"
+  },
+  {
+    "timestamp": "2025-12-26T16:16:48.488481",
+    "id": "Location",
+    "value": "其他"
+  },
+  {
+    "timestamp": "2025-12-26T16:16:48.488481",
+    "id": "Scence",
+    "value": {
+      "scene_type": 1,
+      "scene_type_str": "其他",
+      "has_image": true,
+      "image_size": 402730,
+      "image_path": "scene_images\\其他.png"
+    }
+  },
+  {
+    "timestamp": "2025-12-26T16:16:49.488481",
+    "id": "activity_mode",
+    "value": "电梯"
+  },
+  {
+    "timestamp": "2025-12-26T16:16:49.488481",
+    "id": "Light_Intensity",
+    "value": "正常"
+  },
+  {
+    "timestamp": "2025-12-26T16:16:49.488481",
+    "id": "Sound_Intensity",
+    "value": "正常"
+  },
+  {
+    "timestamp": "2025-12-26T16:16:49.488481",
+    "id": "Location",
+    "value": "其他"
+  },
+  {
+    "timestamp": "2025-12-26T16:16:49.488481",
+    "id": "Scence",
+    "value": {
+      "scene_type": 1,
+      "scene_type_str": "其他",
+      "has_image": true,
+      "image_size": 402730,
+      "image_path": "scene_images\\其他.png"
+    }
+  },
+  {
+    "timestamp": "2025-12-26T16:16:50.488481",
+    "id": "activity_mode",
+    "value": "电梯"
+  },
+  {
+    "timestamp": "2025-12-26T16:16:50.488481",
+    "id": "Light_Intensity",
+    "value": "正常"
+  },
+  {
+    "timestamp": "2025-12-26T16:16:50.488481",
+    "id": "Sound_Intensity",
+    "value": "正常"
+  },
+  {
+    "timestamp": "2025-12-26T16:16:50.488481",
+    "id": "Location",
+    "value": "其他"
+  },
+  {
+    "timestamp": "2025-12-26T16:16:50.488481",
+    "id": "Scence",
+    "value": {
+      "scene_type": 1,
+      "scene_type_str": "其他",
+      "has_image": true,
+      "image_size": 402730,
+      "image_path": "scene_images\\其他.png"
+    }
+  },
+  {
+    "timestamp": "2025-12-26T16:16:51.488481",
+    "id": "activity_mode",
+    "value": "电梯"
+  },
+  {
+    "timestamp": "2025-12-26T16:16:51.488481",
+    "id": "Light_Intensity",
+    "value": "正常"
+  },
+  {
+    "timestamp": "2025-12-26T16:16:51.488481",
+    "id": "Sound_Intensity",
+    "value": "正常"
+  },
+  {
+    "timestamp": "2025-12-26T16:16:51.488481",
+    "id": "Location",
+    "value": "其他"
+  },
+  {
+    "timestamp": "2025-12-26T16:16:51.488481",
+    "id": "Scence",
+    "value": {
+      "scene_type": 1,
+      "scene_type_str": "其他",
+      "has_image": true,
+      "image_size": 402730,
+      "image_path": "scene_images\\其他.png"
+    }
+  },
+  {
+    "timestamp": "2025-12-26T16:16:52.488481",
+    "id": "activity_mode",
+    "value": "电梯"
+  },
+  {
+    "timestamp": "2025-12-26T16:16:52.488481",
+    "id": "Light_Intensity",
+    "value": "正常"
+  },
+  {
+    "timestamp": "2025-12-26T16:16:52.488481",
+    "id": "Sound_Intensity",
+    "value": "正常"
+  },
+  {
+    "timestamp": "2025-12-26T16:16:52.488481",
+    "id": "Location",
+    "value": "其他"
+  },
+  {
+    "timestamp": "2025-12-26T16:16:52.488481",
+    "id": "Scence",
+    "value": {
+      "scene_type": 1,
+      "scene_type_str": "其他",
+      "has_image": true,
+      "image_size": 402730,
+      "image_path": "scene_images\\其他.png"
+    }
+  },
+  {
+    "timestamp": "2025-12-26T16:16:53.488481",
+    "id": "activity_mode",
+    "value": "电梯"
+  },
+  {
+    "timestamp": "2025-12-26T16:16:53.488481",
+    "id": "Light_Intensity",
+    "value": "正常"
+  },
+  {
+    "timestamp": "2025-12-26T16:16:53.488481",
+    "id": "Sound_Intensity",
+    "value": "正常"
+  },
+  {
+    "timestamp": "2025-12-26T16:16:53.488481",
+    "id": "Location",
+    "value": "其他"
+  },
+  {
+    "timestamp": "2025-12-26T16:16:53.488481",
+    "id": "Scence",
+    "value": {
+      "scene_type": 1,
+      "scene_type_str": "其他",
+      "has_image": true,
+      "image_size": 402730,
+      "image_path": "scene_images\\其他.png"
+    }
+  },
+  {
+    "timestamp": "2025-12-26T16:16:54.488481",
+    "id": "activity_mode",
+    "value": "电梯"
+  },
+  {
+    "timestamp": "2025-12-26T16:16:54.488481",
+    "id": "Light_Intensity",
+    "value": "正常"
+  },
+  {
+    "timestamp": "2025-12-26T16:16:54.488481",
+    "id": "Sound_Intensity",
+    "value": "正常"
+  },
+  {
+    "timestamp": "2025-12-26T16:16:54.488481",
+    "id": "Location",
+    "value": "其他"
+  },
+  {
+    "timestamp": "2025-12-26T16:16:54.488481",
+    "id": "Scence",
+    "value": {
+      "scene_type": 1,
+      "scene_type_str": "其他",
+      "has_image": true,
+      "image_size": 402730,
+      "image_path": "scene_images\\其他.png"
+    }
+  },
+  {
+    "timestamp": "2025-12-26T16:16:55.488481",
+    "id": "activity_mode",
+    "value": "电梯"
+  },
+  {
+    "timestamp": "2025-12-26T16:16:55.488481",
+    "id": "Light_Intensity",
+    "value": "正常"
+  },
+  {
+    "timestamp": "2025-12-26T16:16:55.488481",
+    "id": "Sound_Intensity",
+    "value": "正常"
+  },
+  {
+    "timestamp": "2025-12-26T16:16:55.488481",
+    "id": "Location",
+    "value": "其他"
+  },
+  {
+    "timestamp": "2025-12-26T16:16:55.488481",
+    "id": "Scence",
+    "value": {
+      "scene_type": 1,
+      "scene_type_str": "其他",
+      "has_image": true,
+      "image_size": 402730,
+      "image_path": "scene_images\\其他.png"
+    }
+  },
+  {
+    "timestamp": "2025-12-26T16:16:56.488481",
+    "id": "activity_mode",
+    "value": "电梯"
+  },
+  {
+    "timestamp": "2025-12-26T16:16:56.488481",
+    "id": "Light_Intensity",
+    "value": "正常"
+  },
+  {
+    "timestamp": "2025-12-26T16:16:56.488481",
+    "id": "Sound_Intensity",
+    "value": "正常"
+  },
+  {
+    "timestamp": "2025-12-26T16:16:56.488481",
+    "id": "Location",
+    "value": "其他"
+  },
+  {
+    "timestamp": "2025-12-26T16:16:56.488481",
+    "id": "Scence",
+    "value": {
+      "scene_type": 1,
+      "scene_type_str": "其他",
+      "has_image": true,
+      "image_size": 402730,
+      "image_path": "scene_images\\其他.png"
+    }
+  },
+  {
+    "timestamp": "2025-12-26T16:16:57.488481",
+    "id": "activity_mode",
+    "value": "电梯"
+  },
+  {
+    "timestamp": "2025-12-26T16:16:57.488481",
+    "id": "Light_Intensity",
+    "value": "正常"
+  },
+  {
+    "timestamp": "2025-12-26T16:16:57.488481",
+    "id": "Sound_Intensity",
+    "value": "正常"
+  },
+  {
+    "timestamp": "2025-12-26T16:16:57.488481",
+    "id": "Location",
+    "value": "其他"
+  },
+  {
+    "timestamp": "2025-12-26T16:16:57.488481",
+    "id": "Scence",
+    "value": {
+      "scene_type": 1,
+      "scene_type_str": "其他",
+      "has_image": true,
+      "image_size": 402730,
+      "image_path": "scene_images\\其他.png"
+    }
+  },
+  {
+    "timestamp": "2025-12-26T16:16:58.488481",
+    "id": "activity_mode",
+    "value": "电梯"
+  },
+  {
+    "timestamp": "2025-12-26T16:16:58.488481",
+    "id": "Light_Intensity",
+    "value": "正常"
+  },
+  {
+    "timestamp": "2025-12-26T16:16:58.488481",
+    "id": "Sound_Intensity",
+    "value": "正常"
+  },
+  {
+    "timestamp": "2025-12-26T16:16:58.488481",
+    "id": "Location",
+    "value": "其他"
+  },
+  {
+    "timestamp": "2025-12-26T16:16:58.488481",
+    "id": "Scence",
+    "value": {
+      "scene_type": 1,
+      "scene_type_str": "其他",
+      "has_image": true,
+      "image_size": 402730,
+      "image_path": "scene_images\\其他.png"
+    }
+  },
+  {
+    "timestamp": "2025-12-26T16:16:59.488481",
+    "id": "activity_mode",
+    "value": "站立"
+  },
+  {
+    "timestamp": "2025-12-26T16:16:59.488481",
+    "id": "Light_Intensity",
+    "value": "明亮"
+  },
+  {
+    "timestamp": "2025-12-26T16:16:59.488481",
+    "id": "Sound_Intensity",
+    "value": "正常"
+  },
+  {
+    "timestamp": "2025-12-26T16:16:59.488481",
+    "id": "Location",
+    "value": "商业区"
+  },
+  {
+    "timestamp": "2025-12-26T16:16:59.488481",
+    "id": "Scence",
+    "value": {
+      "scene_type": 1,
+      "scene_type_str": "其他",
+      "has_image": true,
+      "image_size": 402730,
+      "image_path": "scene_images\\其他.png"
+    }
+  },
+  {
+    "timestamp": "2025-12-26T16:17:00.488481",
+    "id": "activity_mode",
+    "value": "站立"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:00.488481",
+    "id": "Light_Intensity",
+    "value": "明亮"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:00.488481",
+    "id": "Sound_Intensity",
+    "value": "正常"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:00.488481",
+    "id": "Location",
+    "value": "商业区"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:00.488481",
+    "id": "Scence",
+    "value": {
+      "scene_type": 1,
+      "scene_type_str": "其他",
+      "has_image": true,
+      "image_size": 402730,
+      "image_path": "scene_images\\其他.png"
+    }
+  },
+  {
+    "timestamp": "2025-12-26T16:17:01.488481",
+    "id": "activity_mode",
+    "value": "慢走"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:01.488481",
+    "id": "Light_Intensity",
+    "value": "明亮"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:01.488481",
+    "id": "Sound_Intensity",
+    "value": "正常"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:01.488481",
+    "id": "Location",
+    "value": "商业区"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:01.488481",
+    "id": "Scence",
+    "value": {
+      "scene_type": 1,
+      "scene_type_str": "其他",
+      "has_image": true,
+      "image_size": 402730,
+      "image_path": "scene_images\\其他.png"
+    }
+  },
+  {
+    "timestamp": "2025-12-26T16:17:02.488481",
+    "id": "activity_mode",
+    "value": "慢走"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:02.488481",
+    "id": "Light_Intensity",
+    "value": "明亮"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:02.488481",
+    "id": "Sound_Intensity",
+    "value": "正常"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:02.488481",
+    "id": "Location",
+    "value": "商业区"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:02.488481",
+    "id": "Scence",
+    "value": {
+      "scene_type": 1,
+      "scene_type_str": "其他",
+      "has_image": true,
+      "image_size": 402730,
+      "image_path": "scene_images\\其他.png"
+    }
+  },
+  {
+    "timestamp": "2025-12-26T16:17:03.488481",
+    "id": "activity_mode",
+    "value": "慢走"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:03.488481",
+    "id": "Light_Intensity",
+    "value": "明亮"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:03.488481",
+    "id": "Sound_Intensity",
+    "value": "正常"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:03.488481",
+    "id": "Location",
+    "value": "商业区"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:03.488481",
+    "id": "Scence",
+    "value": {
+      "scene_type": 1,
+      "scene_type_str": "其他",
+      "has_image": true,
+      "image_size": 402730,
+      "image_path": "scene_images\\其他.png"
+    }
+  },
+  {
+    "timestamp": "2025-12-26T16:17:04.488481",
+    "id": "activity_mode",
+    "value": "慢走"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:04.488481",
+    "id": "Light_Intensity",
+    "value": "明亮"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:04.488481",
+    "id": "Sound_Intensity",
+    "value": "正常"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:04.488481",
+    "id": "Location",
+    "value": "商业区"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:04.488481",
+    "id": "Scence",
+    "value": {
+      "scene_type": 1,
+      "scene_type_str": "其他",
+      "has_image": true,
+      "image_size": 402730,
+      "image_path": "scene_images\\其他.png"
+    }
+  },
+  {
+    "timestamp": "2025-12-26T16:17:05.488481",
+    "id": "activity_mode",
+    "value": "慢走"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:05.488481",
+    "id": "Light_Intensity",
+    "value": "明亮"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:05.488481",
+    "id": "Sound_Intensity",
+    "value": "正常"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:05.488481",
+    "id": "Location",
+    "value": "商业区"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:05.488481",
+    "id": "Scence",
+    "value": {
+      "scene_type": 1,
+      "scene_type_str": "其他",
+      "has_image": true,
+      "image_size": 402730,
+      "image_path": "scene_images\\其他.png"
+    }
+  },
+  {
+    "timestamp": "2025-12-26T16:17:06.488481",
+    "id": "activity_mode",
+    "value": "慢走"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:06.488481",
+    "id": "Light_Intensity",
+    "value": "明亮"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:06.488481",
+    "id": "Sound_Intensity",
+    "value": "正常"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:06.488481",
+    "id": "Location",
+    "value": "商业区"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:06.488481",
+    "id": "Scence",
+    "value": {
+      "scene_type": 1,
+      "scene_type_str": "其他",
+      "has_image": true,
+      "image_size": 402730,
+      "image_path": "scene_images\\其他.png"
+    }
+  },
+  {
+    "timestamp": "2025-12-26T16:17:07.488481",
+    "id": "activity_mode",
+    "value": "慢走"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:07.488481",
+    "id": "Light_Intensity",
+    "value": "明亮"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:07.488481",
+    "id": "Sound_Intensity",
+    "value": "正常"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:07.488481",
+    "id": "Location",
+    "value": "商业区"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:07.488481",
+    "id": "Scence",
+    "value": {
+      "scene_type": 1,
+      "scene_type_str": "其他",
+      "has_image": true,
+      "image_size": 402730,
+      "image_path": "scene_images\\其他.png"
+    }
+  },
+  {
+    "timestamp": "2025-12-26T16:17:08.488481",
+    "id": "activity_mode",
+    "value": "慢走"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:08.488481",
+    "id": "Light_Intensity",
+    "value": "明亮"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:08.488481",
+    "id": "Sound_Intensity",
+    "value": "正常"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:08.488481",
+    "id": "Location",
+    "value": "商业区"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:08.488481",
+    "id": "Scence",
+    "value": {
+      "scene_type": 1,
+      "scene_type_str": "其他",
+      "has_image": true,
+      "image_size": 402730,
+      "image_path": "scene_images\\其他.png"
+    }
+  },
+  {
+    "timestamp": "2025-12-26T16:17:09.488481",
+    "id": "activity_mode",
+    "value": "慢走"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:09.488481",
+    "id": "Light_Intensity",
+    "value": "明亮"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:09.488481",
+    "id": "Sound_Intensity",
+    "value": "正常"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:09.488481",
+    "id": "Location",
+    "value": "商业区"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:09.488481",
+    "id": "Scence",
+    "value": {
+      "scene_type": 1,
+      "scene_type_str": "其他",
+      "has_image": true,
+      "image_size": 402730,
+      "image_path": "scene_images\\其他.png"
+    }
+  },
+  {
+    "timestamp": "2025-12-26T16:17:10.488481",
+    "id": "activity_mode",
+    "value": "慢走"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:10.488481",
+    "id": "Light_Intensity",
+    "value": "明亮"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:10.488481",
+    "id": "Sound_Intensity",
+    "value": "正常"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:10.488481",
+    "id": "Location",
+    "value": "商业区"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:10.488481",
+    "id": "Scence",
+    "value": {
+      "scene_type": 1,
+      "scene_type_str": "其他",
+      "has_image": true,
+      "image_size": 402730,
+      "image_path": "scene_images\\其他.png"
+    }
+  },
+  {
+    "timestamp": "2025-12-26T16:17:11.488481",
+    "id": "activity_mode",
+    "value": "慢走"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:11.488481",
+    "id": "Light_Intensity",
+    "value": "明亮"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:11.488481",
+    "id": "Sound_Intensity",
+    "value": "正常"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:11.488481",
+    "id": "Location",
+    "value": "商业区"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:11.488481",
+    "id": "Scence",
+    "value": {
+      "scene_type": 1,
+      "scene_type_str": "其他",
+      "has_image": true,
+      "image_size": 402730,
+      "image_path": "scene_images\\其他.png"
+    }
+  },
+  {
+    "timestamp": "2025-12-26T16:17:12.488481",
+    "id": "activity_mode",
+    "value": "慢走"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:12.488481",
+    "id": "Light_Intensity",
+    "value": "明亮"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:12.488481",
+    "id": "Sound_Intensity",
+    "value": "正常"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:12.488481",
+    "id": "Location",
+    "value": "商业区"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:12.488481",
+    "id": "Scence",
+    "value": {
+      "scene_type": 1,
+      "scene_type_str": "其他",
+      "has_image": true,
+      "image_size": 402730,
+      "image_path": "scene_images\\其他.png"
+    }
+  },
+  {
+    "timestamp": "2025-12-26T16:17:13.488481",
+    "id": "activity_mode",
+    "value": "慢走"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:13.488481",
+    "id": "Light_Intensity",
+    "value": "明亮"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:13.488481",
+    "id": "Sound_Intensity",
+    "value": "正常"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:13.488481",
+    "id": "Location",
+    "value": "商业区"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:13.488481",
+    "id": "Scence",
+    "value": {
+      "scene_type": 1,
+      "scene_type_str": "其他",
+      "has_image": true,
+      "image_size": 402730,
+      "image_path": "scene_images\\其他.png"
+    }
+  },
+  {
+    "timestamp": "2025-12-26T16:17:14.488481",
+    "id": "activity_mode",
+    "value": "慢走"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:14.488481",
+    "id": "Light_Intensity",
+    "value": "明亮"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:14.488481",
+    "id": "Sound_Intensity",
+    "value": "正常"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:14.488481",
+    "id": "Location",
+    "value": "商业区"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:14.488481",
+    "id": "Scence",
+    "value": {
+      "scene_type": 1,
+      "scene_type_str": "其他",
+      "has_image": true,
+      "image_size": 402730,
+      "image_path": "scene_images\\其他.png"
+    }
+  },
+  {
+    "timestamp": "2025-12-26T16:17:15.488481",
+    "id": "activity_mode",
+    "value": "慢走"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:15.488481",
+    "id": "Light_Intensity",
+    "value": "明亮"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:15.488481",
+    "id": "Sound_Intensity",
+    "value": "正常"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:15.488481",
+    "id": "Location",
+    "value": "商业区"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:15.488481",
+    "id": "Scence",
+    "value": {
+      "scene_type": 1,
+      "scene_type_str": "其他",
+      "has_image": true,
+      "image_size": 402730,
+      "image_path": "scene_images\\其他.png"
+    }
+  },
+  {
+    "timestamp": "2025-12-26T16:17:16.488481",
+    "id": "activity_mode",
+    "value": "慢走"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:16.488481",
+    "id": "Light_Intensity",
+    "value": "明亮"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:16.488481",
+    "id": "Sound_Intensity",
+    "value": "正常"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:16.488481",
+    "id": "Location",
+    "value": "商业区"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:16.488481",
+    "id": "Scence",
+    "value": {
+      "scene_type": 1,
+      "scene_type_str": "其他",
+      "has_image": true,
+      "image_size": 402730,
+      "image_path": "scene_images\\其他.png"
+    }
+  },
+  {
+    "timestamp": "2025-12-26T16:17:17.488481",
+    "id": "activity_mode",
+    "value": "慢走"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:17.488481",
+    "id": "Light_Intensity",
+    "value": "明亮"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:17.488481",
+    "id": "Sound_Intensity",
+    "value": "正常"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:17.488481",
+    "id": "Location",
+    "value": "商业区"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:17.488481",
+    "id": "Scence",
+    "value": {
+      "scene_type": 1,
+      "scene_type_str": "其他",
+      "has_image": true,
+      "image_size": 402730,
+      "image_path": "scene_images\\其他.png"
+    }
+  },
+  {
+    "timestamp": "2025-12-26T16:17:18.488481",
+    "id": "activity_mode",
+    "value": "慢走"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:18.488481",
+    "id": "Light_Intensity",
+    "value": "明亮"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:18.488481",
+    "id": "Sound_Intensity",
+    "value": "正常"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:18.488481",
+    "id": "Location",
+    "value": "商业区"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:18.488481",
+    "id": "Scence",
+    "value": {
+      "scene_type": 1,
+      "scene_type_str": "其他",
+      "has_image": true,
+      "image_size": 402730,
+      "image_path": "scene_images\\其他.png"
+    }
+  },
+  {
+    "timestamp": "2025-12-26T16:17:19.488481",
+    "id": "activity_mode",
+    "value": "慢走"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:19.488481",
+    "id": "Light_Intensity",
+    "value": "明亮"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:19.488481",
+    "id": "Sound_Intensity",
+    "value": "正常"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:19.488481",
+    "id": "Location",
+    "value": "商业区"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:19.488481",
+    "id": "Scence",
+    "value": {
+      "scene_type": 1,
+      "scene_type_str": "其他",
+      "has_image": true,
+      "image_size": 402730,
+      "image_path": "scene_images\\其他.png"
+    }
+  },
+  {
+    "timestamp": "2025-12-26T16:17:20.488481",
+    "id": "activity_mode",
+    "value": "慢走"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:20.488481",
+    "id": "Light_Intensity",
+    "value": "明亮"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:20.488481",
+    "id": "Sound_Intensity",
+    "value": "正常"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:20.488481",
+    "id": "Location",
+    "value": "商业区"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:20.488481",
+    "id": "Scence",
+    "value": {
+      "scene_type": 1,
+      "scene_type_str": "其他",
+      "has_image": true,
+      "image_size": 402730,
+      "image_path": "scene_images\\其他.png"
+    }
+  },
+  {
+    "timestamp": "2025-12-26T16:17:21.488481",
+    "id": "activity_mode",
+    "value": "慢走"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:21.488481",
+    "id": "Light_Intensity",
+    "value": "明亮"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:21.488481",
+    "id": "Sound_Intensity",
+    "value": "正常"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:21.488481",
+    "id": "Location",
+    "value": "商业区"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:21.488481",
+    "id": "Scence",
+    "value": {
+      "scene_type": 1,
+      "scene_type_str": "其他",
+      "has_image": true,
+      "image_size": 402730,
+      "image_path": "scene_images\\其他.png"
+    }
+  },
+  {
+    "timestamp": "2025-12-26T16:17:22.488481",
+    "id": "activity_mode",
+    "value": "慢走"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:22.488481",
+    "id": "Light_Intensity",
+    "value": "明亮"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:22.488481",
+    "id": "Sound_Intensity",
+    "value": "正常"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:22.488481",
+    "id": "Location",
+    "value": "商业区"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:22.488481",
+    "id": "Scence",
+    "value": {
+      "scene_type": 1,
+      "scene_type_str": "其他",
+      "has_image": true,
+      "image_size": 402730,
+      "image_path": "scene_images\\其他.png"
+    }
+  },
+  {
+    "timestamp": "2025-12-26T16:17:23.488481",
+    "id": "activity_mode",
+    "value": "慢走"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:23.488481",
+    "id": "Light_Intensity",
+    "value": "明亮"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:23.488481",
+    "id": "Sound_Intensity",
+    "value": "正常"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:23.488481",
+    "id": "Location",
+    "value": "商业区"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:23.488481",
+    "id": "Scence",
+    "value": {
+      "scene_type": 1,
+      "scene_type_str": "其他",
+      "has_image": true,
+      "image_size": 402730,
+      "image_path": "scene_images\\其他.png"
+    }
+  },
+  {
+    "timestamp": "2025-12-26T16:17:24.488481",
+    "id": "activity_mode",
+    "value": "慢走"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:24.488481",
+    "id": "Light_Intensity",
+    "value": "明亮"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:24.488481",
+    "id": "Sound_Intensity",
+    "value": "正常"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:24.488481",
+    "id": "Location",
+    "value": "商业区"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:24.488481",
+    "id": "Scence",
+    "value": {
+      "scene_type": 1,
+      "scene_type_str": "其他",
+      "has_image": true,
+      "image_size": 402730,
+      "image_path": "scene_images\\其他.png"
+    }
+  },
+  {
+    "timestamp": "2025-12-26T16:17:25.488481",
+    "id": "activity_mode",
+    "value": "慢走"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:25.488481",
+    "id": "Light_Intensity",
+    "value": "明亮"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:25.488481",
+    "id": "Sound_Intensity",
+    "value": "正常"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:25.488481",
+    "id": "Location",
+    "value": "商业区"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:25.488481",
+    "id": "Scence",
+    "value": {
+      "scene_type": 1,
+      "scene_type_str": "其他",
+      "has_image": true,
+      "image_size": 402730,
+      "image_path": "scene_images\\其他.png"
+    }
+  },
+  {
+    "timestamp": "2025-12-26T16:17:26.488481",
+    "id": "activity_mode",
+    "value": "慢走"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:26.488481",
+    "id": "Light_Intensity",
+    "value": "明亮"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:26.488481",
+    "id": "Sound_Intensity",
+    "value": "正常"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:26.488481",
+    "id": "Location",
+    "value": "商业区"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:26.488481",
+    "id": "Scence",
+    "value": {
+      "scene_type": 1,
+      "scene_type_str": "其他",
+      "has_image": true,
+      "image_size": 402730,
+      "image_path": "scene_images\\其他.png"
+    }
+  },
+  {
+    "timestamp": "2025-12-26T16:17:27.488481",
+    "id": "activity_mode",
+    "value": "慢走"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:27.488481",
+    "id": "Light_Intensity",
+    "value": "明亮"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:27.488481",
+    "id": "Sound_Intensity",
+    "value": "正常"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:27.488481",
+    "id": "Location",
+    "value": "商业区"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:27.488481",
+    "id": "Scence",
+    "value": {
+      "scene_type": 1,
+      "scene_type_str": "其他",
+      "has_image": true,
+      "image_size": 402730,
+      "image_path": "scene_images\\其他.png"
+    }
+  },
+  {
+    "timestamp": "2025-12-26T16:17:28.488481",
+    "id": "activity_mode",
+    "value": "站立"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:28.488481",
+    "id": "Light_Intensity",
+    "value": "明亮"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:28.488481",
+    "id": "Sound_Intensity",
+    "value": "嘈杂"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:28.488481",
+    "id": "Location",
+    "value": "街道"
+  },
+  {
+    "timestamp": "2025-12-26T16:17:28.488481",
+    "id": "Scence",
+    "value": {
+      "scene_type": 1,
+      "scene_type_str": "其他",
+      "has_image": true,
+      "image_size": 402730,
+      "image_path": "scene_images\\其他.png"
+    }
+  }
+]
