@@ -132,12 +132,8 @@ class ScenePerceptionModule:
             for scene_data in vlm_result["scenes"]:
                 scene = SceneSegment(
                     scene_id=scene_data.get("scene_id", 0),
-                    start_frame=scene_data.get("start_frame", 0),
-                    end_frame=scene_data.get("end_frame", 0),
                     description=scene_data.get("description", ""),
-                    main_activity=scene_data.get("main_activity", ""),
-                    confidence=scene_data.get("confidence", 0.0),
-                    tags=scene_data.get("tags", [])
+                    main_activity=scene_data.get("main_activity", "")
                 )
                 scenes.append(scene)
 
@@ -149,7 +145,6 @@ class ScenePerceptionModule:
             total_frames=len(scene_batch.frames),
             total_scenes=len(scenes),
             scenes=scenes,
-            summary=vlm_result.get("summary", ""),
             processing_time=processing_time
         )
 
@@ -157,7 +152,6 @@ class ScenePerceptionModule:
         """设置错误结果"""
         self.last_result = SceneAnalysisResult(
             batch_id=f"error_{int(time.time())}",
-            summary=f"处理失败: {error_msg}",
             processing_time=time.time() - start_time
         )
 

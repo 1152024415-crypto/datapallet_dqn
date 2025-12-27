@@ -28,13 +28,8 @@ class SceneBatch:
 class SceneSegment:
     """划分出的一个场景段"""
     scene_id: int  # 场景编号
-    start_frame: int  # 起始帧（包含）
-    end_frame: int  # 结束帧（包含）
     description: str  # 场景描述
     main_activity: str  # 主要活动
-    confidence: float = 1.0  # 置信度
-    tags: List[str] = field(default_factory=list)  # 场景标签
-
 
 @dataclass
 class SceneAnalysisResult:
@@ -44,5 +39,4 @@ class SceneAnalysisResult:
     total_frames: int = 0
     total_scenes: int = 0
     scenes: List[SceneSegment] = field(default_factory=list)  # 划分出的多个场景
-    summary: str = ""  # 整体总结
     processing_time: float = 0.0  # 处理时间

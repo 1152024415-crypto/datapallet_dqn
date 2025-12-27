@@ -28,9 +28,12 @@ class SceneDataFetcher:
         image_extensions = ['.jpg', '.jpeg', '.png', '.bmp', '.gif']
         self.image_files = []
 
-        # 遍历文件夹，收集所有图片文件
-        for ext in image_extensions:
-            self.image_files.extend(list(self.image_dir.glob(f"*{ext}")))
+        if self.image_dir.is_file():
+            if self.image_dir.suffix.lower() in [ext.lower() for ext in image_extensions]:
+                self.image_files.append(self.image_dir)
+        else:
+            for ext in image_extensions:
+                self.image_files.extend(list(self.image_dir.glob(f"*{ext}")))
 
         # 按文件名排序，确保顺序一致
         self.image_files.sort(key=lambda x: x.name)
@@ -60,12 +63,11 @@ class SceneDataFetcher:
 
         for i in range(count):
             metadata = {
-                "timestamp": (base_time + timedelta(seconds=i * 2)).isoformat(),
-                "object_classes": ["unknown"],
-                "activity_type": "unknown",
-                "specific_address": "unknown",
-                "frame_id": i,
-                "is_default_metadata": True  # 标记为默认元数据
+                "activity_mode": "unknown",
+                "Light_Intensity": "unknown",
+                "Sound_Intensity": "unknown",
+                "Location": "unknown",
+                "scene_type": "unknown",
             }
             default_metadata.append(metadata)
 

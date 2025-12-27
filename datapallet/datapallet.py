@@ -11,7 +11,7 @@ from dataclasses import dataclass
 from datetime import datetime, timedelta
 
 # 从enums模块导入枚举定义和工具函数
-from enums import (
+from .enums import (
     ActivityMode, LightIntensity, SoundIntensity,
     LocationType, SceneType, SceneData, to_str, from_str
 )

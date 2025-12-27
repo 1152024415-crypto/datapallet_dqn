@@ -1,5 +1,5 @@
 [project]
-name = "vlm"
+name = "datapallet"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
@@ -8,4 +8,5 @@ dependencies = [
     "httpx[http2]>=0.28.1",
     "logger>=1.4",
     "openai>=2.14.0",
+    "requests>=2.32.5",
 ]

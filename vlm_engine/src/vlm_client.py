@@ -58,7 +58,7 @@ class VLMClient:
         messages = self._build_scene_messages(scene_batch)
 
         # 调用VLM
-        logger.info(f"调用VLM进行场景分析，共{len(scene_batch.frames)}帧")
+        logger.info(f"调用VLM进行场景分析")
         try:
             response = self.cli.chat.completions.create(
                 model=self.model,
@@ -85,25 +85,39 @@ class VLMClient:
 
             # 添加元数据中的关键信息
             meta = frame.metadata
-            if "object_classes" in meta:
-                desc += f"物体: {', '.join(meta['object_classes'][:3])}"
-                if len(meta["object_classes"]) > 3:
-                    desc += f" 等{len(meta['object_classes'])}个物体"
-            if "activity_type" in meta:
-                desc += f"，活动: {meta['activity_type']}"
-            if "specific_address" in meta:
-                desc += f"，位置: {meta['specific_address']}"
+            available_metadata = []
+            if "activity_mode" in meta:
+                available_metadata.append(f"姿态模式: {meta['activity_mode']}")
 
+            if "Light_Intensity" in meta:
+                available_metadata.append(f"环境光亮度: {meta['Light_Intensity']}")
+
+            if "Sound_Intensity" in meta:
+                available_metadata.append(f"背景音强度: {meta['Sound_Intensity']}")
+
+            if "Location" in meta:
+                available_metadata.append(f"位置: {meta['Location']}")
+
+            if "scene_type" in meta:
+                available_metadata.append(f"图像场景分类: {meta['scene_type']}")
+
+            desc += "  " + "\n  ".join(available_metadata)
             frame_descriptions.append(desc)
 
         # 构建系统提示词
-        system_prompt = """你是一个专业的场景分析AI。你需要分析一系列按时间顺序排列的图片帧（每张图片都有关联的元数据），识别连续的相关活动，并将它们划分为不同的场景。
+        system_prompt = """你是一个专业的场景分析AI。你需要分析单张图片及其相关的元数据信息，识别当前场景的活动和状态。
 
 你的任务：
-1. 分析所有图片帧的内容和关联元数据
-2. 识别每帧中的活动、物体、人物和状态变化
-3. 基于时间连续性和活动相关性将帧分组为不同的场景
-4. 输出详细的场景划分结果
+1. 分析图片的视觉内容
+2. 结合提供的元数据信息（可能不完整）进行综合分析
+3. 识别当前场景的主要活动、状态和环境特征
+4. 输出详细且准确的场景分析结果
+
+重要说明：
+- 元数据可能不完整：只提供存在的元信息，缺失的信息不要假设
+- 结合视觉内容：优先根据图片内容分析，元数据作为补充信息
+- main_activity要尽量简单：用一个词语概括主要活动
+- description要详细：提供场景的详细描述，结合视觉内容和元数据
 
 输出要求：
 - 你必须且只能输出一个纯粹的JSON对象
@@ -114,32 +128,44 @@ class VLMClient:
 输出JSON必须包含以下字段：
 - scenes: 场景列表，每个场景包含：
   - scene_id: (int) 场景编号，从1开始
-  - start_frame: (int) 起始帧编号
-  - end_frame: (int) 结束帧编号（包含）
-  - description: (string) 对该场景的详细描述
-  - main_activity: (string) 该场景的主要活动类型
-  - confidence: (float) 划分的置信度，0-1之间
-  - tags: (list) 场景标签列表
-- summary: (string) 整体场景分析的总结"""
+  - description: (string) 对该场景的详细描述，结合视觉内容和元数据
+  - main_activity: (string) 该场景的主要活动类型，一个词语概括
+  
+示例输出格式：
+{
+  "scenes": [
+    {
+      "scene_id": 1,
+      "description": "详细的场景描述...",
+      "main_activity": "一个词语概括"
+    }
+  ]
+}
+"""
 
         # 构建用户提示词
-        user_prompt = f"""请分析以下连续的 {len(scene_batch.frames)} 帧图片，并将它们划分为不同的场景。
+        user_prompt = f"""请分析以下图片及其相关的元数据信息，给出详细的场景分析。
 
-图片按时间顺序排列（从早到晚）：
+图片元数据信息：
 {chr(10).join(frame_descriptions)}
 
 重要说明：
-1. 每张图片都与上方的描述一一对应
-2. 帧编号从0开始，依次递增
-3. 请基于视觉内容和元数据信息进行场景划分
+1. 元数据信息来自同一张图片的不同维度感知
+2. 元数据可能不完整，只提供已知信息
+3. 请结合图片视觉内容和所有可用元数据进行综合分析
 
-场景划分原则：
-1. 一个场景应该包含时间上连续的若干帧
-2. 同一场景内的帧应该具有一致的主要活动或主题
-3. 场景之间的切换应该有明显的活动变化或主题变化
-4. 尽可能将相关活动合并到同一场景中
+场景分析要点：
+1. 根据视觉内容确定主要活动或状态
+2. 结合姿态模式（如有）推断人物活动
+3. 根据环境光亮度（如有）判断光照条件
+4. 根据背景音强度（如有）推断环境嘈杂度
+5. 根据位置信息（如有）确定场景地点
+6. 根据场景分类（如有）了解场景类型
+7. 结合所有可用信息给出综合判断
+8. main_activity要简单，一个词语概括（如：办公、会议、休息、行走等）
+9. description要详细，包括场景环境、人物活动、环境条件等
 
-请输出划分结果："""
+请基于以上信息，输出详细且准确的场景分析结果："""
 
         # 构建消息（使用Ollama格式）
         messages = [
@@ -158,7 +184,6 @@ class VLMClient:
 
     def _analyze_in_batches(self, scene_batch):
         """分批处理（如果需要的话）"""
-        #TODO 这里实现分批逻辑
         logger.warning("分批处理功能待实现，将使用前{self.max_images_per_request}张图片")
         # 只取前max_images_per_request张
         truncated_batch = SceneBatch(frames=scene_batch.frames[:self.max_images_per_request])

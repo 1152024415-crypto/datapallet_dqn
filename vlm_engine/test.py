@@ -55,12 +55,8 @@ def display_results(result: SceneAnalysisResult):
     print(f"划分出场景数: {result.total_scenes}")
     print(f"处理时间: {result.processing_time:.2f}秒")
 
-    if result.summary:
-        print(f"\n整体总结: {result.summary}")
-
     for i, scene in enumerate(result.scenes, 1):
         print(f"\n场景 {i}:")
-        print(f"  帧范围: {scene.start_frame} - {scene.end_frame}")
         print(f"  主要活动: {scene.main_activity}")
         print(f"  描述: {scene.description[:80]}..." if len(scene.description) > 80 else f"  描述: {scene.description}")
 

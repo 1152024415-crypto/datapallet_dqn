@@ -4,13 +4,16 @@ VLM场景感知模块测试 - 简化版
 import time
 import sys
 import os
-
+from typing import Any
+import time
+from datapallet.datapallet import DataPallet, create_datapallet
+from datapallet.enums import ActivityMode, SceneData, SceneType, LightIntensity, SoundIntensity, LocationType
+from datetime import datetime, timedelta
 # 添加vlm_engine目录到Python路径
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), 'vlm_engine'))
 
 from vlm_engine import initialize_vlm_service
 from vlm_engine import SceneAnalysisResult
-from vlm_engine.config import Config
 
 # DQN / 规则引擎
 class TestEngine:
@@ -51,34 +54,67 @@ class TestEngine:
 def display_results(result: SceneAnalysisResult):
     """显示分析结果"""
     print(f"\n场景分析结果 (批次: {result.batch_id})")
-    print(f"总帧数: {result.total_frames}")
-    print(f"划分出场景数: {result.total_scenes}")
     print(f"处理时间: {result.processing_time:.2f}秒")
-
-    if result.summary:
-        print(f"\n整体总结: {result.summary}")
 
     for i, scene in enumerate(result.scenes, 1):
         print(f"\n场景 {i}:")
-        print(f"  帧范围: {scene.start_frame} - {scene.end_frame}")
         print(f"  主要活动: {scene.main_activity}")
         print(f"  描述: {scene.description[:80]}..." if len(scene.description) > 80 else f"  描述: {scene.description}")
 
 
 def main():
-    """主测试函数 - 简化版本"""
+    def simple_callback(data_id: str, value: Any):
+        """简单回调示例"""
+        print(f"[回调] {data_id} = {value}")
+
+    # 创建数据托盘
+    dp = create_datapallet(ttl=10)
+
+    # 设置回调
+    dp.setup(simple_callback)
+    # 模拟接收数据（实际由测试床发送）
+    image_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "datapallet/scene_images/会议室.png")
+    sd = SceneData(
+        scene_type=SceneType.MEETINGROOM,
+        image_path=image_path
+    )
+    dp.receive_data("Scence", sd, datetime.now())
+    print(f"✓ 添加 Scence: SceneType.MEETINGROOM, 图片路径: {image_path}")
+    success, value = dp.get("Scence")
+    if success:
+        print("Scence value get success")
+    dp.receive_data("activity_mode", ActivityMode.SITTING, datetime.now())
+    print(f"✓ 添加 activity_mode: ActivityMode.SITTING")
+    success, value = dp.get("ActivityMode")
+    if success:
+        print("ActivityMode value get success")
+    dp.receive_data("Light_Intensity", LightIntensity.BRIGHT, datetime.now())
+    print(f"✓ 添加 Light_Intensity: LightIntensity.BRIGHT")
+    success, value = dp.get("Light_Intensity")
+    if success:
+        print("Light_Intensity value get success")
+    dp.receive_data("Sound_Intensity", SoundIntensity.NORMAL_SOUND, datetime.now())
+    print(f"✓ 添加 Sound_Intensity: SoundIntensity.NORMAL_SOUND")
+    success, value = dp.get("Sound_Intensity")
+    if success:
+        print("Sound_Intensity value get success")
+    dp.receive_data("Location", LocationType.WORK, datetime.now())
+    print(f"✓ 添加 Location: LocationType.WORK")
+    success, value = dp.get("Location")
+    if success:
+        print("Location value get success")
+
+    # """主测试函数 - 简化版本"""
     print("VLM场景感知模块测试")
     print("=" * 60)
 
+#=============================================================================================================
     # 1. 创建测试引擎
     test_engine = TestEngine()
 
     # 2. 使用初始化接口创建VLM服务
     print("初始化VLM服务...")
-    vlm_module, analysis_callback = initialize_vlm_service(
-        image_dir=Config.IMAGE_DIR,
-        metadata_list=Config.MOCK_METADATA_LIST
-    )
+    vlm_module, analysis_callback = initialize_vlm_service(datapallet=dp)
 
     # 3. 设置回调
     test_engine.setup_callback(analysis_callback)
@@ -101,9 +137,11 @@ def main():
         result = vlm_module.get_last_result()
         if result:
             display_results(result)
+# =============================================================================================================
 
     print("\n测试完成！")
-
+    # 停止数据托盘
+    dp.stop()
 
 if __name__ == "__main__":
     main()
