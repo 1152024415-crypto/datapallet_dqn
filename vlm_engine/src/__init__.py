@@ -52,7 +52,7 @@ def _get_metadata_from_datapallet(datapallet: DataPallet, scene_type) -> List[Di
 
     return [metadata]
 
-def initialize_vlm_service(datapallet: DataPallet) -> Tuple[ScenePerceptionModule, Callable]:
+def initialize_vlm_service(api_type: str, datapallet: DataPallet) -> Tuple[ScenePerceptionModule, Callable]:
     """
     初始化VLM服务并返回模块和场景分析回调
 
@@ -76,7 +76,7 @@ def initialize_vlm_service(datapallet: DataPallet) -> Tuple[ScenePerceptionModul
     #     }
     # ]
     _fetcher = SceneDataFetcher(scene_info["image_dir"], metadata_list)
-    _vlm_client = VLMClient()
+    _vlm_client = VLMClient(api_type=api_type)
     _vlm_module = ScenePerceptionModule(_fetcher, _vlm_client)
     analysis_callback = _vlm_module.get_scene_analysis_callback()
 
