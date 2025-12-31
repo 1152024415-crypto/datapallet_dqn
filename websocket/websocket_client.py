@@ -2,88 +2,120 @@ import asyncio
 import websockets
 import json
 import time
+import random
+from typing import Optional
 
 
 class WebSocketClient:
-    def __init__(self, server_url: str = "ws://localhost:8765"):
+    def __init__(self, server_url: str = "ws://localhost:8765", client_id: str = "client"):
         self.server_url = server_url
-        self.websocket = None
+        self.client_id = client_id
+        self.websocket: Optional[websockets] = None
         self.running = False
 
     async def connect(self):
-        """连接服务器"""
-        print(f"正在连接到 {self.server_url} ...")
+        """连接到服务器"""
         try:
+            print(f"正在连接到 {self.server_url} ...")
             self.websocket = await websockets.connect(self.server_url)
-            print("连接成功!")
-            self.running = True
-            return True
+
+            # 发送注册消息
+            register_msg = {
+                "type": "register",
+                "client_id": self.client_id
+            }
+            await self.websocket.send(json.dumps(register_msg))
+
+            # 等待欢迎消息
+            response = await self.websocket.recv()
+            data = json.loads(response)
+
+            if data.get("type") == "welcome":
+                print(f"✓ {data['message']}")
+                self.running = True
+                return True
+            else:
+                print("注册失败")
+                return False
+
         except Exception as e:
             print(f"连接失败: {e}")
             return False
 
-    async def listen_for_notifications(self):
-        """监听服务器通知"""
-        if not self.websocket:
-            print("未连接到服务器")
-            return
+    async def process_upload_request(self):
+        """处理上传请求"""
+        print(f"收到上传请求，准备上传数据...")
 
-        print("开始监听服务器通知...")
+        # 模拟数据处理延迟
+        await asyncio.sleep(2)
+        # 发送上传响应
+        upload_response = {
+            "type": "upload_response",
+            "client_id": self.client_id,
+            "data": "upload data",
+            "timestamp": time.time()
+        }
 
-        while self.running:
-            try:
-                # 等待服务器通知
-                print("等待服务器通知...")
-                notification = await self.websocket.recv()
-                print(f"收到原始消息: {notification[:100]}...")
+        await self.websocket.send(json.dumps(upload_response))
+        print("数据上传完成，等待服务器确认...")
 
-                try:
-                    data = json.loads(notification)
-                    if data.get("type") == "upload_request":
-                        print(f"\n收到服务器通知: {data['message']}")
+        # 等待服务器确认
+        try:
+            response = await asyncio.wait_for(self.websocket.recv(), timeout=5)
+            data = json.loads(response)
+            if data.get("type") == "upload_ack":
+                print(f"服务器确认: {data.get('message')}")
+        except asyncio.TimeoutError:
+            print("未收到服务器确认")
 
-                        # 发送文本
-                        text_to_send = f"这是客户端在 {time.strftime('%H:%M:%S')} 发送的测试文本。内容包含一些测试数据用于验证通信。"
-                        await self.websocket.send(text_to_send)
-                        print(f"已发送文本，长度: {len(text_to_send)} 字符")
-
-                        # 等待服务器响应
-                        response = await self.websocket.recv()
-                        response_data = json.loads(response)
-                        print(f"服务器响应: {response_data['message']}\n")
-                except json.JSONDecodeError:
-                    print(f"收到非JSON消息: {notification[:100]}...")
-
-            except websockets.exceptions.ConnectionClosed:
-                print("连接已关闭")
-                self.running = False
-                break
-            except Exception as e:
-                print(f"接收消息时出错: {e}")
-                await asyncio.sleep(1)  # 出错时等待1秒
-
-    async def run(self):
-        """运行客户端（持续运行）"""
-        if not await self.connect():
-            return
-
-        print("客户端已启动，等待服务器通知...")
+    async def listen(self):
+        """监听服务器消息"""
+        print(f"客户端 {self.client_id} 已就绪，等待服务器指令...")
         print("按 Ctrl+C 退出")
 
         try:
-            await self.listen_for_notifications()
+            while self.running and self.websocket:
+                try:
+                    # 接收消息
+                    message = await self.websocket.recv()
+                    data = json.loads(message)
+
+                    if data.get("type") == "upload_request":
+                        print(f"\n收到上传请求: {data.get('message')}")
+                        await self.process_upload_request()
+                    else:
+                        print(f"收到消息: {data.get('type')}")
+
+                except websockets.exceptions.ConnectionClosed:
+                    print("连接已关闭")
+                    break
+
         except KeyboardInterrupt:
             print("\n用户中断")
         finally:
             await self.close()
 
+    async def run(self):
+        """运行客户端"""
+        if not await self.connect():
+            return
+
+        await self.listen()
+
     async def close(self):
         """关闭连接"""
         if self.websocket:
             await self.websocket.close()
+            self.running = False
             print("连接已关闭")
 
 
-if __name__ == "__main__":
-    client = WebSocketClient()
+# 客户端运行示例
+def run_client(client_id: str = "client1"):
+    """运行单个客户端"""
+    client = WebSocketClient(client_id=client_id)
     asyncio.run(client.run())
+
+
+if __name__ == "__main__":
+    run_client()

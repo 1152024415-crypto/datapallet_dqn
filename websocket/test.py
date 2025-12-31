@@ -1,58 +1,53 @@
-"""
-简化的触发脚本 - 只发送控制消息，不干扰正常客户端
-"""
-
-import asyncio
-import websockets
-import json
+#test.py
+from websocket_server import WebSocketServer, Trigger
 import time
+import threading
+#=================================================
+# 使用示例
+def main():
+    # 创建服务器
+    server = WebSocketServer()
 
+    def run_server():
+        server.start(run_async=False)
 
-async def trigger_notifications():
-    """触发服务器向所有客户端发送通知"""
-    print("触发服务器向所有客户端发送通知...")
+    # 启动服务器线程
+    server_thread = threading.Thread(target=run_server, daemon=True)
+    server_thread.start()
+    # 等待服务器启动
+    time.sleep(2)
+
+    # 创建触发器
+    trigger = Trigger(server)
+
+    print("服务器已启动，等待客户端连接...")
+    print("按 Ctrl+C 停止")
 
     try:
-        # 连接到服务器
-        async with websockets.connect("ws://localhost:8765") as websocket:
-            print("已连接到服务器")
+        # 示例：定期检查并触发客户端
 
-            # 发送控制消息
-            control_msg = {
-                "type": "control",
-                "command": "notify_all",
-                "timestamp": time.time(),
-                "source": "trigger_script"
-            }
+        while True:
+            # 检查连接状态
+            clients = server.get_connected_clients()
+            if clients:
+                print(f"当前连接客户端: {clients}")
 
-            print("发送控制消息...")
-            await websocket.send(json.dumps(control_msg))
+                # 触发第一个客户端上传数据
+                if clients:
+                    success = trigger.trigger_upload(clients[0])
+                    if success:
+                        print(f"已成功触发客户端 {clients[0]}")
+            else:
+                print("等待客户端连接...")
 
-            # 等待服务器响应
-            try:
-                response = await asyncio.wait_for(websocket.recv(), timeout=5)
-                response_data = json.loads(response)
-                print(f"服务器响应: {response_data}")
+            # 每10秒检查一次
+            time.sleep(2)
 
-                if response_data.get("status") == "ok":
-                    print("✓ 触发成功！服务器已向所有客户端发送通知")
-                else:
-                    print("✗ 触发失败")
+    except KeyboardInterrupt:
+        print("\n正在停止服务器...")
+        # 在实际应用中，这里应该优雅地停止服务器
+        print("服务器已停止")
 
-            except asyncio.TimeoutError:
-                print("✗ 服务器未响应（可能不支持控制消息）")
-
-            # 保持连接一小会儿
-            await asyncio.sleep(1)
-
-    except ConnectionRefusedError:
-        print("✗ 无法连接到服务器，请确保服务器正在运行")
-    except Exception as e:
-        print(f"✗ 触发失败: {e}")
-
-
+#=================================================
 if __name__ == "__main__":
-    print("=" * 50)
-    print("WebSocket 通知触发器")
-    print("=" * 50)
-    asyncio.run(trigger_notifications())
+    main()
