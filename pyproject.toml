@@ -9,4 +9,5 @@ dependencies = [
     "logger>=1.4",
     "openai>=2.14.0",
     "requests>=2.32.5",
+    "websockets>=15.0.1",
 ]
