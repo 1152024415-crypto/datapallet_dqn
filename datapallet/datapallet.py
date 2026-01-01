@@ -258,27 +258,30 @@ class DataPallet:
         
         return last_callback
     
-    def get(self, data_id: Optional[str] = None) -> Tuple[bool, Any]:
+    def get(self, data_id: Optional[str] = None, only_valid: bool = False) -> Tuple[bool, Any]:
         """
         获取数据
         
         Args:
-            data_id: 数据ID，如果为None则获取所有数据（包括尝试从测试床获取无效数据）
+            data_id: 数据ID，如果为None则获取所有数据
+            only_valid: 是否仅获取datapallet的data_store的有效数据。
+                        如果为True，只返回有效数据，不访问testbed。
+                        如果为False（默认），当数据无效时访问testbed获取最新数据。
             
         Returns:
             (success, value): 成功标志和数据值
         """
         with self.lock:
             if data_id is None:
-                # 获取所有数据，对于无效的数据尝试从测试床获取
+                # 获取所有数据
                 result = {}
                 
                 for did, item in self.data_store.items():
                     if item.is_valid():
                         # 数据有效，直接使用
                         result[did] = item.value
-                    elif self.testbed is not None:
-                        # 数据无效，尝试从测试床获取最新数据
+                    elif not only_valid and self.testbed is not None:
+                        # 数据无效且only_valid=False，尝试从测试床获取最新数据
                         try:
                             success, value = self.testbed.get_latest_data(did)
                             if success:
@@ -305,8 +308,8 @@ class DataPallet:
             if data_item.is_valid():
                 return True, data_item.value
             
-            # 数据无效，尝试从测试床获取（如果已连接）
-            if self.testbed is not None:
+            # 数据无效时，根据only_valid参数决定是否访问testbed
+            if not only_valid and self.testbed is not None:
                 try:
                     # 从测试床获取最新数据
                     success, value = self.testbed.get_latest_data(data_id)
