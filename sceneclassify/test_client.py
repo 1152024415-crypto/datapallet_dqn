@@ -42,5 +42,15 @@ def predict_scene(image_path, server_url="http://127.0.0.1:8000/predict/"):
 
 
 if __name__ == "__main__":
-    test_image_path = "/Users/cannkit/PycharmProjects/AO/sceneclassify/scene_images/meeting_room.png"
+    # 使用相对路径定位本目录下的png文件
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    test_image_path = os.path.join(script_dir, "scene_images", "meeting_room.png")
+    
+    # 检查文件是否存在
+    if not os.path.exists(test_image_path):
+        print(f"错误：找不到测试图片文件 {test_image_path}")
+        print("请确保 scene_images/meeting_room.png 文件存在")
+        exit(1)
+    
+    print(f"使用测试图片: {test_image_path}")
     predict_scene(test_image_path)

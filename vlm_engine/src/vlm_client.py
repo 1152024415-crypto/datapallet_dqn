@@ -297,8 +297,6 @@ class VLMClient:
             ],
             "stream": False,
             "max_tokens": 4096,
-            "enable_thinking": False,
-            "thinking_budget": 4096,
             "min_p": 0.05,
             "stop": [],
             "temperature": 0.1,

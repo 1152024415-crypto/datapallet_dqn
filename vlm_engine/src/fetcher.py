@@ -104,7 +104,24 @@ class SceneDataFetcher:
                 # 读取图像并编码为base64
                 logger.debug(f"加载图片: {img_path.name}")
                 with open(img_path, "rb") as f:
-                    image_b64 = base64.b64encode(f.read()).decode('utf-8')
+                    image_data = f.read()
+                    image_b64 = base64.b64encode(image_data).decode('utf-8')
+                
+                # 根据文件扩展名确定MIME类型
+                ext = img_path.suffix.lower()
+                if ext == '.jpg' or ext == '.jpeg':
+                    mime_type = 'image/jpeg'
+                elif ext == '.png':
+                    mime_type = 'image/png'
+                elif ext == '.gif':
+                    mime_type = 'image/gif'
+                elif ext == '.bmp':
+                    mime_type = 'image/bmp'
+                else:
+                    mime_type = 'image/jpeg'  # 默认
+                
+                # 创建完整的data URI
+                image_b64 = f"data:{mime_type};base64,{image_b64}"
 
                 # 获取对应的元数据
                 frame_metadata = self.metadata_list[idx].copy()  # 使用副本避免修改
