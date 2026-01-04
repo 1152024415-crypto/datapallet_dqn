@@ -1,0 +1,101 @@
+{
+  "mappings": {
+    "Sound": {
+      "0": "null", "1": "very_quiet", "2": "soft_sound", "3": "normal_sound", "4": "noisy", "5": "very_noisy"
+    },
+    "Light": {
+      "0": "null", "1": "extremely_dark", "2": "dim", "3": "moderate_brightness", "4": "bright", "5": "harsh_light"
+    },
+    "Activity": {
+      "0": "null", "1": "riding", "2": "cycling", "3": "sitting", "4": "strolling",
+      "5": "running", "6": "standing", "7": "bus", "8": "car", "9": "subway",
+      "10": "high_speed_train", "11": "train", "12": "hiking", "13": "brisk_walking",
+      "14": "vehicle_braking", "15": "elevator", "16": "garage_parking"
+    },
+    "Location": {
+      "0": "null", "1": "other", "2": "destination", "3": "home", "4": "work",
+      "5": "bus_station", "6": "subway_station", "7": "train_station", "8": "airport",
+      "9": "accommodation", "10": "residential", "11": "commercial", "12": "school",
+      "13": "health", "14": "government", "15": "entertainment", "16": "dining",
+      "17": "shopping", "18": "sport", "19": "attraction", "20": "park", "21": "street"
+    },
+    "Scene": {
+      "0": "null", "1": "other", "2": "one_person", "3": "group_of_people", "4": "workspace",
+      "5": "meeting", "6": "service_counter", "7": "payment_counter", "8": "elevator",
+      "9": "parking_lot", "10": "driving"
+    },
+    "Actions": {
+      "0": "Nothing", "1": "Handover", "2": "AOD_Step_Count_And_Map", "3": "AOD_Transit_Qr_Code",
+      "4": "AOD_Train_Information", "5": "AOD_Flight_Information", "6": "AOD_Payment_Qr_Code",
+      "7": "AOD_Arrived_Destination", "8": "AOD_Parking", "9": "AOD_Relax",
+      "10": "Open_Glasses_Snapshot", "11": "Open_Identify_Person", "12": "Open_Silent_Mode",
+      "13": "Open_Navigation"
+    }
+  },
+  "thresholds": {
+    "walk_duration": 30,
+    "relax_duration": 900
+  },
+  "rules": [
+    {
+      "id": "R1",
+      "condition": "activity_duration >= threshold_walk_duration and activity_class in ['strolling', 'running', 'hiking', 'brisk_walking'] and last_action != 'AOD_Step_Count_And_Map'",
+      "action": "AOD_Step_Count_And_Map"
+    },
+    {
+      "id": "R2",
+      "condition": "activity_duration >= threshold_relax_duration and activity_class == 'sitting' and last_action != 'AOD_Relax'",
+      "action": "AOD_Relax"
+    },
+    {
+      "id": "R3",
+      "condition": "location_class == 'subway_station' and last_action != 'AOD_Transit_Qr_Code'",
+      "action": "AOD_Transit_Qr_Code"
+    },
+    {
+      "id": "R4",
+      "condition": "location_class == 'train_station' and last_action != 'AOD_Train_Information'",
+      "action": "AOD_Train_Information"
+    },
+    {
+      "id": "R5",
+      "condition": "location_class == 'airport' and last_action != 'AOD_Flight_Information'",
+      "action": "AOD_Flight_Information"
+    },
+    {
+      "id": "R6",
+      "condition": "location_class == 'destination' and scene_class != 'driving' and last_action != 'AOD_Arrived_Destination'",
+      "action": "AOD_Arrived_Destination"
+    },
+    {
+      "id": "R7",
+      "condition": "location_class == 'destination' and scene_class == 'driving' and last_action != 'AOD_Parking'",
+      "action": "AOD_Parking"
+    },
+    {
+      "id": "R8",
+      "condition": "scene_class == 'group_of_people' and last_action != 'Open_Glasses_Snapshot'",
+      "action": "Open_Glasses_Snapshot"
+    },
+    {
+      "id": "R9",
+      "condition": "scene_class == 'one_person' and last_action != 'Open_Identify_Person'",
+      "action": "Open_Identify_Person"
+    },
+    {
+      "id": "R10",
+      "condition": "scene_class == 'payment_counter' and last_action != 'AOD_Payment_Qr_Code'",
+      "action": "AOD_Payment_Qr_Code"
+    },
+    {
+      "id": "R11",
+      "condition": "scene_class == 'meeting' and last_action != 'Open_Silent_Mode'",
+      "action": "Open_Silent_Mode"
+    },
+    {
+      "id": "R12",
+      "condition": "scene_class == 'driving' and last_action != 'Open_Navigation'",
+      "action": "Open_Navigation"
+    }
+  ]
+}
