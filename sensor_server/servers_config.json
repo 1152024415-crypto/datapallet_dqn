@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "amap-mcp-server": {
+      "command": "python",
+      "args": ["amap_mcp_server.py", "stdio"]
+    }
+  }
+}

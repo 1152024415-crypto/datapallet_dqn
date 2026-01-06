@@ -9,13 +9,13 @@ from typing import Dict, Any, List, Optional
 from datetime import datetime, timedelta
 from dataclasses import dataclass
 
-from enums import (
+from datapallet.enums import (
     ActivityMode, LightIntensity, SoundIntensity,
     LocationType, SceneType, SceneData, to_str
 )
 
 # 导入图像生成器
-from image_generator import ImageGenerator, create_image_generator
+from datapallet.image_generator import ImageGenerator, create_image_generator
 
 
 @dataclass

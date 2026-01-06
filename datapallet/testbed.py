@@ -14,14 +14,14 @@ from datetime import datetime, timedelta
 from dataclasses import dataclass
 from enum import IntEnum
 
-from enums import (
+from datapallet.enums import (
     ActivityMode, LightIntensity, SoundIntensity,
     LocationType, SceneType, SceneData, to_str, from_str
 )
-from datapallet import DataPallet
+from datapallet.datapallet import DataPallet
 
-from llm_simulator import LLMSimulator, DataRecord
-from image_generator import ImageGenerator, create_image_generator
+from datapallet.llm_simulator import LLMSimulator, DataRecord
+from datapallet.image_generator import ImageGenerator, create_image_generator
 
 
 # ==================== 数据结构定义 ====================
@@ -370,6 +370,18 @@ class TestBed:
                     "interval": self.playback_config.interval
                 }
             }
+
+    def receive_and_transmit_data(self, data_id: str, value: Any, timestamp: datetime):
+            """
+            接收数据并透传给datapallet
+            
+            Args:
+                data_id: 数据ID
+                value: 数据值
+                timestamp: 时间戳
+            """
+            # 直接调用send_data方法发送数据到datapallet
+            self.send_data(data_id, value, timestamp)
 
 # ==================== 工具函数 ====================
 

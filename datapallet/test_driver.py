@@ -14,6 +14,7 @@ from enums import (
 )
 from datapallet import DataPallet, create_datapallet
 from testbed import TestBed, create_testbed, PlaybackConfig
+from sensor_server import run as run_sensor_server 
 
 # ==================== 测试回调函数 ====================
 
@@ -205,13 +206,46 @@ def test_recording_functionality():
     dp.stop()
     return dp, tb, handler
 
+def test_sensor_server_functionality():
+    """测试直接接收数据模式（通过 sensor_server 上报数据）"""
+    print("\n=== 测试直接接收数据模式 ===")
+    print("说明：启动 sensor_server，让其将数据上报给 TestBed，然后由 TestBed 透传给 DataPallet")
+    
+    # 创建数据托盘实例
+    dp = create_datapallet(ttl=30)
+    handler = TestCallbackHandler("直接接收测试", datapallet=dp)
+    
+    # 设置回调
+    dp.setup(handler.callback)
+    
+    # 创建测试床实例
+    tb = create_testbed(dp)
+    
+    # 启动 sensor_server
+    print("\n=== 启动 sensor_server ===")
+    sensor_server_thread = threading.Thread(target=run_sensor_server, daemon=True)
+    sensor_server_thread.start()
+    
+    # 主线程保持运行，等待用户中断
+    try:
+        while True:
+            time.sleep(1)  # 保持主线程运行
+    except KeyboardInterrupt:
+        print("\n=== 停止 sensor_server ===")
+        dp.stop()
+        print("\n=== 测试结束 ===")
+        stats = handler.get_stats()
+        print(f"  - 总回调次数: {stats['total_callbacks']}")
+        print(f"  - 主动获取演示次数: {stats['active_fetches']}")
+        print(f"  - 接收到的数据类型: {', '.join(stats['data_types'])}")
+
 # ==================== 命令行接口 ====================
 
 if __name__ == "__main__":
     import argparse
     
     parser = argparse.ArgumentParser(description="数据托盘系统测试程序")
-    parser.add_argument("--mode", choices=["playback", "recording"],
+    parser.add_argument("--mode", choices=["playback", "recording", "sensor_server"],
                        default="playback", help="测试模式")
     parser.add_argument("--file", help="playback的文件名")
     parser.add_argument("--time", help="playback的时长")
@@ -222,6 +256,8 @@ if __name__ == "__main__":
         test_playback_functionality(args.file, args.time)
     elif args.mode == "recording": # 生成模拟场景数据
         test_recording_functionality()
+    elif args.mode == "sensor_server":
+        test_sensor_server_functionality()
     else:
         print(f"未知模式: {args.mode}")
         print("可用模式: playback, recording")
