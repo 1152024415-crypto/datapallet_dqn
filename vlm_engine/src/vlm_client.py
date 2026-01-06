@@ -8,18 +8,19 @@ import requests
 from datetime import datetime
 import warnings
 import ssl
+import time
 logger = get_logger(__name__)
 
 class VLMClient:
     def __init__(self,
-                 api_type: str = "openai",  # "openai" 或 "siliconflow"
+                 api_type: str = "openai",  # "openai", "siliconflow" 或 "aliyun"
                  max_images_per_request: int = 8,
                  model: Optional[str] = None):
         """
-        初始化VLM客户端，支持两种完全不同的API调用方式
+        初始化VLM客户端，支持多种不同的API调用方式
 
         Args:
-            api_type: API类型，"openai"或"siliconflow"
+            api_type: API类型，"openai", "siliconflow" 或 "aliyun"
             max_images_per_request: 单次请求最大图片数
             model: 指定模型
         """
@@ -31,16 +32,36 @@ class VLMClient:
             self.model = model
         elif api_type == "siliconflow":
             self.model = "Qwen/Qwen3-VL-8B-Instruct"
-        else:  # openai格式
+        elif api_type == "openai":  # openai格式
             self.model = "qwen2.5vl:7b"
+        elif api_type == "aliyun":
+            self.model = "qwen2.5-vl-3b-instruct"
 
         logger.info(f"初始化VLM客户端，API类型: {api_type}, 模型: {self.model}")
 
         # 根据API类型配置不同的客户端
         if api_type == "siliconflow":
             self._init_siliconflow_client()
+        elif api_type == "aliyun":
+            self._init_aliyun_client()
         else:
             self._init_openai_client()
+
+    def _init_aliyun_client(self):
+        """初始化阿里云DashScope客户端"""
+        from openai import OpenAI
+        
+        # 获取API密钥
+        self.api_key = "sk-c0450be8353f48bb8f29d65b11ee7427"
+            
+        # 阿里云配置
+        self.api_base = "https://dashscope.aliyuncs.com/compatible-mode/v1"
+        
+        self.client = OpenAI(
+            api_key=self.api_key,
+            base_url=self.api_base
+        )
+        self._call_api = self._call_openai_api
 
     def _init_openai_client(self):
         """初始化OpenAI格式客户端（使用OpenAI库）"""
@@ -111,6 +132,8 @@ class VLMClient:
         # 构建消息
         if self.api_type == "siliconflow":
             messages = self._build_siliconflow_messages(scene_batch)
+        elif self.api_type == "aliyun":
+            messages = self._build_aliyun_messages(scene_batch)
         else:
             messages = self._build_openai_messages(scene_batch)
 
@@ -310,6 +333,41 @@ class VLMClient:
 
         return payload
 
+    def _build_aliyun_messages(self, scene_batch: SceneBatch) -> List[Dict[str, Any]]:
+        """构建阿里云格式的消息"""
+        # 提取帧描述和图片数据
+        frame_descriptions, image_bases = self._extract_frame_descriptions(scene_batch)
+
+        # 构建提示词
+        system_prompt, user_prompt = self._build_user_prompt_text(frame_descriptions, len(scene_batch.frames))
+
+        # 构建阿里云规范的内容数组
+        user_content = [{"type": "text", "text": user_prompt}]
+        for image_base64 in image_bases:
+            # 阿里云要求base64必须带前缀，如果不带的话加上（通常是jpeg）
+            img_url = image_base64
+            if not img_url.startswith("data:image"):
+                img_url = f"data:image/jpeg;base64,{image_base64}"
+            
+            user_content.append({
+                "type": "image_url",
+                "image_url": {
+                    "url": img_url
+                }
+            })
+
+        messages = [
+            {
+                "role": "system",
+                "content": system_prompt
+            },
+            {
+                "role": "user",
+                "content": user_content
+            }
+        ]
+        return messages
+
     def _build_openai_messages(self, scene_batch: SceneBatch) -> List[Dict[str, Any]]:
         """构建OpenAI格式的消息（用于Ollama）"""
         # 提取帧描述和图片数据
@@ -338,6 +396,7 @@ class VLMClient:
     def _call_siliconflow_api(self, payload: Dict[str, Any]) -> str:
         """调用SiliconFlow API（使用requests）"""
         try:
+            start_time = time.time()
             response = requests.post(
                 self.api_base,
                 json=payload,
@@ -345,6 +404,8 @@ class VLMClient:
                 timeout=self.timeout,
                 verify=False
             )
+            elapsed = time.time() - start_time
+            logger.info(f"SiliconFlow API调用完成，耗时: {elapsed:.2f}秒")
 
             # 检查响应状态
             response.raise_for_status()
@@ -417,8 +478,8 @@ def test_vlm_client():
     with open(img_path1, "rb") as image_file:
         test_image_base64 = base64.b64encode(image_file.read()).decode('utf-8')
 
-    # 测试两种API格式
-    for api_type in ["siliconflow", "openai"]:
+    # 测试三种API格式
+    for api_type in ["siliconflow", "openai", "aliyun"]:
         print(f"\n{'=' * 60}")
         print(f"测试 {api_type.upper()} 格式API")
         print('=' * 60)
@@ -445,6 +506,10 @@ def test_vlm_client():
             if api_type == "siliconflow":
                 messages = client._build_siliconflow_messages(scene_batch)
                 print("构建的SiliconFlow消息结构:")
+                print(json.dumps(messages, indent=2, ensure_ascii=False)[:1000] + "...")
+            elif api_type == "aliyun":
+                messages = client._build_aliyun_messages(scene_batch)
+                print("构建的Aliyun消息结构:")
                 print(json.dumps(messages, indent=2, ensure_ascii=False)[:1000] + "...")
             else:
                 messages = client._build_openai_messages(scene_batch)

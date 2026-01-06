@@ -1,0 +1,346 @@
+[
+  {
+    "id": "R1_Walking_Duration",
+    "overall_description": "R1: Duration threshold (30s) for walking.",
+    "reset": true,
+    "previous_state": {"Activity": "sitting", "Location": "park", "Sound": "quiet", "Light": "moderate_brightness"},
+    "previous_action": "Nothing",
+    "steps": [
+      {
+        "input": {"Activity": "strolling", "Location": "park", "Sound": "quiet", "Light": "moderate_brightness"},
+        "expect_term": "Nothing",
+        "inter_check": ["Request_Location", "Request_Scene"],
+        "desc": "Baseline: Start Strolling (Act Changed)"
+      },
+      {
+        "wait": 29,
+        "input": {"Activity": "strolling", "Location": "park", "Sound": "quiet", "Light": "moderate_brightness"},
+        "expect_term": "AOD_Step_Count_And_Map",
+        "inter_check": [],
+        "desc": "Trigger: Duration Met"
+      }
+    ]
+  },
+  {
+    "id": "R2_Relaxing_Duration",
+    "overall_description": "R2: Duration threshold (15m) for relaxing.",
+    "reset": true,
+    "previous_state": {"Activity": "strolling", "Location": "park", "Sound": "quiet", "Light": "moderate_brightness"},
+    "previous_action": "Nothing",
+    "steps": [
+      {
+        "input": {"Activity": "strolling", "Location": "park", "Sound": "quiet", "Light": "moderate_brightness"},
+        "expect_term": "Nothing",
+        "inter_check": [],
+        "desc": "Baseline: Strolling"
+      },
+      {
+        "input": {"Activity": "sitting", "Location": "park", "Sound": "quiet", "Light": "moderate_brightness"},
+        "expect_term": "Nothing",
+        "inter_check": ["Request_Location", "Request_Scene"],
+        "desc": "Event: Sit Down (Act Change -> Loc -> Scene)"
+      },
+      {
+        "wait": 899,
+        "input": {"Activity": "sitting", "Location": "park", "Sound": "quiet", "Light": "moderate_brightness"},
+        "expect_term": "AOD_Relax",
+        "inter_check": [],
+        "desc": "Trigger: Duration Met"
+      }
+    ]
+  },
+  {
+    "id": "R3_Subway_Sound_Trigger",
+    "overall_description": "R3: Detect Subway via Sound change (Street -> Noisy Station).",
+    "reset": true,
+    "previous_state": {"Activity": "strolling", "Location": "street", "Sound": "normal_sound", "Light": "moderate_brightness"},
+    "previous_action": "Nothing",
+    "steps": [
+      {
+        "input": {"Activity": "strolling", "Location": "street", "Sound": "normal_sound", "Light": "moderate_brightness"},
+        "expect_term": "Nothing",
+        "inter_check": [],
+        "desc": "Baseline: Walking Street"
+      },
+      {
+        "input": {"Activity": "strolling", "Sound": "noisy", "Light": "moderate_brightness", "Location": "subway_station"},
+        "expect_term": "AOD_Transit_Qr_Code",
+        "inter_check": ["Request_Location", "Request_Scene"],
+        "desc": "Event: Sound Change (Noisy) -> Loc -> Scene"
+      }
+    ]
+  },
+  {
+    "id": "R3_Subway_Light_Trigger",
+    "overall_description": "R3: Detect Subway via Light change (Sunny Street -> Dim Station).",
+    "reset": true,
+    "previous_state": {"Activity": "strolling", "Location": "street", "Sound": "normal_sound", "Light": "bright"},
+    "previous_action": "Nothing",
+    "steps": [
+      {
+        "input": {"Activity": "strolling", "Location": "street", "Sound": "normal_sound", "Light": "bright"},
+        "expect_term": "Nothing",
+        "inter_check": [],
+        "desc": "Baseline: Walking Street (Bright)"
+      },
+      {
+        "input": {"Activity": "strolling", "Light": "dim", "Sound": "normal_sound", "Location": "subway_station"},
+        "expect_term": "AOD_Transit_Qr_Code",
+        "inter_check": ["Request_Location", "Request_Scene"],
+        "desc": "Event: Light Change (Dim) -> Loc -> Scene"
+      }
+    ]
+  },
+  {
+    "id": "R4_Train_Light_Trigger",
+    "overall_description": "R4: Detect Train Station via Light change (Sunny Street -> Dim Station).",
+    "reset": true,
+    "previous_state": {"Activity": "strolling", "Location": "street", "Sound": "normal_sound", "Light": "bright"},
+    "previous_action": "Nothing",
+    "steps": [
+      {
+        "input": {"Activity": "strolling", "Location": "street", "Sound": "normal_sound", "Light": "bright"},
+        "expect_term": "Nothing",
+        "inter_check": [],
+        "desc": "Baseline: Walking Street (Bright)"
+      },
+      {
+        "input": {"Activity": "strolling", "Light": "dim", "Sound": "normal_sound", "Location": "train_station"},
+        "expect_term": "AOD_Train_Information",
+        "inter_check": ["Request_Location", "Request_Scene"],
+        "desc": "Event: Light Change (Dim) -> Loc -> Scene"
+      }
+    ]
+  },
+  {
+    "id": "R4_Train_Activity_Trigger",
+    "overall_description": "R4: Detect Train Station via Activity change (Riding Taxi -> Walking into Station).",
+    "reset": true,
+    "previous_state": {"Activity": "riding", "Location": "street", "Sound": "normal_sound", "Light": "moderate_brightness"},
+    "previous_action": "Nothing",
+    "steps": [
+      {
+        "input": {"Activity": "riding", "Location": "street", "Sound": "normal_sound", "Light": "moderate_brightness"},
+        "expect_term": "Nothing",
+        "inter_check": [],
+        "desc": "Baseline: Riding in Taxi"
+      },
+      {
+        "input": {"Activity": "strolling", "Sound": "normal_sound", "Light": "moderate_brightness", "Location": "train_station"},
+        "expect_term": "AOD_Train_Information",
+        "inter_check": ["Request_Location", "Request_Scene"],
+        "desc": "Event: Activity Change -> Loc -> Scene"
+      }
+    ]
+  },
+  {
+    "id": "R5_Airport_Activity_Trigger",
+    "overall_description": "R5: Detect Airport via Activity change (Riding -> Strolling at Terminal).",
+    "reset": true,
+    "previous_state": {"Activity": "riding", "Location": "street", "Sound": "normal_sound", "Light": "moderate_brightness"},
+    "previous_action": "Nothing",
+    "steps": [
+      {
+        "input": {"Activity": "riding", "Location": "street", "Sound": "normal_sound", "Light": "moderate_brightness"},
+        "expect_term": "Nothing",
+        "inter_check": [],
+        "desc": "Baseline: Riding to Airport"
+      },
+      {
+        "input": {"Activity": "strolling", "Sound": "normal_sound", "Light": "moderate_brightness", "Location": "airport"},
+        "expect_term": "AOD_Flight_Information",
+        "inter_check": ["Request_Location", "Request_Scene"],
+        "desc": "Event: Activity Change -> Loc -> Scene"
+      }
+    ]
+  },
+  {
+    "id": "R6_Dest_Sound_Trigger",
+    "overall_description": "R6: Arrive Home via Sound change (Noisy Street -> Quiet Home).",
+    "reset": true,
+    "previous_state": {"Activity": "strolling", "Location": "street", "Sound": "noisy", "Light": "moderate_brightness"},
+    "previous_action": "Nothing",
+    "steps": [
+      {
+        "input": {"Activity": "strolling", "Location": "street", "Sound": "noisy", "Light": "moderate_brightness"},
+        "expect_term": "Nothing",
+        "inter_check": [],
+        "desc": "Baseline: Walking Noisy Street"
+      },
+      {
+        "input": {"Activity": "strolling", "Sound": "very_quiet", "Light": "moderate_brightness", "Location": "destination", "Scene": "other"},
+        "expect_term": "AOD_Arrived_Destination",
+        "inter_check": ["Request_Location", "Request_Scene"],
+        "desc": "Event: Sound Change (Quiet) -> Loc -> Scene"
+      }
+    ]
+  },
+  {
+    "id": "R6_Dest_Activity_Trigger",
+    "overall_description": "R6: Arrive Home via Activity change (Riding Taxi -> Strolling to door).",
+    "reset": true,
+    "previous_state": {"Activity": "riding", "Location": "street", "Sound": "normal_sound", "Light": "moderate_brightness"},
+    "previous_action": "Nothing",
+    "steps": [
+      {
+        "input": {"Activity": "riding", "Location": "street", "Sound": "normal_sound", "Light": "moderate_brightness"},
+        "expect_term": "Nothing",
+        "inter_check": [],
+        "desc": "Baseline: Riding Taxi"
+      },
+      {
+        "input": {"Activity": "strolling", "Sound": "normal_sound", "Light": "moderate_brightness", "Location": "destination", "Scene": "other"},
+        "expect_term": "AOD_Arrived_Destination",
+        "inter_check": ["Request_Location", "Request_Scene"],
+        "desc": "Event: Activity Change -> Loc -> Scene"
+      }
+    ]
+  },
+  {
+    "id": "R7_Parking_Light_Trigger",
+    "overall_description": "R7: Detect Parking via Light change (Bright Street -> Dim Garage).",
+    "reset": true,
+    "previous_state": {"Activity": "car", "Light": "bright", "Sound": "normal_sound"},
+    "previous_action": "Nothing",
+    "steps": [
+      {
+        "input": {"Activity": "car", "Light": "bright", "Sound": "normal_sound"},
+        "expect_term": "Nothing",
+        "inter_check": [],
+        "desc": "Baseline: Driving Bright"
+      },
+      {
+        "input": {"Activity": "car", "Light": "dim", "Sound": "normal_sound", "Location": "destination", "Scene": "driving"},
+        "expect_term": "AOD_Parking",
+        "inter_check": ["Request_Location", "Request_Scene"],
+        "desc": "Event: Light Change (Dim) -> Loc -> Scene"
+      }
+    ]
+  },
+  {
+    "id": "R7_Parking_Sound_Trigger",
+    "overall_description": "R7: Detect Parking via Sound change (Noisy Highway -> Quiet Garage).",
+    "reset": true,
+    "previous_state": {"Activity": "car", "Light": "moderate_brightness", "Sound": "noisy"},
+    "previous_action": "Nothing",
+    "steps": [
+      {
+        "input": {"Activity": "car", "Light": "moderate_brightness", "Sound": "noisy"},
+        "expect_term": "Nothing",
+        "inter_check": [],
+        "desc": "Baseline: Driving Noisy"
+      },
+      {
+        "input": {"Activity": "car", "Sound": "soft_sound", "Light": "moderate_brightness", "Location": "destination", "Scene": "driving"},
+        "expect_term": "AOD_Parking",
+        "inter_check": ["Request_Location", "Request_Scene"],
+        "desc": "Event: Sound Change (Quiet) -> Loc -> Scene"
+      }
+    ]
+  },
+  {
+    "id": "R8_Group_Snapshot",
+    "overall_description": "R8: Snapshot check triggered by Stopping (Walk->Stand).",
+    "reset": true,
+    "previous_state": {"Activity": "strolling", "Location": "park", "Sound": "normal_sound", "Light": "moderate_brightness"},
+    "previous_action": "Nothing",
+    "steps": [
+      {
+        "input": {"Activity": "strolling", "Location": "park", "Sound": "normal_sound", "Light": "moderate_brightness"},
+        "expect_term": "Nothing",
+        "inter_check": [],
+        "desc": "Baseline: Walking Park"
+      },
+      {
+        "input": {"Activity": "standing", "Location": "park", "Sound": "normal_sound", "Light": "moderate_brightness", "Scene": "group_of_people"},
+        "expect_term": "Open_Glasses_Snapshot",
+        "inter_check": ["Request_Location", "Request_Scene"],
+        "desc": "Event: Activity Change -> Loc -> Scene"
+      }
+    ]
+  },
+  {
+    "id": "R9_Identify_Person",
+    "overall_description": "R9: Identity check triggered by Stopping (Walk->Stand).",
+    "reset": true,
+    "previous_state": {"Activity": "strolling", "Location": "street", "Sound": "normal_sound", "Light": "moderate_brightness"},
+    "previous_action": "Nothing",
+    "steps": [
+      {
+        "input": {"Activity": "strolling", "Location": "street", "Sound": "normal_sound", "Light": "moderate_brightness"},
+        "expect_term": "Nothing",
+        "inter_check": [],
+        "desc": "Baseline: Walking Street"
+      },
+      {
+        "input": {"Activity": "standing", "Location": "street", "Sound": "normal_sound", "Light": "moderate_brightness", "Scene": "one_person"},
+        "expect_term": "Open_Identify_Person",
+        "inter_check": ["Request_Location", "Request_Scene"],
+        "desc": "Event: Activity Change -> Loc -> Scene"
+      }
+    ]
+  },
+  {
+    "id": "R10_Payment_Counter_Sound",
+    "overall_description": "R10: Detect Payment via Location Switch (Street->Mall) triggered by Sound.",
+    "reset": true,
+    "previous_state": {"Activity": "standing", "Location": "street", "Sound": "quiet", "Light": "moderate_brightness"},
+    "previous_action": "Nothing",
+    "steps": [
+      {
+        "input": {"Activity": "standing", "Location": "street", "Sound": "quiet", "Light": "moderate_brightness"},
+        "expect_term": "Nothing",
+        "inter_check": [],
+        "desc": "Baseline: Standing Street"
+      },
+      {
+        "input": {"Activity": "standing", "Sound": "noisy", "Light": "moderate_brightness", "Location": "commercial", "Scene": "payment_counter"},
+        "expect_term": "AOD_Payment_Qr_Code",
+        "inter_check": ["Request_Location", "Request_Scene"],
+        "desc": "Event: Sound Change -> Loc -> Scene"
+      }
+    ]
+  },
+  {
+    "id": "R11_Meeting_Silent_Mode",
+    "overall_description": "R11: Meeting Mode triggered by Sitting Down (Activity Change).",
+    "reset": true,
+    "previous_state": {"Activity": "strolling", "Location": "work", "Sound": "normal_sound", "Light": "moderate_brightness"},
+    "previous_action": "Nothing",
+    "steps": [
+      {
+        "input": {"Activity": "strolling", "Location": "work", "Sound": "normal_sound", "Light": "moderate_brightness"},
+        "expect_term": "Nothing",
+        "inter_check": [],
+        "desc": "Baseline: Walking Office"
+      },
+      {
+        "input": {"Activity": "sitting", "Location": "work", "Sound": "normal_sound", "Light": "moderate_brightness", "Scene": "meeting"},
+        "expect_term": "Open_Silent_Mode",
+        "inter_check": ["Request_Location", "Request_Scene"],
+        "desc": "Event: Activity Change -> Loc -> Scene"
+      }
+    ]
+  },
+  {
+    "id": "R12_Driving_Navigation",
+    "overall_description": "R12: Navigation triggered by entering Car (Activity Change).",
+    "reset": true,
+    "previous_state": {"Activity": "strolling", "Location": "street", "Sound": "normal_sound", "Light": "moderate_brightness"},
+    "previous_action": "Nothing",
+    "steps": [
+      {
+        "input": {"Activity": "strolling", "Location": "street", "Sound": "normal_sound", "Light": "moderate_brightness"},
+        "expect_term": "Nothing",
+        "inter_check": [],
+        "desc": "Baseline: Walking to Car"
+      },
+      {
+        "input": {"Activity": "car", "Location": "street", "Sound": "normal_sound", "Light": "moderate_brightness", "Scene": "driving"},
+        "expect_term": "Open_Navigation",
+        "inter_check": ["Request_Location", "Request_Scene"],
+        "desc": "Event: Activity Change -> Loc -> Scene"
+      }
+    ]
+  }
+]
