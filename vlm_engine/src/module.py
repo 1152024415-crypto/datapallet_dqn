@@ -110,7 +110,7 @@ class ScenePerceptionModule:
             )
 
             elapsed = time.time() - start_time
-            logger.info(f"场景分析完成，耗时: {elapsed:.2f}秒")
+            logger.info(f"场景分析完成，总耗时: {elapsed:.2f}秒")
             logger.info(f"划分出 {len(self.last_result.scenes)} 个场景")
 
         except json.JSONDecodeError as e:

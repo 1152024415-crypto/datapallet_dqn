@@ -114,7 +114,7 @@ def main():
 
     # 2. 使用初始化接口创建VLM服务
     print("初始化VLM服务...")
-    vlm_module, analysis_callback = initialize_vlm_service(api_type="siliconflow", datapallet=dp)
+    vlm_module, analysis_callback = initialize_vlm_service(api_type="aliyun", datapallet=dp)
 
     # 3. 设置回调
     test_engine.setup_callback(analysis_callback)
