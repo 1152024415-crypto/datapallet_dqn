@@ -1,5 +1,6 @@
 import os
 import shutil
+import asyncio
 from typing import Optional
 from fastapi import FastAPI, WebSocket, UploadFile, File, Header, HTTPException
 import uvicorn
@@ -15,10 +16,13 @@ if not os.path.exists(DEST_DIR):
 # 注意：生产环境中应该使用 ConnectionManager 类来管理多个连接
 active_connection: Optional[WebSocket] = None
 
+# 用于等待上传结果的 Future
+upload_result_future: Optional[asyncio.Future] = None
+
 
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
-    global active_connection
+    global active_connection, upload_result_future
     await websocket.accept()
     active_connection = websocket
     print(f"[Server] 客户端已连接: {websocket.client}")
@@ -31,8 +35,14 @@ async def websocket_endpoint(websocket: WebSocket):
 
             if data == "upload_complete":
                 print("[Server] 流程结束：图片上传成功。")
+                # 通知等待的 trigger_client 请求
+                if upload_result_future and not upload_result_future.done():
+                    upload_result_future.set_result("upload_complete")
             elif data == "upload_failed":
                 print("[Server] 流程结束：图片上传失败。")
+                # 通知等待的 trigger_client 请求
+                if upload_result_future and not upload_result_future.done():
+                    upload_result_future.set_result("upload_failed")
 
     except Exception as e:
         print(f"[Server] 客户端断开连接: {e}")
@@ -67,18 +77,37 @@ async def upload_file(
 
 
 @app.get("/api/trigger_client")
-async def trigger_client():
+async def trigger_client(timeout: float = 30.0):
     """
     供 test.py 调用，触发服务器向客户端发送 upload_request
+    会等待上传完成后才返回结果
+    
+    Args:
+        timeout: 等待上传结果的超时时间（秒），默认30秒
     """
-    global active_connection
-    if active_connection:
-        await active_connection.send_text("upload_request")
-        print("[Server-API] 已向客户端发送 'upload_request' 指令")
-        return {"status": "command_sent"}
-    else:
+    global active_connection, upload_result_future
+    
+    if not active_connection:
         print("[Server-API] 失败：没有连接的 WebSocket 客户端")
         return {"status": "error", "message": "No active client connected"}
+    
+    # 创建 Future 用于等待上传结果
+    upload_result_future = asyncio.get_event_loop().create_future()
+    
+    # 向客户端发送上传请求
+    await active_connection.send_text("upload_request")
+    print("[Server-API] 已向客户端发送 'upload_request' 指令，等待上传结果...")
+    
+    try:
+        # 等待上传结果（带超时）
+        result = await asyncio.wait_for(upload_result_future, timeout=timeout)
+        print(f"[Server-API] 收到上传结果: {result}")
+        return {"status": result, "message": "Upload completed" if result == "upload_complete" else "Upload failed"}
+    except asyncio.TimeoutError:
+        print(f"[Server-API] 等待上传结果超时（{timeout}秒）")
+        return {"status": "timeout", "message": f"Upload result timeout after {timeout}s"}
+    finally:
+        upload_result_future = None
 
 
 if __name__ == "__main__":

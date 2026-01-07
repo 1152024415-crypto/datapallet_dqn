@@ -23,6 +23,8 @@ def upload_image(ws):
             width, height = img.size
             print(f"[Client] 图片尺寸: {width}x{height}")
 
+        time.sleep(2)
+
         # 2. 准备上传
         headers = {
             "X-Image-Width": str(width),
