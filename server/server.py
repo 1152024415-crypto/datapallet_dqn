@@ -1,8 +1,9 @@
 import os
 import shutil
 import asyncio
+import pathlib
 from typing import Optional
-from fastapi import FastAPI, WebSocket, UploadFile, File, Header, HTTPException
+from fastapi import FastAPI, WebSocket, Request, Header, HTTPException
 import uvicorn
 
 app = FastAPI()
@@ -52,24 +53,48 @@ async def websocket_endpoint(websocket: WebSocket):
 
 @app.post("/upload")
 async def upload_file(
-        file: UploadFile = File(...),
-        x_image_width: Optional[str] = Header(None),
-        x_image_height: Optional[str] = Header(None)
+        request: Request,
+        content_type: Optional[str] = Header(None),
+        x_timestamp: Optional[str] = Header(None),
+        width: Optional[str] = Header(None),
+        height: Optional[str] = Header(None)
 ):
     """
-    HTTP 上传接口
+    HTTP 上传接口（接收二进制数据）
+    - Content-Type: application/png 或 application/jpeg
+    - X-Timestamp: 时间戳 (格式: YYYY-MM-DD HH:MM:SS)
+    - width/height: 图片尺寸
     """
-    print(f"[Server-HTTP] 收到上传请求. 文件名: {file.filename}, 宽: {x_image_width}, 高: {x_image_height}")
+    # 读取请求体的原始二进制数据
+    file_data = await request.body()
+    
+    # 根据 Content-Type 确定文件扩展名
+    if content_type and "jpeg" in content_type.lower() or "jpg" in content_type.lower():
+        ext = ".jpg"
+    else:
+        ext = ".png"
+    
+    # 根据时间戳生成文件名 (IMG_YYYY_MM_DD_HH_MM_SS.ext)
+    if x_timestamp:
+        # 将 "YYYY-MM-DD HH:MM:SS" 转换为 "YYYY_MM_DD_HH_MM_SS"
+        time_str = x_timestamp.replace("-", "_").replace(":", "_").replace(" ", "_")
+        filename = f"IMG_{time_str}{ext}"
+    else:
+        # 使用当前时间作为备用
+        from datetime import datetime
+        time_str = datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
+        filename = f"IMG_{time_str}{ext}"
+    
+    print(f"[Server-HTTP] 收到上传请求. 文件名: {filename}, 宽: {width}, 高: {height}, 数据大小: {len(file_data)} bytes")
 
     try:
-        file_location = os.path.join(DEST_DIR, f"received_{file.filename}")
+        file_location = pathlib.Path(DEST_DIR).joinpath(filename)
 
-        # 保存文件
-        with open(file_location, "wb") as buffer:
-            shutil.copyfileobj(file.file, buffer)
+        # 保存二进制数据
+        file_location.write_bytes(file_data)
 
         print(f"[Server-HTTP] 文件已保存至: {file_location}")
-        return {"status": "success", "filename": file.filename}
+        return {"status": "success", "filename": filename}
 
     except Exception as e:
         print(f"[Server-HTTP] 保存文件失败: {e}")

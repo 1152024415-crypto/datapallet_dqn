@@ -1,8 +1,28 @@
 import websocket
+import pathlib
 import requests
 import os
 import time
+from datetime import datetime
 from PIL import Image  # 用于获取图片宽高
+
+# http 头（C++ 客户端参考格式）
+# std::map<std::string, std::string> HttpService::GenerateHeaders(const RequestContext& context) const {
+#     return {
+#         {"User-Agent", "HarmonyOS-RCP-Client/1.0"},
+#         {"Accept-Encoding", "gzip, deflate"},
+#         {"Accept", "*/*"},
+#         {"Connection", "keep-alive"},
+#         {"Content-Type", "application/png"},# application/jpeg
+#         {"type", "person"},
+#         {"photoid", "10001"},  
+#         {"width", std::to_string(context.imageInfo.width)},
+#         {"height", std::to_string(context.imageInfo.height)},
+#         {"Index", "10001"},
+#         {"X-Timestamp", GetCurrentTimestamp()}, "YYYY-MM-DD HH:MM:SS"
+#         {"Content-Length", std::to_string(context.imageInfo.data.size())}
+#     };
+# }
 
 # 配置
 SERVER_WS_URL = "ws://localhost:8000/ws"
@@ -12,7 +32,7 @@ IMAGE_PATH = "./sourceData/test.png"  # 请确保该文件存在
 
 def upload_image(ws):
     """读取图片并通过 HTTP 上传"""
-    if not os.path.exists(IMAGE_PATH):
+    if not pathlib.Path(IMAGE_PATH).exists():
         print(f"[Client] 错误: 找不到图片文件 {IMAGE_PATH}")
         ws.send("upload_failed")
         return
@@ -26,17 +46,35 @@ def upload_image(ws):
         time.sleep(2)
 
         # 2. 准备上传
+        file_path = pathlib.Path(IMAGE_PATH)
+        file_data = file_path.read_bytes()
+        
+        # 根据文件扩展名确定 Content-Type
+        ext = file_path.suffix.lower()
+        content_type = "application/jpeg" if ext in [".jpg", ".jpeg"] else "application/png"
+        
+        # 生成时间戳 (格式: YYYY-MM-DD HH:MM:SS)
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        
+        # 构建 HTTP 头（模拟 C++ 客户端格式）
         headers = {
-            "X-Image-Width": str(width),
-            "X-Image-Height": str(height)
-        }
-
-        files = {
-            'file': (os.path.basename(IMAGE_PATH), open(IMAGE_PATH, 'rb'), 'image/png')
+            "User-Agent": "HarmonyOS-RCP-Client/1.0",
+            "Accept-Encoding": "gzip, deflate",
+            "Accept": "*/*",
+            "Connection": "keep-alive",
+            "Content-Type": content_type,
+            "type": "person",
+            "photoid": "10001",
+            "width": str(width),
+            "height": str(height),
+            "Index": "10001",
+            "X-Timestamp": timestamp,
         }
 
         print("[Client] 开始通过 HTTP 上传图片...")
-        response = requests.post(SERVER_HTTP_URL, files=files, headers=headers)
+        print(f"[Client] Headers: Content-Type={content_type}, width={width}, height={height}, X-Timestamp={timestamp}")
+        print(f"[Client] 文件前10字节: {list(file_data[:10])}")
+        response = requests.post(SERVER_HTTP_URL, data=file_data, headers=headers)
 
         # 3. 处理响应
         if response.status_code == 200:
