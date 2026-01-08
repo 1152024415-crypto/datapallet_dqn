@@ -46,26 +46,23 @@ THRESHOLD = 1.1
 DATE_TIME_FORMAT = '%Y-%m-%d %H:%M:%S'
 AR_MAPPING = {
     "AR_ACTIVITY_VEHICLE": ActivityMode.CAR,
-    "AR_ACTIVITY_RIDING": ActivityMode.CYCLING,
-    "AR_ACTIVITY_WALK_SLOW": "Walking",
-    "AR_ACTIVITY_RUN_FAST": "Running",
+    "AR_ACTIVITY_RIDING": ActivityMode.RIDING,
+    "AR_ACTIVITY_WALK_SLOW": ActivityMode.STROLLING,
+    "AR_ACTIVITY_RUN_FAST": ActivityMode.RUNNING,
     "AR_ACTIVITY_STATIONARY": ActivityMode.STANDING,
+    "AR_ACTIVITY_TILT": ActivityMode.TILT,
+    "AR_ACTIVITY_END": ActivityMode.NULL,
 
     "AR_VE_BUS": ActivityMode.BUS,
     "AR_VE_CAR": ActivityMode.CAR,
     "AR_VE_METRO": ActivityMode.SUBWAY,
-    "AR_VE_HIGH_SPEED_RAIL": "Taking the train",
-    "AR_VE_AUTO": "Riding in a car",
+    "AR_VE_HIGH_SPEED_RAIL": ActivityMode.HIGH_SPEED_TRAIN,
+    "AR_VE_AUTO": ActivityMode.CAR,
+    "AR_VE_RAIL": ActivityMode.TRAIN,
+    "AR_CLIMBING_MOUNT": ActivityMode.HIKING,
+    "AR_FAST_WALK": ActivityMode.BRISK_WALKING,
 
-    "AR_ACTIVITY_VE_TRAIN": ActivityMode.TRAIN,
-    "AR_ACTIVITY_ON_FOOT": "Walking",
-    "AR_ACTIVITY_WALK_FOR_HEALTH": "Walking",
-    "AR_ACTIVITY_RUN_FOR_HEALTH": "Running",
-    "AR_ACTIVITY_ELEVATOR": "Standing",
-    "AR_ACTIVITY_RELATIVE_STILL": "Standing",
-    "AR_ACTIVITY_MOBLIVIOUS": "Walking",
-    "AR_ACTIVITY_PLANE": "Taking a flight",
-    "AR_ACTIVITY_QUICK_MOVE": "Running"
+    "AR_ACTIVITY_ELEVATOR": ActivityMode.ELEVATOR,
 }
 
 def delayed_call(delay_seconds):

@@ -55,6 +55,7 @@ class ActivityMode(IntEnum):
     VEHICLE_BRAKING = 14        # 刹车
     ELEVATOR = 15               # 电梯
     GARAGE_PARKING = 16         # 车库停车
+    TILT = 17                   # 摔倒
 
 # 添加字符串方法
 ActivityMode = add_string_methods(ActivityMode, {
@@ -75,6 +76,8 @@ ActivityMode = add_string_methods(ActivityMode, {
     ActivityMode.VEHICLE_BRAKING: "刹车",
     ActivityMode.ELEVATOR: "电梯",
     ActivityMode.GARAGE_PARKING: "车库停车",
+    ActivityMode.TILT: "摔倒",
+
 })
 
 
