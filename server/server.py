@@ -20,6 +20,15 @@ active_connection: Optional[WebSocket] = None
 # 用于等待上传结果的 Future
 upload_result_future: Optional[asyncio.Future] = None
 
+DATE_TIME_FORMAT = '%Y-%m-%d %H:%M:%S'
+_timestamp = None
+_image_path = None
+_upload_complete_callback = None
+
+def set_upload_complete_callback(callback_func):
+    """设置上传完成的回调函数"""
+    global _upload_complete_callback
+    _upload_complete_callback = callback_func
 
 @app.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):
@@ -85,10 +94,15 @@ async def upload_file(
         time_str = datetime.now().strftime("%Y_%m_%d_%H_%M_%S")
         filename = f"IMG_{time_str}{ext}"
     
+    global _image_path
+    global _timestamp
+    _timestamp = '_'.join(time_str.split('_')[:3]) + ' ' + '_'.join(time_str.split('_')[3:])
+     
     print(f"[Server-HTTP] 收到上传请求. 文件名: {filename}, 宽: {width}, 高: {height}, 数据大小: {len(file_data)} bytes")
 
     try:
         file_location = pathlib.Path(DEST_DIR).joinpath(filename)
+        _image_path = file_location
 
         # 保存二进制数据
         file_location.write_bytes(file_data)
@@ -110,7 +124,7 @@ async def trigger_client(timeout: float = 30.0):
     Args:
         timeout: 等待上传结果的超时时间（秒），默认30秒
     """
-    global active_connection, upload_result_future
+    global active_connection, upload_result_future, _image_path, _timestamp, _upload_complete_callback
     
     if not active_connection:
         print("[Server-API] 失败：没有连接的 WebSocket 客户端")
@@ -127,6 +141,9 @@ async def trigger_client(timeout: float = 30.0):
         # 等待上传结果（带超时）
         result = await asyncio.wait_for(upload_result_future, timeout=timeout)
         print(f"[Server-API] 收到上传结果: {result}")
+        if _image_path and _timestamp and _upload_complete_callback:
+            _upload_complete_callback(_image_path, _timestamp)
+            _image_path, _timestamp = None, None
         return {"status": result, "message": "Upload completed" if result == "upload_complete" else "Upload failed"}
     except asyncio.TimeoutError:
         print(f"[Server-API] 等待上传结果超时（{timeout}秒）")
@@ -134,7 +151,10 @@ async def trigger_client(timeout: float = 30.0):
     finally:
         upload_result_future = None
 
+def run_server():
+    """运行 FastAPI 服务器"""
+    uvicorn.run(app, host="0.0.0.0", port=8000)
 
 if __name__ == "__main__":
     # 启动服务，端口 8000
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    run_server()

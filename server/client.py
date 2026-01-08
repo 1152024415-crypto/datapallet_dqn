@@ -1,4 +1,4 @@
-import websocket
+from websocket._app import WebSocketApp
 import pathlib
 import requests
 import os
@@ -113,7 +113,7 @@ if __name__ == "__main__":
         print(f"【警告】请先在 client_data 文件夹下放入 {os.path.basename(IMAGE_PATH)} 图片！")
     else:
         # 开启 WebSocket 长连接
-        ws = websocket.WebSocketApp(
+        ws = WebSocketApp(
             SERVER_WS_URL,
             on_open=on_open,
             on_message=on_message,
