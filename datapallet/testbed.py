@@ -23,7 +23,12 @@ from datapallet.datapallet import DataPallet
 from datapallet.llm_simulator import LLMSimulator, DataRecord
 from datapallet.image_generator import ImageGenerator, create_image_generator
 
+_on_image_request_callback = None
 
+def set_on_image_request_callback(callback_func):
+        """设置上传完成的回调函数"""
+        global _on_image_request_callback
+        _on_image_request_callback = callback_func
 # ==================== 数据结构定义 ====================
 
 
@@ -86,6 +91,10 @@ class TestBed:
         # 连接到数据托盘
         if datapallet:
             self.connect_datapallet(datapallet)
+
+        self.scene_value = None  # 存储Scene值
+        self.scene_event = threading.Event()  # 用于等待Scene数据
+        self.scene_timeout = 30.0  # 阻塞超时时间
     
     def connect_datapallet(self, datapallet):
         """连接到数据托盘"""
@@ -336,6 +345,7 @@ class TestBed:
         
         注意：当datapallet需要最新数据时，主动调用此方法
         此时testbed仅需将最新状态返回即可
+        对于Scene数据：阻塞等待直到有数据或超时
         
         Args:
             data_id: 数据ID
@@ -343,13 +353,73 @@ class TestBed:
         Returns:
             (success, value): 成功标志和数据值
         """
+        if data_id == "Scene":
+        # 如果有Scene值，直接返回
+            if self.scene_value is not None:
+                return True, self.scene_value
+            
+            # 启动一个新线程来触发回调，不阻塞当前线程
+            if _on_image_request_callback and self.scene_value is None:
+                print("已触发图片请求，等待图片上传...")
+                
+                def trigger_callback():
+                    try:
+                        _on_image_request_callback()
+                    except Exception as e:
+                        print(f"触发图片请求失败: {e}")
+                
+                # 在新线程中触发回调
+                callback_thread = threading.Thread(target=trigger_callback, daemon=True)
+                callback_thread.start()
+            
+            # 立即开始阻塞等待结果
+            return self._get_scene_blocking()
+        
         with self.lock:
             if data_id in self.current_state:
                 return True, self.current_state[data_id]
             else:
-                # 如果没有当前状态，返回失败
                 return False, None
+        
+    def _get_scene_blocking(self) -> Tuple[bool, Any]:
+        """
+        阻塞获取Scene数据
+        """
+        # 如果有Scene值，直接返回
+        if self.scene_value is not None:
+            return True, self.scene_value
+        
+        # 否则等待Scene数据
+        print(f"等待Scene数据，最多等待{self.scene_timeout}秒...")
+        
+        # 阻塞等待事件
+        if self.scene_event.wait(timeout=self.scene_timeout):
+            print(f"接收到Scene数据了!!!")
+            # 事件被触发，说明有Scene数据了
+            # 重置事件以便下次使用
+            self.scene_event.clear()
+            return True, self.scene_value
+        else:
+            # 超时，返回失败
+            print("等待Scene数据超时")
+            return False, None
     
+    def update_scene_value(self, value: Any):
+        """
+        更新Scene值（由main.py调用）
+        这个方法触发后，get_latest_data("Scene")就能获取到数据了
+        """
+        print(f"更新Scene值: {value}")
+        
+        self.scene_value = value
+        
+        # 更新current_state
+        with self.lock:
+            self.current_state["Scene"] = value
+        
+        # 设置事件，唤醒等待的线程
+        self.scene_event.set()
+        
     def get_all_latest_data(self) -> Dict[str, Any]:
         """获取所有最新的数据"""
         with self.lock:
@@ -380,8 +450,16 @@ class TestBed:
                 value: 数据值
                 timestamp: 时间戳
             """
-            # 直接调用send_data方法发送数据到datapallet
-            self.send_data(data_id, value, timestamp)
+
+            # 如果是Scene数据，设置事件
+            if data_id == "Scene":
+                scene_data = SceneData(scene_type = value['scene_type'], image_path = value['image_path'])
+                self.update_scene_value(scene_data)
+            else:
+                # 直接调用send_data方法发送数据到datapallet
+                with self.lock:
+                    self.current_state[data_id] = value
+                self.send_data(data_id, value, timestamp)
 
 # ==================== 工具函数 ====================
 

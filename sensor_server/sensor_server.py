@@ -26,6 +26,13 @@ import urllib.parse
 import glob
 from datapallet.enums import LightIntensity, SoundIntensity, ActivityMode
 
+_on_get_sensor_data_callback = None
+
+def set_on_get_sensor_data_callback(callback_func):
+        """设置上传完成的回调函数"""
+        global _on_get_sensor_data_callback
+        _on_get_sensor_data_callback = callback_func
+
 summary_queue = queue.Queue()
 # testbed = TestBed()
 class ArEventType(Enum):
@@ -1007,9 +1014,9 @@ class SensorHTTPRequestHandler(BaseHTTPRequestHandler):
         print(f"HTTP headers : {self.headers}")
         content_type = self.headers.get('Content-Type', '')
         # if content_type.startswith('image/'):
-        if content_type == 'application/jpeg':
-            parse_picture_data(self)
-            return
+        # if content_type == 'application/jpeg':
+        #     parse_picture_data(self)
+        #     return
         
         content_length = int(self.headers.get('Content-Length', 0))
         post_data = self.rfile.read(content_length)
@@ -1017,26 +1024,25 @@ class SensorHTTPRequestHandler(BaseHTTPRequestHandler):
             data = json.loads(post_data)
             # print(data) # 调整成save to file
             print(f"Sensor data : {data}")
-            # append_to_jsonl(ORI_SENSOR_DATA_FILE,data)
 
             if isinstance(data, list):
                 swings = {item.get("swing") for item in data}
                 if not swings or swings <= {None, ""}:
-                    processed = process_sensor_data(data)
-                    # save_sensor_data(processed)
+                    for item in data:
+                        processed = process_sensor_data([item])
 
-                    # # todo:处理sensor数据
-                    # # 将处理后的数据上报给TestBed
-                    # for item in data:
-                    #     data_id = item.get("data_id")
-                    #     value = item.get("value")
-                    #     timestamp_str = item.get("timestamp")
-                    #     if data_id and value and timestamp_str:
-                    #         timestamp = datetime.strptime(timestamp_str, DATE_TIME_FORMAT)
-                    #         testbed.receive_and_transmit_data(data_id, value, timestamp)
+                        data_id = processed.get("data_id")
+                        value = processed.get("value")
+                        timestamp_str = processed.get("timestamp")
+                        if data_id and value and timestamp_str:
+                            timestamp = datetime.strptime(timestamp_str, DATE_TIME_FORMAT)
+                            if _on_get_sensor_data_callback:
+                                _on_get_sensor_data_callback(data_id, value, timestamp)
 
-                    response = {'status': 'received', 'processed': 'ok'}
-                    self._set_headers(200)
+                            
+
+                        response = {'status': 'received', 'processed': 'ok'}
+                        self._set_headers(200)
                 # else:
                 #     # 处理swing：faceid & photoid; 并更新到活动日志
                 #     process_person_data_from_sensorhub(self, data)
@@ -1049,32 +1055,17 @@ class SensorHTTPRequestHandler(BaseHTTPRequestHandler):
             self._set_headers(400)
             self.wfile.write(json.dumps({'error': str(e)}).encode('utf-8'))
 
-def run(server_class=HTTPServer, handler_class=SensorHTTPRequestHandler, port=8100):
-
+def run_sensor_server(server_class=HTTPServer, handler_class=SensorHTTPRequestHandler, port=8100):
     def run_http_server():
         server_address = ('', port)
-        print(f"Server address: {server_address}")
-        try:
-            httpd = server_class(server_address, handler_class)
-            print(f'Starting http server on port {port}...')
-            try:
-                httpd.serve_forever()
-            except KeyboardInterrupt:
-                print("\nKeyboardInterrupt received, shutting down server...")
-            finally:
-                httpd.shutdown()
-                httpd.server_close()
-                print("Http server closed\n")
-        except Exception as e:
-            print(f"Error starting server: {e}")
-
+        httpd = server_class(server_address, handler_class)
+        print(f'Starting http server on port {port}...')
+        httpd.serve_forever()
+    
     http_thread = threading.Thread(target=run_http_server, daemon=True)
     http_thread.start()
-    try:
-        http_thread.join()  # 确保主线程等待线程完成
-    except KeyboardInterrupt:
-        print("\nMain thread KeyboardInterrupt received, shutting down...")
-        http_thread.join()
+    
+    return http_thread
 
 if __name__ == '__main__':
-    run()
+    run_sensor_server()

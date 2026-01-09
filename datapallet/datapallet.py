@@ -100,7 +100,7 @@ class DataPallet:
                 timestamp=expired_timestamp,
                 ttl=self.default_ttl
             )
-            self.data_store["Scence"] = DataItem(
+            self.data_store["Scene"] = DataItem(
                 value=SceneData.from_scene_type(SceneType.NULL),
                 timestamp=expired_timestamp,
                 ttl=self.default_ttl
@@ -185,8 +185,8 @@ class DataPallet:
                 
                 # 创建tuple值
                 value = (previous_value, value)
-            # 对于Scence，确保值是SceneData类型
-            elif data_id == "Scence":
+            # 对于Scece，确保值是SceneData类型
+            elif data_id == "Scene":
                 # 如果value已经是SceneData对象，直接使用
                 if isinstance(value, SceneData):
                     pass  # 已经是SceneData，不需要转换

@@ -13,6 +13,8 @@ import uvicorn
 
 def load_labels(file_path):
     class_map = {}
+    current_dir = os.path.dirname(os.path.abspath(__file__))
+    file_path = os.path.join(current_dir, file_path)
     if not os.path.exists(file_path):
         print(f"找不到标签文件 {file_path}，将使用数字索引。")
         return {i: str(i) for i in range(365)}
@@ -76,7 +78,7 @@ async def predict_image(file: UploadFile = File(...)):
         return JSONResponse(status_code=500, content={"message": f"处理图片或模型推理出错: {str(e)}"})
 
     probs = out[0]
-    top5_indices = np.argsort(probs)[::-1][:5]
+    top5_indices = np.argsort(probs)[::-1][:1]
 
     draw = ImageDraw.Draw(original_img)
     font_size = max(20, int(original_img.height * 0.03))
@@ -122,5 +124,9 @@ def read_root():
     return {"message": "欢迎使用场景分类 API"}
 
 
+def run_scene_classify_server():
+    uvicorn.run(app, host="0.0.0.0", port=8200)
+
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    # 启动服务，端口 8200
+    run_scene_classify_server()

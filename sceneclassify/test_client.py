@@ -2,7 +2,7 @@ import requests
 import os
 
 
-def predict_scene(image_path, server_url="http://127.0.0.1:8000/predict/"):
+def predict_scene(image_path, server_url="http://127.0.0.1:8200/predict/"):
     """
     向场景分类 API 发送图片并获取预测结果。
 
