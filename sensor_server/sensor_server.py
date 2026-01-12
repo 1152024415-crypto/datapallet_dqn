@@ -611,7 +611,8 @@ def parse_activity_data(data):
     }
 
 async def get_address_info(longitude, latitude):
-    mcp_client_session = MCPClientSession("D:\myArxiv\datapallet\datapallet\sensor_server\servers_config.json")
+    config_path = Path(__file__).parent / "servers_config.json"
+    mcp_client_session = MCPClientSession(str(config_path))    
     await mcp_client_session.start()
 
     all_tools = await mcp_client_session.get_all_tools()
@@ -627,7 +628,7 @@ async def get_address_info(longitude, latitude):
     }
 }""" % (location)
     status, result = await mcp_client_session.process_tool_call(amap_json_str)
-    # print(f"####status= {status}, json_str= {result}")
+    print(f"####status= {status}, json_str= {result}")
 
     await mcp_client_session.stop()
     if status:
@@ -758,23 +759,12 @@ def process_sensor_data(data):
                 return result
                 # result["Activity type"] = activity_data["Activity type"]
         elif "gnss" in item:
-            result["data_id"] = "Location"
-            result["value"] = 1
-            return result
             # 处理位置信息数据
-            # gnss_data = parse_gnss_data([item])
-            # gnss_data = {}
-            # if gnss_data:
-            #     result.update({
-            #         "Specific address": 1,
-            #         "Location type": 1,
-            #         "Longitude": 1,
-            #         "Latitude": 1
-            #         # "Specific address": gnss_data["Specific address"],
-            #         # "Location type": gnss_data["Location type"],
-            #         # "Longitude": gnss_data["Longitude"],
-            #         # "Latitude": gnss_data["Latitude"]
-            #     })
+            result["data_id"] = "Location"
+            gnss_data = parse_gnss_data([item])
+            if gnss_data:
+                result["value"] = gnss_data["Location type"]
+            return result
         elif "audio" in item:
             # 处理声音数据
             sound_level = parse_noise_level_data([item])

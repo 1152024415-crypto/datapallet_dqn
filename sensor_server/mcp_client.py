@@ -404,6 +404,25 @@ class MCPClientSession:
     async def start(self):
         config = Configuration()
         server_config = config.load_config(self.server_config_path)
+
+        # === 新增：修正配置文件中的相对路径 ===
+        from pathlib import Path
+        config_dir = Path(self.server_config_path).parent
+        for server_name, server_config_item in server_config["mcpServers"].items():
+            if "command" in server_config_item and "args" in server_config_item:
+                args = server_config_item["args"]
+                if args and len(args) > 0:
+                    # 第一个参数通常是脚本文件
+                    first_arg = args[0]
+                    if first_arg.endswith('.py') and not Path(first_arg).is_absolute():
+                        # 转换为绝对路径
+                        abs_path = config_dir / first_arg
+                        if abs_path.exists():
+                            server_config_item["args"][0] = str(abs_path)
+                            print(f"[INFO] 修正路径 {server_name}: {first_arg} -> {abs_path}")
+                        else:
+                            print(f"[WARNING] 文件不存在: {abs_path}")
+
         self.servers = [
             Server(name, srv_config)
             for name, srv_config in server_config["mcpServers"].items()
