@@ -151,6 +151,18 @@ async def trigger_client(timeout: float = 30.0):
     finally:
         upload_result_future = None
 
+def is_client_connected() -> bool:
+    """检查客户端是否已连接"""
+    return active_connection is not None
+
+
+@app.get("/api/client_status")
+async def client_status():
+    """查询客户端连接状态"""
+    connected = is_client_connected()
+    return {"connected": connected}
+
+
 def run_server():
     """运行 FastAPI 服务器"""
     uvicorn.run(app, host="0.0.0.0", port=8000)

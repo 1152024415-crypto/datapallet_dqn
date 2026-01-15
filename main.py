@@ -132,13 +132,46 @@ class ApplicationManager:
         wait_thread.start()
         return wait_thread
         
+    def wait_for_client_connection(self, check_interval: float = 2.0, max_wait: float = 30.0) -> bool:
+        """
+        等待客户端连接到服务器
+        
+        Args:
+            check_interval: 检查间隔（秒）
+            max_wait: 最大等待时间（秒）
+            
+        Returns:
+            True if client connected, False if timeout
+        """
+        import requests
+        
+        start_time = time.time()
+        while time.time() - start_time < max_wait:
+            try:
+                response = requests.get("http://localhost:8000/api/client_status", timeout=2)
+                if response.json().get("connected"):
+                    return True
+            except requests.exceptions.RequestException:
+                pass  # 服务器可能还未完全启动
+            
+            elapsed = time.time() - start_time
+            print(f"[等待连接] 客户端尚未连接，已等待 {elapsed:.0f}秒...")
+            time.sleep(check_interval)
+        
+        return False
+    
     def delayed_scene_request(self, delay: int = 10):
         """延迟请求拍照"""
         print(f"[延迟请求] {delay}秒后将开始请求拍照...")
         time.sleep(delay)
         
-        # 模拟请求拍照
-        print("[延迟请求] 正在请求拍照...")
+        # 等待客户端连接
+        print("[延迟请求] 正在等待客户端连接...")
+        if not self.wait_for_client_connection():
+            print("[延迟请求] 错误：等待客户端连接超时，放弃请求拍照")
+            return
+        
+        print("[延迟请求] 客户端已连接，正在请求拍照...")
         self.request_image_capture()
         
         # 启动Scene数据等待
