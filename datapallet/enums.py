@@ -182,12 +182,20 @@ class SceneType(IntEnum):
     NULL = 0                     # 未知
     OTHER = 1                    # 其他
     MEETINGROOM = 2              # 会议室
+    WORKSPACE = 3                # 工位(办公)
+    DINING = 4                   # 餐厅(就餐)
+    OUTDOOR_PARK = 5             # 室外园区(散步)
+    SUBWAY_STATION = 6           # 地铁站
 
 # 添加字符串方法
 SceneType = add_string_methods(SceneType, {
     SceneType.NULL: "未知",
     SceneType.OTHER: "其他",
     SceneType.MEETINGROOM: "会议室",
+    SceneType.WORKSPACE: "工位办公",
+    SceneType.DINING: "餐厅",
+    SceneType.OUTDOOR_PARK: "室外园区",
+    SceneType.SUBWAY_STATION: "地铁站",
 })
 
 

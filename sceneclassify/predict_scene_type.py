@@ -4,6 +4,27 @@ from datapallet.enums import SceneType
 
 SCENE_TYPE_MAPPING = {
     "conference_room": SceneType.MEETINGROOM,
+    # 工位办公 (适配细粒度分类结果：对应 labels.txt 中的 office, office_cubicles, computer_room)
+    "office": SceneType.WORKSPACE,
+    "office_cubicles": SceneType.WORKSPACE,
+    "computer_room": SceneType.WORKSPACE,
+    "cubicle/office": SceneType.WORKSPACE,
+
+    # 餐厅就餐 (适配细粒度分类结果：对应 labels.txt 中的 cafeteria, food_court, dining_hall)
+    "cafeteria": SceneType.DINING,
+    "food_court": SceneType.DINING,
+    "dining_hall": SceneType.DINING,
+    "restaurant": SceneType.DINING,
+
+    # 室外园区散步 (适配细粒度分类结果：对应 labels.txt 中的 park, campus, garden)
+    "park": SceneType.OUTDOOR_PARK,
+    "campus": SceneType.OUTDOOR_PARK,
+    "botanical_garden": SceneType.OUTDOOR_PARK,
+    "garden": SceneType.OUTDOOR_PARK,
+    "promenade": SceneType.OUTDOOR_PARK,
+
+    # 地铁站 (适配细粒度分类结果：对应 labels.txt 中的 subway_station/platform)
+    "subway_station/platform": SceneType.SUBWAY_STATION,
 }
 def predict_scene(image_path, server_url="http://127.0.0.1:8200/predict/"):
     """

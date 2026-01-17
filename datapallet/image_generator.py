@@ -90,6 +90,11 @@ class ImageGenerator:
             SceneType.NULL: "一个未知的室内场景，光线昏暗，没有明显特征",
             SceneType.OTHER: "一个普通的室内或室外场景，具有日常环境特征",
             SceneType.MEETINGROOM: "一个现代化的会议室，有长桌、椅子、投影屏幕和窗户，会议室坐着几个男人和女人，光线明亮，适合商务会议",
+            # DEMO新增演示场景
+            SceneType.WORKSPACE: "现代化的开放式办公区域，有电脑显示器、办公桌椅、隔断，员工正在专注工作，典型的办公室环境",
+            SceneType.DINING: "繁忙的餐厅或食堂区域，有餐桌、餐椅和正在用餐的人群，光线温暖",
+            SceneType.OUTDOOR_PARK: "风景优美的室外园区，有绿树、草坪、铺装步道，阳光明媚，适合散步",
+            SceneType.SUBWAY_STATION: "地铁站站台层，有屏蔽门、列车轨道、指示牌和候车座椅，典型的公共交通场景",
         }
         
         # 默认图像尺寸

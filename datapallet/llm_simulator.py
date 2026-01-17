@@ -149,6 +149,11 @@ class LLMSimulator:
                 "未知": SceneType.NULL,
                 "其他": SceneType.OTHER,
                 "会议室": SceneType.MEETINGROOM,
+                # DEMO新增演示场景
+                "工位办公": SceneType.WORKSPACE,
+                "餐厅": SceneType.DINING,
+                "室外园区": SceneType.OUTDOOR_PARK,
+                "地铁站": SceneType.SUBWAY_STATION,
             }
         }
     
@@ -366,7 +371,7 @@ activity_mode 可选值: 未知, 骑摩托车, 骑自行车, 坐着, 坐, 慢走
 Light_Intensity 可选值: 未知, 极暗, 昏暗, 正常, 明亮, 刺眼
 Sound_Intensity 可选值: 未知, 安静, 轻柔, 正常, 嘈杂, 非常嘈杂
 Location 可选值: 未知, 其他, 目的地, 家, 工作场所, 办公室, 公交车站, 地铁站, 火车站, 机场, 住宿, 住宅区, 商业区, 学校, 医疗机构, 政府机构, 娱乐场所, 餐饮场所, 购物场所, 运动场所, 旅游景点, 公园, 街道
-Scence 可选值: 未知, 其他, 会议室
+Scence 可选值: 未知, 其他, 会议室, 工位办公, 餐厅, 室外园区, 地铁站
 """
         
         # 基础prompt
