@@ -4,17 +4,23 @@ from datapallet.enums import SceneType
 
 SCENE_TYPE_MAPPING = {
     "conference_room": SceneType.MEETINGROOM,
+    "conference_center": SceneType.MEETINGROOM,
+    "lecture_room": SceneType.MEETINGROOM,
     # 工位办公 (适配细粒度分类结果：对应 labels.txt 中的 office, office_cubicles, computer_room)
     "office": SceneType.WORKSPACE,
     "office_cubicles": SceneType.WORKSPACE,
     "computer_room": SceneType.WORKSPACE,
     "cubicle/office": SceneType.WORKSPACE,
+    "home_office": SceneType.WORKSPACE,
 
     # 餐厅就餐 (适配细粒度分类结果：对应 labels.txt 中的 cafeteria, food_court, dining_hall)
     "cafeteria": SceneType.DINING,
     "food_court": SceneType.DINING,
     "dining_hall": SceneType.DINING,
     "restaurant": SceneType.DINING,
+    "dining_room": SceneType.DINING,
+    "kitchen": SceneType.DINING,
+    "pantry": SceneType.DINING,
 
     # 室外园区散步 (适配细粒度分类结果：对应 labels.txt 中的 park, campus, garden)
     "park": SceneType.OUTDOOR_PARK,
@@ -22,6 +28,8 @@ SCENE_TYPE_MAPPING = {
     "botanical_garden": SceneType.OUTDOOR_PARK,
     "garden": SceneType.OUTDOOR_PARK,
     "promenade": SceneType.OUTDOOR_PARK,
+    "street": SceneType.OUTDOOR_PARK,
+    "crosswalk": SceneType.OUTDOOR_PARK,
 
     # 地铁站 (适配细粒度分类结果：对应 labels.txt 中的 subway_station/platform)
     "subway_station/platform": SceneType.SUBWAY_STATION,
