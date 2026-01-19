@@ -666,6 +666,9 @@ def parse_gnss_data(data):
         latitude_l = cur_gnss_data[1]
         longitude_h = cur_gnss_data[2]
         longitude_l = cur_gnss_data[3]
+        if latitude_h == 0 and latitude_l == 0 and longitude_h == 0 and longitude_l == 0:
+            print(" GNSS data is None\n")
+            continue
         wgs_longitude = longitude_h * (2 ** -23) + longitude_l * (2 ** -37)
         wgs_latitude = latitude_h * (2 ** -23) + latitude_l * (2 ** -37)
         
