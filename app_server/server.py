@@ -84,14 +84,36 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
             post_data = self.rfile.read(content_length)
             data = json.loads(post_data.decode("utf-8"))
 
-            # 验证数据格式
-            required_fields = ["id", "timestamp", "active_module"]
+            # 验证数据格式 - 新统一格式
+            required_fields = [
+                "id",
+                "timestamp",
+                "action_type",
+                "action_name",
+                "scene_category",
+            ]
             if not all(field in data for field in required_fields):
                 self.send_error(400, "Missing required fields")
                 self.log_message(
                     "POST /update-recommendation - 400 Bad Request - Missing required fields"
                 )
                 return
+
+            # 验证action_type字段
+            valid_action_types = ["probe", "recommend", "none"]
+            if data["action_type"] not in valid_action_types:
+                self.send_error(
+                    400, f"Invalid action_type. Must be one of: {valid_action_types}"
+                )
+                self.log_message(
+                    "POST /update-recommendation - 400 Bad Request - Invalid action_type: %s",
+                    data["action_type"],
+                )
+                return
+
+            # 确保image字段存在（可为null）
+            if "image" not in data:
+                data["image"] = None
 
             # 更新推荐数据
             recommendation_data.update(data)
@@ -103,8 +125,9 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
             response = json.dumps({"status": "success", "message": "Data updated"})
             self.wfile.write(response.encode("utf-8"))
             self.log_message(
-                "POST /update-recommendation - 200 OK - Module: %s",
-                data.get("active_module"),
+                "POST /update-recommendation - 200 OK - Action: %s (%s)",
+                data.get("action_type"),
+                data.get("action_name"),
             )
 
         except json.JSONDecodeError:
@@ -123,11 +146,24 @@ def run_server(host="0.0.0.0", port=8080):
     httpd = HTTPServer(server_address, HTTPRequestHandler)
 
     print("=" * 60)
-    print("HTTP轮询服务器启动")
+    print("HTTP轮询服务器启动 (新统一格式)")
     print("=" * 60)
     print(f"监听地址: http://{host}:{port}")
     print(f"GET 接口: http://{host}:{port}/latest-recommendation")
     print(f"POST 接口: http://{host}:{port}/update-recommendation")
+    print("=" * 60)
+    print("数据格式 (POST /update-recommendation):")
+    print("```json")
+    print("{")
+    print('  "id": "rec_<timestamp>_001",')
+    print('  "timestamp": <unix_timestamp>,')
+    print('  "action_type": "probe|recommend|none",')
+    print('  "action_name": "动作名称",')
+    print('  "scene_category": "场景类别",')
+    print('  "image": "data:image/jpeg;base64,..."  # 或 null')
+    print("}")
+    print("```")
+    print("=" * 60)
     print("=" * 60)
     print("服务器运行中... (按 Ctrl+C 停止)")
     print("=" * 60)
