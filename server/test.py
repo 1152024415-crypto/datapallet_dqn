@@ -1,6 +1,6 @@
 import requests
 
-TRIGGER_URL = "http://localhost:8000/api/trigger_client"
+TRIGGER_URL = "http://localhost:8001/api/trigger_client"
 
 
 def run_test():

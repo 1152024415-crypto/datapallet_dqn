@@ -1045,11 +1045,11 @@ class SensorHTTPRequestHandler(BaseHTTPRequestHandler):
             self._set_headers(400)
             self.wfile.write(json.dumps({'error': str(e)}).encode('utf-8'))
 
-def run_sensor_server(server_class=HTTPServer, handler_class=SensorHTTPRequestHandler, port=8100):
+def run_sensor_server(server_class=HTTPServer, handler_class=SensorHTTPRequestHandler, port=8000):
     def run_http_server():
         server_address = ('', port)
         httpd = server_class(server_address, handler_class)
-        print(f'Starting http server on port {port}...')
+        print(f'Starting sensor server http server on port {port}...')
         httpd.serve_forever()
     
     http_thread = threading.Thread(target=run_http_server, daemon=True)

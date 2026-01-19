@@ -148,7 +148,7 @@ class ApplicationManager:
         start_time = time.time()
         while time.time() - start_time < max_wait:
             try:
-                response = requests.get("http://localhost:8000/api/client_status", timeout=2)
+                response = requests.get("http://localhost:8001/api/client_status", timeout=2)
                 if response.json().get("connected"):
                     return True
             except requests.exceptions.RequestException:

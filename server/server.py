@@ -165,8 +165,8 @@ async def client_status():
 
 def run_server():
     """运行 FastAPI 服务器"""
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=8001)
 
 if __name__ == "__main__":
-    # 启动服务，端口 8000
+    # 启动服务，端口 8001
     run_server()

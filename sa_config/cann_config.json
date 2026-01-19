@@ -1,0 +1,6 @@
+{
+  "httpUrl": "http://192.168.43.26:8001/upload",
+  "wsUrl": "ws://192.168.43.26:8001/ws",
+  "syncPeriod": 10,
+  "glassesCameraEnabled": 0
+}
