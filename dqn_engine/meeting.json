@@ -1,0 +1,932 @@
+[
+  {
+    "timestamp": "2025-12-26T17:10:08.370532",
+    "id": "activity_mode",
+    "value": "stationary"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:08.370532",
+    "id": "Light_Intensity",
+    "value": "bright"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:08.370532",
+    "id": "Sound_Intensity",
+    "value": "normal"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:08.370532",
+    "id": "Location",
+    "value": "Work"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:08.370532",
+    "id": "Scence",
+    "value": {
+      "scene_type": 1,
+      "scene_type_str": "other",
+      "has_image": true,
+      "image_size": 370713,
+      "image_path": "scene_images\\other.png"
+    }
+  },
+  {
+    "timestamp": "2025-12-26T17:10:09.370532",
+    "id": "activity_mode",
+    "value": "slow walk"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:09.370532",
+    "id": "Light_Intensity",
+    "value": "bright"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:09.370532",
+    "id": "Sound_Intensity",
+    "value": "normal"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:09.370532",
+    "id": "Location",
+    "value": "Work"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:09.370532",
+    "id": "Scence",
+    "value": {
+      "scene_type": 1,
+      "scene_type_str": "other",
+      "has_image": true,
+      "image_size": 370713,
+      "image_path": "scene_images\\other.png"
+    }
+  },
+  {
+    "timestamp": "2025-12-26T17:10:10.370532",
+    "id": "activity_mode",
+    "value": "slow walk"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:10.370532",
+    "id": "Light_Intensity",
+    "value": "bright"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:10.370532",
+    "id": "Sound_Intensity",
+    "value": "normal"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:10.370532",
+    "id": "Location",
+    "value": "Work"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:10.370532",
+    "id": "Scence",
+    "value": {
+      "scene_type": 1,
+      "scene_type_str": "other",
+      "has_image": true,
+      "image_size": 370713,
+      "image_path": "scene_images\\other.png"
+    }
+  },
+  {
+    "timestamp": "2025-12-26T17:10:11.370532",
+    "id": "activity_mode",
+    "value": "slow walk"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:11.370532",
+    "id": "Light_Intensity",
+    "value": "bright"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:11.370532",
+    "id": "Sound_Intensity",
+    "value": "normal"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:11.370532",
+    "id": "Location",
+    "value": "Work"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:11.370532",
+    "id": "Scence",
+    "value": {
+      "scene_type": 1,
+      "scene_type_str": "other",
+      "has_image": true,
+      "image_size": 370713,
+      "image_path": "scene_images\\other.png"
+    }
+  },
+  {
+    "timestamp": "2025-12-26T17:10:12.370532",
+    "id": "activity_mode",
+    "value": "slow walk"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:12.370532",
+    "id": "Light_Intensity",
+    "value": "bright"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:12.370532",
+    "id": "Sound_Intensity",
+    "value": "normal"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:12.370532",
+    "id": "Location",
+    "value": "Work"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:12.370532",
+    "id": "Scence",
+    "value": {
+      "scene_type": 1,
+      "scene_type_str": "other",
+      "has_image": true,
+      "image_size": 370713,
+      "image_path": "scene_images\\other.png"
+    }
+  },
+  {
+    "timestamp": "2025-12-26T17:10:13.370532",
+    "id": "activity_mode",
+    "value": "slow walk"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:13.370532",
+    "id": "Light_Intensity",
+    "value": "bright"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:13.370532",
+    "id": "Sound_Intensity",
+    "value": "normal"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:13.370532",
+    "id": "Location",
+    "value": "Work"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:13.370532",
+    "id": "Scence",
+    "value": {
+      "scene_type": 1,
+      "scene_type_str": "other",
+      "has_image": true,
+      "image_size": 370713,
+      "image_path": "scene_images\\other.png"
+    }
+  },
+  {
+    "timestamp": "2025-12-26T17:10:14.370532",
+    "id": "activity_mode",
+    "value": "slow walk"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:14.370532",
+    "id": "Light_Intensity",
+    "value": "bright"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:14.370532",
+    "id": "Sound_Intensity",
+    "value": "normal"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:14.370532",
+    "id": "Location",
+    "value": "Work"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:14.370532",
+    "id": "Scence",
+    "value": {
+      "scene_type": 1,
+      "scene_type_str": "other",
+      "has_image": true,
+      "image_size": 370713,
+      "image_path": "scene_images\\other.png"
+    }
+  },
+  {
+    "timestamp": "2025-12-26T17:10:15.370532",
+    "id": "activity_mode",
+    "value": "slow walk"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:15.370532",
+    "id": "Light_Intensity",
+    "value": "bright"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:15.370532",
+    "id": "Sound_Intensity",
+    "value": "normal"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:15.370532",
+    "id": "Location",
+    "value": "Work"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:15.370532",
+    "id": "Scence",
+    "value": {
+      "scene_type": 1,
+      "scene_type_str": "other",
+      "has_image": true,
+      "image_size": 370713,
+      "image_path": "scene_images\\other.png"
+    }
+  },
+  {
+    "timestamp": "2025-12-26T17:10:16.370532",
+    "id": "activity_mode",
+    "value": "slow walk"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:16.370532",
+    "id": "Light_Intensity",
+    "value": "bright"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:16.370532",
+    "id": "Sound_Intensity",
+    "value": "normal"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:16.370532",
+    "id": "Location",
+    "value": "Work"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:16.370532",
+    "id": "Scence",
+    "value": {
+      "scene_type": 1,
+      "scene_type_str": "other",
+      "has_image": true,
+      "image_size": 370713,
+      "image_path": "scene_images\\other.png"
+    }
+  },
+  {
+    "timestamp": "2025-12-26T17:10:17.370532",
+    "id": "activity_mode",
+    "value": "slow walk"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:17.370532",
+    "id": "Light_Intensity",
+    "value": "bright"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:17.370532",
+    "id": "Sound_Intensity",
+    "value": "normal"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:17.370532",
+    "id": "Location",
+    "value": "Work"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:17.370532",
+    "id": "Scence",
+    "value": {
+      "scene_type": 1,
+      "scene_type_str": "other",
+      "has_image": true,
+      "image_size": 370713,
+      "image_path": "scene_images\\other.png"
+    }
+  },
+  {
+    "timestamp": "2025-12-26T17:10:18.370532",
+    "id": "activity_mode",
+    "value": "stationary"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:18.370532",
+    "id": "Light_Intensity",
+    "value": "bright"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:18.370532",
+    "id": "Sound_Intensity",
+    "value": "normal"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:18.370532",
+    "id": "Location",
+    "value": "Work"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:18.370532",
+    "id": "Scence",
+    "value": {
+      "scene_type": 2,
+      "scene_type_str": "conference_room",
+      "has_image": true,
+      "image_size": 360552,
+      "image_path": "scene_images\\conference_room.png"
+    }
+  },
+  {
+    "timestamp": "2025-12-26T17:10:19.370532",
+    "id": "activity_mode",
+    "value": "stationary"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:19.370532",
+    "id": "Light_Intensity",
+    "value": "bright"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:19.370532",
+    "id": "Sound_Intensity",
+    "value": "normal"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:19.370532",
+    "id": "Location",
+    "value": "Work"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:19.370532",
+    "id": "Scence",
+    "value": {
+      "scene_type": 2,
+      "scene_type_str": "conference_room",
+      "has_image": true,
+      "image_size": 360552,
+      "image_path": "scene_images\\conference_room.png"
+    }
+  },
+  {
+    "timestamp": "2025-12-26T17:10:20.370532",
+    "id": "activity_mode",
+    "value": "stationary"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:20.370532",
+    "id": "Light_Intensity",
+    "value": "bright"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:20.370532",
+    "id": "Sound_Intensity",
+    "value": "normal"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:20.370532",
+    "id": "Location",
+    "value": "Work"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:20.370532",
+    "id": "Scence",
+    "value": {
+      "scene_type": 2,
+      "scene_type_str": "conference_room",
+      "has_image": true,
+      "image_size": 360552,
+      "image_path": "scene_images\\conference_room.png"
+    }
+  },
+  {
+    "timestamp": "2025-12-26T17:10:21.370532",
+    "id": "activity_mode",
+    "value": "stationary"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:21.370532",
+    "id": "Light_Intensity",
+    "value": "bright"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:21.370532",
+    "id": "Sound_Intensity",
+    "value": "normal"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:21.370532",
+    "id": "Location",
+    "value": "Work"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:21.370532",
+    "id": "Scence",
+    "value": {
+      "scene_type": 2,
+      "scene_type_str": "conference_room",
+      "has_image": true,
+      "image_size": 360552,
+      "image_path": "scene_images\\conference_room.png"
+    }
+  },
+  {
+    "timestamp": "2025-12-26T17:10:22.370532",
+    "id": "activity_mode",
+    "value": "stationary"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:22.370532",
+    "id": "Light_Intensity",
+    "value": "bright"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:22.370532",
+    "id": "Sound_Intensity",
+    "value": "normal"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:22.370532",
+    "id": "Location",
+    "value": "Work"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:22.370532",
+    "id": "Scence",
+    "value": {
+      "scene_type": 2,
+      "scene_type_str": "conference_room",
+      "has_image": true,
+      "image_size": 360552,
+      "image_path": "scene_images\\conference_room.png"
+    }
+  },
+  {
+    "timestamp": "2025-12-26T17:10:23.370532",
+    "id": "activity_mode",
+    "value": "stationary"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:23.370532",
+    "id": "Light_Intensity",
+    "value": "bright"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:23.370532",
+    "id": "Sound_Intensity",
+    "value": "normal"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:23.370532",
+    "id": "Location",
+    "value": "Work"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:23.370532",
+    "id": "Scence",
+    "value": {
+      "scene_type": 2,
+      "scene_type_str": "conference_room",
+      "has_image": true,
+      "image_size": 360552,
+      "image_path": "scene_images\\conference_room.png"
+    }
+  },
+  {
+    "timestamp": "2025-12-26T17:10:24.370532",
+    "id": "activity_mode",
+    "value": "stationary"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:24.370532",
+    "id": "Light_Intensity",
+    "value": "bright"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:24.370532",
+    "id": "Sound_Intensity",
+    "value": "normal"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:24.370532",
+    "id": "Location",
+    "value": "Work"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:24.370532",
+    "id": "Scence",
+    "value": {
+      "scene_type": 2,
+      "scene_type_str": "conference_room",
+      "has_image": true,
+      "image_size": 360552,
+      "image_path": "scene_images\\conference_room.png"
+    }
+  },
+  {
+    "timestamp": "2025-12-26T17:10:25.370532",
+    "id": "activity_mode",
+    "value": "stationary"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:25.370532",
+    "id": "Light_Intensity",
+    "value": "bright"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:25.370532",
+    "id": "Sound_Intensity",
+    "value": "normal"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:25.370532",
+    "id": "Location",
+    "value": "Work"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:25.370532",
+    "id": "Scence",
+    "value": {
+      "scene_type": 2,
+      "scene_type_str": "conference_room",
+      "has_image": true,
+      "image_size": 360552,
+      "image_path": "scene_images\\conference_room.png"
+    }
+  },
+  {
+    "timestamp": "2025-12-26T17:10:26.370532",
+    "id": "activity_mode",
+    "value": "stationary"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:26.370532",
+    "id": "Light_Intensity",
+    "value": "bright"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:26.370532",
+    "id": "Sound_Intensity",
+    "value": "normal"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:26.370532",
+    "id": "Location",
+    "value": "Work"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:26.370532",
+    "id": "Scence",
+    "value": {
+      "scene_type": 2,
+      "scene_type_str": "conference_room",
+      "has_image": true,
+      "image_size": 360552,
+      "image_path": "scene_images\\conference_room.png"
+    }
+  },
+  {
+    "timestamp": "2025-12-26T17:10:27.370532",
+    "id": "activity_mode",
+    "value": "stationary"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:27.370532",
+    "id": "Light_Intensity",
+    "value": "bright"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:27.370532",
+    "id": "Sound_Intensity",
+    "value": "normal"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:27.370532",
+    "id": "Location",
+    "value": "Work"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:27.370532",
+    "id": "Scence",
+    "value": {
+      "scene_type": 2,
+      "scene_type_str": "conference_room",
+      "has_image": true,
+      "image_size": 360552,
+      "image_path": "scene_images\\conference_room.png"
+    }
+  },
+  {
+    "timestamp": "2025-12-26T17:10:28.370532",
+    "id": "activity_mode",
+    "value": "stationary"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:28.370532",
+    "id": "Light_Intensity",
+    "value": "bright"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:28.370532",
+    "id": "Sound_Intensity",
+    "value": "normal"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:28.370532",
+    "id": "Location",
+    "value": "Work"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:28.370532",
+    "id": "Scence",
+    "value": {
+      "scene_type": 2,
+      "scene_type_str": "conference_room",
+      "has_image": true,
+      "image_size": 360552,
+      "image_path": "scene_images\\conference_room.png"
+    }
+  },
+  {
+    "timestamp": "2025-12-26T17:10:29.370532",
+    "id": "activity_mode",
+    "value": "stationary"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:29.370532",
+    "id": "Light_Intensity",
+    "value": "bright"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:29.370532",
+    "id": "Sound_Intensity",
+    "value": "normal"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:29.370532",
+    "id": "Location",
+    "value": "Work"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:29.370532",
+    "id": "Scence",
+    "value": {
+      "scene_type": 2,
+      "scene_type_str": "conference_room",
+      "has_image": true,
+      "image_size": 360552,
+      "image_path": "scene_images\\conference_room.png"
+    }
+  },
+  {
+    "timestamp": "2025-12-26T17:10:30.370532",
+    "id": "activity_mode",
+    "value": "stationary"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:30.370532",
+    "id": "Light_Intensity",
+    "value": "bright"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:30.370532",
+    "id": "Sound_Intensity",
+    "value": "normal"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:30.370532",
+    "id": "Location",
+    "value": "Work"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:30.370532",
+    "id": "Scence",
+    "value": {
+      "scene_type": 2,
+      "scene_type_str": "conference_room",
+      "has_image": true,
+      "image_size": 360552,
+      "image_path": "scene_images\\conference_room.png"
+    }
+  },
+  {
+    "timestamp": "2025-12-26T17:10:31.370532",
+    "id": "activity_mode",
+    "value": "stationary"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:31.370532",
+    "id": "Light_Intensity",
+    "value": "bright"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:31.370532",
+    "id": "Sound_Intensity",
+    "value": "normal"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:31.370532",
+    "id": "Location",
+    "value": "Work"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:31.370532",
+    "id": "Scence",
+    "value": {
+      "scene_type": 2,
+      "scene_type_str": "conference_room",
+      "has_image": true,
+      "image_size": 360552,
+      "image_path": "scene_images\\conference_room.png"
+    }
+  },
+  {
+    "timestamp": "2025-12-26T17:10:32.370532",
+    "id": "activity_mode",
+    "value": "stationary"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:32.370532",
+    "id": "Light_Intensity",
+    "value": "bright"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:32.370532",
+    "id": "Sound_Intensity",
+    "value": "normal"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:32.370532",
+    "id": "Location",
+    "value": "Work"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:32.370532",
+    "id": "Scence",
+    "value": {
+      "scene_type": 2,
+      "scene_type_str": "conference_room",
+      "has_image": true,
+      "image_size": 360552,
+      "image_path": "scene_images\\conference_room.png"
+    }
+  },
+  {
+    "timestamp": "2025-12-26T17:10:33.370532",
+    "id": "activity_mode",
+    "value": "stationary"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:33.370532",
+    "id": "Light_Intensity",
+    "value": "bright"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:33.370532",
+    "id": "Sound_Intensity",
+    "value": "normal"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:33.370532",
+    "id": "Location",
+    "value": "Work"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:33.370532",
+    "id": "Scence",
+    "value": {
+      "scene_type": 2,
+      "scene_type_str": "conference_room",
+      "has_image": true,
+      "image_size": 360552,
+      "image_path": "scene_images\\conference_room.png"
+    }
+  },
+  {
+    "timestamp": "2025-12-26T17:10:34.370532",
+    "id": "activity_mode",
+    "value": "stationary"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:34.370532",
+    "id": "Light_Intensity",
+    "value": "bright"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:34.370532",
+    "id": "Sound_Intensity",
+    "value": "normal"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:34.370532",
+    "id": "Location",
+    "value": "Work"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:34.370532",
+    "id": "Scence",
+    "value": {
+      "scene_type": 2,
+      "scene_type_str": "conference_room",
+      "has_image": true,
+      "image_size": 360552,
+      "image_path": "scene_images\\conference_room.png"
+    }
+  },
+  {
+    "timestamp": "2025-12-26T17:10:35.370532",
+    "id": "activity_mode",
+    "value": "stationary"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:35.370532",
+    "id": "Light_Intensity",
+    "value": "bright"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:35.370532",
+    "id": "Sound_Intensity",
+    "value": "normal"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:35.370532",
+    "id": "Location",
+    "value": "Work"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:35.370532",
+    "id": "Scence",
+    "value": {
+      "scene_type": 2,
+      "scene_type_str": "conference_room",
+      "has_image": true,
+      "image_size": 360552,
+      "image_path": "scene_images\\conference_room.png"
+    }
+  },
+  {
+    "timestamp": "2025-12-26T17:10:36.370532",
+    "id": "activity_mode",
+    "value": "stationary"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:36.370532",
+    "id": "Light_Intensity",
+    "value": "bright"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:36.370532",
+    "id": "Sound_Intensity",
+    "value": "normal"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:36.370532",
+    "id": "Location",
+    "value": "Work"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:36.370532",
+    "id": "Scence",
+    "value": {
+      "scene_type": 2,
+      "scene_type_str": "conference_room",
+      "has_image": true,
+      "image_size": 360552,
+      "image_path": "scene_images\\conference_room.png"
+    }
+  },
+  {
+    "timestamp": "2025-12-26T17:10:37.370532",
+    "id": "activity_mode",
+    "value": "stationary"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:37.370532",
+    "id": "Light_Intensity",
+    "value": "bright"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:37.370532",
+    "id": "Sound_Intensity",
+    "value": "normal"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:37.370532",
+    "id": "Location",
+    "value": "Work"
+  },
+  {
+    "timestamp": "2025-12-26T17:10:37.370532",
+    "id": "Scence",
+    "value": {
+      "scene_type": 2,
+      "scene_type_str": "conference_room",
+      "has_image": true,
+      "image_size": 360552,
+      "image_path": "scene_images\\conference_room.png"
+    }
+  }
+]
