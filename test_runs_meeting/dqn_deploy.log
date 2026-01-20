@@ -3,3 +3,5 @@ Using device: cpu
 [Server] 数据发送成功: action=QUERY_VISUAL
 [Server] 数据发送成功: action=step_count
 [Server] 数据发送成功: action=step_count
+[Server] 数据发送成功: action=step_count
+Replay complete: test_runs_meeting

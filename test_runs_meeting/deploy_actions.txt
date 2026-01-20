@@ -1,0 +1,36 @@
+Meeting path: D:\proj\datapallet\dqn_engine\meeting.json
+Bucket seconds: 1
+Step seconds: 1
+History len: 0
+Profile: meeting
+----------------------------------------------------------------------------------------------------
+17:10:08 step=   0 | a=QUERY_VISUAL           r=  -2.00
+17:10:09 step=   1 | a=step_count             r=  -2.00
+17:10:10 step=   2 | a=step_count             r=  -2.00
+17:10:11 step=   3 | a=step_count             r=  -2.00
+17:10:12 step=   4 | a=step_count             r=  -2.00
+17:10:13 step=   5 | a=step_count             r=  -2.00
+17:10:14 step=   6 | a=step_count             r=  -2.00
+17:10:15 step=   7 | a=step_count             r=  -2.00
+17:10:16 step=   8 | a=step_count             r=  -2.00
+17:10:17 step=   9 | a=step_count             r=  -2.00
+17:10:18 step=  10 | a=QUERY_LOC_GPS          r=  -1.25
+17:10:19 step=  11 | a=QUERY_VISUAL           r=  -2.00
+17:10:20 step=  12 | a=silent_DND             r=  -2.00
+17:10:21 step=  13 | a=silent_DND             r=  -2.00
+17:10:22 step=  14 | a=silent_DND             r=  -2.00
+17:10:23 step=  15 | a=silent_DND             r=  -2.00
+17:10:24 step=  16 | a=silent_DND             r=  -2.00
+17:10:25 step=  17 | a=silent_DND             r=  -2.00
+17:10:26 step=  18 | a=silent_DND             r=  -2.00
+17:10:27 step=  19 | a=silent_DND             r=  -2.00
+17:10:28 step=  20 | a=silent_DND             r=  -2.00
+17:10:29 step=  21 | a=silent_DND             r=  -2.00
+17:10:30 step=  22 | a=silent_DND             r=  -2.00
+17:10:31 step=  23 | a=silent_DND             r=  -2.00
+17:10:32 step=  24 | a=silent_DND             r=  -2.00
+17:10:33 step=  25 | a=silent_DND             r=  -2.00
+17:10:34 step=  26 | a=silent_DND             r=  -2.00
+17:10:35 step=  27 | a=silent_DND             r=  -2.00
+17:10:36 step=  28 | a=silent_DND             r=  -2.00
+17:10:37 step=  29 | a=silent_DND             r=  -2.00
