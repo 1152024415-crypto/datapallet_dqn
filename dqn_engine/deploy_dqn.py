@@ -2,9 +2,6 @@ import argparse
 import json
 import logging
 import time
-import sys
-import os
-import random
 from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
@@ -12,19 +9,9 @@ from typing import Any, Dict, Iterable, Iterator, List, Optional, Tuple
 
 import numpy as np
 import torch
-import requests
 
-# 添加 app_server 目录到路径，以便导入 util 模块
-APP_SERVER_DIR = Path(__file__).parent.parent / "app_server"
-sys.path.insert(0, str(APP_SERVER_DIR))
-from util import create_test_image_data
-
-# 服务器配置
-SERVER_URL = "http://127.0.0.1:8080/update-recommendation"
-SEND_INTERVAL_SECONDS = 3  # 每3秒发送一次数据
-
-from aod_env_demo import AODDemoEnv
-from constants import (
+from dqn_engine.aod_env_demo import AODDemoEnv
+from dqn_engine.constants import (
     ALL_ACTIONS,
     ACTIVITIES,
     LOCATIONS,
@@ -34,7 +21,7 @@ from constants import (
     PROBE_ACTIONS,
     TruthStep,
 )
-from train_dqn_tensorboard_v3 import QNetwork as QNet
+from dqn_engine.train_dqn_tensorboard_v3 import QNetwork as QNet
 
 DEFAULT_STEP_SECONDS = 10
 MAX_DUR_STEPS = 180 * 6  # must match meeting env _make_obs max_dur
@@ -204,50 +191,6 @@ def select_action_greedy(q: QNet, obs: np.ndarray, device: torch.device) -> int:
     return int(torch.argmax(q(s), dim=1).item())
 
 
-def send_action_to_server(
-    action_name: str, # 后续补充场景名称和图片
-    logger: logging.Logger,
-) -> bool:
-    action_type = "probe" if action_name in PROBE_ACTIONS else "recommend"
-    current_time = int(time.time())
-    
-    # 如果动作是 QUERY_VISUAL，添加测试图片
-    image_data = None
-    if action_name == "QUERY_VISUAL":
-        test_image_path = APP_SERVER_DIR / "test.png"
-        if test_image_path.exists():
-            image_data = create_test_image_data(str(test_image_path))
-            logger.info(f"[Server] QUERY_VISUAL 动作，已添加测试图片")
-    
-    data = {
-        "id": f"rec_{current_time}_{random.randint(100, 999)}",
-        "timestamp": current_time,
-        "action_type": action_type,
-        "action_name": action_name,
-        "scene_category": "office",  # 打桩
-        "image": image_data, # 打桩
-    }
-    
-    # 发送数据到服务器
-    try:
-        headers = {"Content-Type": "application/json"}
-        response = requests.post(SERVER_URL, json=data, headers=headers, timeout=5)
-        
-        if response.status_code == 200:
-            logger.info(f"[Server] 数据发送成功: action={action_name}")
-            return True
-        else:
-            logger.warning(f"[Server] 请求失败: {response.status_code} {response.text}")
-            return False
-            
-    except requests.exceptions.RequestException as e:
-        logger.warning(f"[Server] 网络请求失败: {e}")
-        return False
-    except Exception as e:
-        logger.error(f"[Server] 未知错误: {e}")
-        return False
-
-
 def deploy_replay_env(
         meeting_path: Path,
         step_seconds: int,
@@ -298,23 +241,18 @@ def deploy_replay_env(
 
             time_str = getattr(truth, "time_str",
                                _fmt_time_from_seconds(int(getattr(truth, "t", 0)))) if truth else "unknown"
-            obs_decoded = decode_obs(obs, history_len=history_len, step_seconds=step_seconds)
             rec = {
                 "t": t,
                 "time": time_str,
                 "action_id": action_id,
                 "action": action_name,
                 "reward": float(reward),
-                "obs": obs_decoded,
+                "obs": decode_obs(obs, history_len=history_len, step_seconds=step_seconds),
             }
             jf.write(json.dumps(rec, ensure_ascii=False) + "\n")
             tf.write(
                 f"{rec['time']} step={rec['t']:4d} | a={action_name:<22s} r={rec['reward']:>7.2f}\n"
             )
-
-            # 每隔 SEND_INTERVAL_SECONDS 秒才发送数据到服务器
-            send_action_to_server(action_name=action_name, logger=logger)
-            time.sleep(SEND_INTERVAL_SECONDS)  # 真正等待3秒
 
             obs = obs2
             t += 1
@@ -323,10 +261,9 @@ def deploy_replay_env(
 
 
 def main() -> None:
-    path = Path(__file__).parent.parent
     parser = argparse.ArgumentParser()
-    parser.add_argument("--ckpt", type=str, default=path / "dqn_engine/dqn_aod_ckpt_episode_1100.pt")
-    parser.add_argument("--stream_path", type=str, default=path / "dqn_engine/meeting.json")
+    parser.add_argument("--ckpt", type=str, default="/Users/cannkit/Downloads/datapallet/dqn_engine/dqn_aod_ckpt_episode_1100.pt")
+    parser.add_argument("--stream_path", type=str, default="/Users/cannkit/Downloads/datapallet/dqn_engine/meeting.json")
     parser.add_argument("--step_seconds", type=int, default=1)
     parser.add_argument("--bucket_seconds", type=int, default=1)
     parser.add_argument("--history_len", type=int, default=0)

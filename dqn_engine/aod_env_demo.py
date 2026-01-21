@@ -20,7 +20,7 @@ import os
 
 import numpy as np
 
-from constants import (
+from dqn_engine.constants import (
     LOCATIONS,
     SCENES,
     ACTIVITIES,
@@ -37,7 +37,7 @@ from constants import (
     TruthStep,
     _fmt_hhmm,
 )
-from aod_env_v3 import AODRecommendationEnv
+from dqn_engine.aod_env_v3 import AODRecommendationEnv
 
 
 def _fmt_hhmmss(seconds: int) -> str:

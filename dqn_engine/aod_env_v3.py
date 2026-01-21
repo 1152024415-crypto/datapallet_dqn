@@ -29,7 +29,7 @@ import numpy as np
 
 # from generator import Segment, build_base_skeleton, normalize_segments
 
-from constants import (
+from dqn_engine.constants import (
     LOCATIONS,
     SCENES,
     ACTIVITIES,

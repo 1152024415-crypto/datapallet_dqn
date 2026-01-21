@@ -1,10 +1,19 @@
+import os
+import pathlib
+import random
 import threading
 import time
+from datetime import datetime
+from tkinter.font import names
 from typing import List, Dict, Any, Optional, Tuple, Callable
+from pathlib import Path
 import signal
 import sys
 import threading
 import time
+
+import requests
+
 from sensor_server.sensor_server import set_on_get_sensor_data_callback, run_sensor_server
 from datapallet.datapallet import create_datapallet
 from datapallet.testbed import TestBed, set_on_image_request_callback
@@ -12,6 +21,14 @@ from server.test import run_test
 from server.server import set_upload_complete_callback, run_server
 from sceneclassify.deploy_server import run_scene_classify_server
 from sceneclassify.predict_scene_type import predict_scene
+from dqn_engine.dqn_realtime_adapter import DQNEngineAdapter
+from app_server.util import create_test_image_data
+from dqn_engine.constants import PROBE_ACTIONS
+from datapallet.enums import SceneType, SceneData
+from app_server.server import run_server as run_app_server
+
+APP_UI_SERVER_URL = "http://127.0.0.1:8002/update-recommendation"
+
 
 class ApplicationManager:
     """应用管理器，统一管理所有服务和组件"""
@@ -22,6 +39,117 @@ class ApplicationManager:
         self.threads = []
         self.running = False
         self.callbacks_registered = False
+        self.dqn_engine = None
+        self.inference_trigger_event = threading.Event()
+        self.last_activity_mode = None
+        self.is_querying_visual = False
+        self.visual_query_lock = threading.Lock()
+
+    def _map_scene_to_category(self, scene_val) -> str:
+        if not scene_val:
+            return "unknown"
+
+        sType = scene_val.scene_type if isinstance(scene_val, SceneData) else scene_val
+
+        mapping = {
+            SceneType.MEETINGROOM: "work",
+            SceneType.WORKSPACE: "work",
+            SceneType.DINING: "food",
+            SceneType.OUTDOOR_PARK: "transportation",
+            SceneType.SUBWAY_STATION: "transportation",
+            SceneType.OTHER: "home",
+            SceneType.NULL: "unknown"
+        }
+        return mapping.get(sType, "work")
+
+    def send_to_app_server(self, action_name: str):
+        action_type = "probe" if action_name in PROBE_ACTIONS else "recommend"
+        current_time = int(time.time())
+
+        success, scene_val = self.dp.get("Scence")
+        scene_category = self._map_scene_to_category(scene_val)
+
+        image_data = None
+
+        if success and isinstance(scene_val, SceneData) and scene_val.has_image:
+            try:
+                raw_path = scene_val.image_path
+                if raw_path and not os.path.isabs(raw_path):
+                    base_dir = os.path.dirname(os.path.abspath(__file__))
+                    possible_paths = [
+                        raw_path,
+                        os.path.join(base_dir, raw_path),
+                        os.path.join(base_dir, "datapallet", raw_path),
+                        os.path.join(base_dir, "sceneclassify", raw_path)
+                    ]
+                else:
+                    possible_paths = [raw_path]
+
+                real_path = None
+                for p in possible_paths:
+                    if p and os.path.exists(p):
+                        real_path = p
+                        break
+
+                if real_path:
+                    image_data = create_test_image_data(real_path)
+                else:
+                    print(f"[AppPush-Error] DataPallet有记录但文件找不到: {possible_paths}")
+
+            except Exception as e:
+                print(f"[AppPush-Error] 真实图片读取异常: {e}")
+
+        if image_data is None and action_name == "QUERY_VISUAL":
+            base_dir = os.path.dirname(os.path.abspath(__file__))
+            test_img_path = os.path.join(base_dir, "app_server", "test.png")
+
+            if os.path.exists(test_img_path):
+                image_data = create_test_image_data(str(test_img_path))
+                print("[AppPush] 暂无真实照片，使用默认测试图片 (QUERY_VISUAL)")
+            else:
+                print(f"[AppPush-Error] 默认测试图片不存在: {test_img_path}")
+
+        payload = {
+            "id": f"rec_{current_time}_{random.randint(100, 999)}",
+            "timestamp": current_time,
+            "action_type": action_type,
+            "action_name": action_name,
+            "scene_category": scene_category,
+            "image": image_data
+        }
+
+        try:
+            response = requests.post(APP_UI_SERVER_URL, json=payload, headers={"Content-Type": "application/json"},
+                                     timeout=0.5)
+            if response.status_code != 200:
+                print(f"[AppPush] 推送失败: {response.status_code}")
+        except Exception as e:
+            print(f"[AppPush] 连接 App Server 失败: {e}")
+
+
+    def execute_visual_query(self):
+        if self.is_querying_visual:
+            print("[VisualQuery] 上一次拍照任务尚未完成，跳过本次请求")
+            return
+
+        with self.visual_query_lock:
+            self.is_querying_visual = True
+
+        try:
+            print("[VisualQuery] DQN 触发了视觉查询请求 (QUERY_VISUAL)")
+
+            if not self.wait_for_client_connection(max_wait=30.0):
+                print("[VisualQuery] 错误：客户端未连接，无法拍照")
+                return
+
+            self.request_image_capture()
+
+
+        except Exception as e:
+            print(f"[VisualQuery] 执行异常: {e}")
+        finally:
+            with self.visual_query_lock:
+                self.is_querying_visual = False
         
     def register_callbacks(self):
         """注册所有回调函数"""
@@ -46,6 +174,16 @@ class ApplicationManager:
         def on_get_sensor_data(data_id, value, timestamp):
             if self.tb:
                 self.tb.receive_and_transmit_data(data_id, value, timestamp)
+                # === 检测姿态变化触发推理 ===
+                if data_id == "activity_mode" and self.dqn_engine:
+                    current_act = value
+                    if isinstance(value, tuple):
+                        current_act = value[1]
+
+                    if current_act != self.last_activity_mode:
+                        print(f"[Trigger] 姿态变化: {self.last_activity_mode} -> {current_act}")
+                        self.last_activity_mode = current_act
+                        self.inference_trigger_event.set()  # 立即触发事件
                 
         set_on_get_sensor_data_callback(on_get_sensor_data)
         
@@ -81,8 +219,54 @@ class ApplicationManager:
         self.dp.setup(self.test_callback)
         self.tb = TestBed(self.dp)
         self.dp.connect_testbed(self.tb)
+        print("[初始化] 加载 DQN 模型...")
+        ckpt_path = r"D:\c00894262\datapallet\dqn_engine\dqn_aod_ckpt_episode_1100.pt"
+        try:
+            self.dqn_engine = DQNEngineAdapter(
+                ckpt_path=Path(ckpt_path),
+                history_len=0, # TODO now is 0
+                device="cpu"
+            )
+            print("[初始化] DQN 模型加载完成")
+        except Exception as e:
+            print(f"[错误] DQN 模型加载失败: {e}")
+
         print("[初始化] 组件初始化完成")
-        
+
+    def start_dqn_inference_loop(self):
+        print("[DQN] 启动推理线程...")
+        while self.running:
+            is_event_triggered = self.inference_trigger_event.wait(timeout=10.0)
+
+            if is_event_triggered:
+                print("[DQN] 触发源: 姿态变化")
+                self.inference_trigger_event.clear()
+            else:
+                print("[DQN] 触发源: 定时周期 (10s)")
+                pass
+
+            if self.dqn_engine and self.dp:
+                try:
+                    action, debug_info = self.dqn_engine.update_and_predict(self.dp)
+                    print("-" * 60)
+                    print(f"[DQN 推理] {datetime.now().strftime('%H:%M:%S')}")
+                    print(f"  ├── {debug_info}")  # 打印物理输入
+                    print(f"  └── Output Action: [{action}]")  # 打印输出动作
+                    print("-" * 60)
+                    if action == "QUERY_VISUAL":
+                        print("DQN Action is QUERY_VISUAL, trigger take picture")
+                        threading.Thread(
+                            target=self.execute_visual_query,
+                            name="Visual-Query-Worker",
+                            daemon=True
+                        ).start()
+
+                    # TODO 要不要过滤NONE的动作？
+                    self.send_to_app_server(action)
+
+                except Exception as e:
+                    print(f"[DQN 错误] 推理过程异常: {e}")
+
     def start_services(self):
         """启动所有服务"""
         print("[服务启动] 正在启动服务...")
@@ -107,6 +291,15 @@ class ApplicationManager:
         )
         scene_classify_thread.start()
         self.threads.append(scene_classify_thread)
+
+        # === 启动 DQN 推理线程 ===
+        dqn_thread = threading.Thread(
+            target=self.start_dqn_inference_loop,
+            name="DQN-Inference-Thread",
+            daemon=True
+        )
+        dqn_thread.start()
+        self.threads.append(dqn_thread)
         
         print("[服务启动] 所有服务已启动")
         
@@ -195,16 +388,28 @@ class ApplicationManager:
         # 启动服务
         self.start_services()
         
-        # 延迟启动Scene请求（模拟）
-        request_thread = threading.Thread(
-            target=self.delayed_scene_request,
-            args=(10,),
-            name="Delayed-Request-Thread",
+        # 延迟启动Scene请求（模拟）- change to DQN trigger
+        # request_thread = threading.Thread(
+        #     target=self.delayed_scene_request,
+        #     args=(10,),
+        #     name="Delayed-Request-Thread",
+        #     daemon=True
+        # )
+        # request_thread.start()
+        # self.threads.append(request_thread)
+
+        app_server_thread = threading.Thread(
+            target=run_app_server,
+            kwargs={
+                "host": "0.0.0.0",
+                "port": 8002,
+            },
+            name="App-Server-Thread",
             daemon=True
         )
-        request_thread.start()
-        self.threads.append(request_thread)
-        
+        app_server_thread.start()
+        self.threads.append(app_server_thread)
+
         print("=== 应用启动完成 ===")
         
     def stop(self):

@@ -140,7 +140,7 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
             self.log_message("POST /update-recommendation - 500 - Error: %s", str(e))
 
 
-def run_server(host="0.0.0.0", port=8080):
+def run_server(host="0.0.0.0", port=8002):
     """启动HTTP服务器"""
     server_address = (host, port)
     httpd = HTTPServer(server_address, HTTPRequestHandler)

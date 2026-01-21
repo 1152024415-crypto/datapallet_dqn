@@ -39,7 +39,7 @@ import torch.optim as optim
 from torch.utils.tensorboard import SummaryWriter
 
 # Local imports
-from aod_env_v3 import (
+from dqn_engine.aod_env_v3 import (
     AODRecommendationEnv,
     ALL_ACTIONS,
     PROBE_ACTIONS,
