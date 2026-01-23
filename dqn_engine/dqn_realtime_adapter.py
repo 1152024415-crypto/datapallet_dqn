@@ -115,6 +115,7 @@ class DQNEngineAdapter:
             LocationType.STREET: self._safe_index(LOCATIONS, "Street"),
             LocationType.HOME: self._safe_index(LOCATIONS, "other"),
             LocationType.COMMERCIAL: self._safe_index(LOCATIONS, "other"),
+            LocationType.Research_Institution: self._safe_index(LOCATIONS, "Work"),
         }
 
         # 3. Scene 映射 (对应 constants.SCENES)
