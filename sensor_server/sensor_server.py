@@ -24,7 +24,7 @@ from pathlib import Path
 import struct
 import urllib.parse
 import glob
-from datapallet.enums import LightIntensity, SoundIntensity, ActivityMode
+from datapallet.enums import LightIntensity, SoundIntensity, ActivityMode, LocationType
 
 _on_get_sensor_data_callback = None
 
@@ -70,6 +70,9 @@ AR_MAPPING = {
     "AR_FAST_WALK": ActivityMode.BRISK_WALKING,
 
     "AR_ACTIVITY_ELEVATOR": ActivityMode.ELEVATOR,
+}
+LOCATION_MAPPING = {
+    "科研机构": LocationType.Research_Institution,
 }
 
 def delayed_call(delay_seconds):
@@ -706,9 +709,13 @@ def parse_gnss_data(data):
     location_type = data.get("poi_type", "")
     location_type_last = location_type.split(";")[-1] if location_type else ""
     
+    location_type_value = LOCATION_MAPPING.get(location_type_last, "")
+    if not location_type_value:
+        print(f"no suitable location data in {data}")
+
     _last_result = { # 含义上可能不太对应，后续可以改下
         "Specific address": specific_address,
-        "Location type": location_type_last,
+        "Location type": location_type_value,
         "Longitude": longitude,
         "Latitude": latitude
     }

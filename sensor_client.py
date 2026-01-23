@@ -2,7 +2,7 @@ import requests
 import json
 
 # 服务器地址和端口
-server_url = "http://127.0.0.1:8100"
+server_url = "http://127.0.0.1:8000"
 
 # 第一组数据
 data1 = [
@@ -25,7 +25,7 @@ data1 = [
 
 # 第二组数据
 data2 = [
-    {'gnss': 'gps', 'duration': 1, 'timestamp': '2000-0-0 0:0:0', 'data': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]},
+    {'gnss': 'gps', 'duration': 1, 'timestamp': '2026-1-23 2:54:9', 'data': [268271208, -5290, 996247322, -908, 11556342, 25646, -4672, 12124384, 3961, 3463, 13472, 48421, 90472, 255]},
     {'audio': 'noise', 'duration': 1, 'timestamp': '2000-0-0 0:0:0', 'data': 0}
 ]
 

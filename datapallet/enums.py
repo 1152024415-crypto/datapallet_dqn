@@ -148,6 +148,7 @@ class LocationType(IntEnum):
     ATTRACTION = 19              # 旅游景点
     PARK = 20                    # 公园
     STREET = 21                  # 街道
+    Research_Institution = 22    # 科研机构
 
 # 添加字符串方法
 LocationType = add_string_methods(LocationType, {
@@ -173,6 +174,7 @@ LocationType = add_string_methods(LocationType, {
     LocationType.ATTRACTION: "旅游景点",
     LocationType.PARK: "公园",
     LocationType.STREET: "街道",
+    LocationType.Research_Institution: "科研机构",
 })
 
 
