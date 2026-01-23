@@ -162,13 +162,19 @@ class DQNEngineAdapter:
         if elapsed > 60: elapsed = 1.0
 
         # 2. 获取数据
-        _, raw_act = dp.get("activity_mode")
-        _, raw_loc = dp.get("Location")
-        success, raw_scene = dp.get("Scene")
-        _, raw_light = dp.get("Light_Intensity")
+        success_act, raw_act = dp.get("activity_mode", only_valid=True)
+        success_loc, raw_loc = dp.get("Location", only_valid=True)
+        success_scene, raw_scene = dp.get("Scene", only_valid=True)
+        success_light, raw_light = dp.get("Light_Intensity", only_valid=True)
+        if not success_act: raw_act = ActivityMode.NULL
+        if not success_loc: raw_loc = LocationType.NULL
+        if not success_scene: raw_scene = SceneType.NULL
+        if not success_light: raw_light = LightIntensity.NULL
 
-        # 提取枚举值用于显示
-        display_act = raw_act[1] if isinstance(raw_act, tuple) else raw_act
+        display_act = raw_act
+        if isinstance(raw_act, tuple):
+            raw_act = raw_act[1]
+            display_act = raw_act
 
         raw_scene_enum = SceneType.NULL
         if hasattr(raw_scene, 'scene_type'):

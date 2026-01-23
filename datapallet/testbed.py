@@ -93,8 +93,8 @@ class TestBed:
             self.connect_datapallet(datapallet)
 
         self.scene_value = None  # 存储Scene值
-        self.scene_event = threading.Event()  # 用于等待Scene数据
-        self.scene_timeout = 30.0  # 阻塞超时时间
+        # self.scene_event = threading.Event()  # 用于等待Scene数据 comment by c00894262
+        # self.scene_timeout = 30.0  # 阻塞超时时间 comment by c00894262
     
     def connect_datapallet(self, datapallet):
         """连接到数据托盘"""
@@ -357,6 +357,8 @@ class TestBed:
         # 如果有Scene值，直接返回
             if self.scene_value is not None:
                 return True, self.scene_value
+            else: # 移除了Scene的自动触发拍照逻辑，非最优方案....返回None让dp没数据
+                return False, None
             
             # 启动一个新线程来触发回调，不阻塞当前线程
             if _on_image_request_callback and self.scene_value is None:
@@ -418,7 +420,7 @@ class TestBed:
             self.current_state["Scene"] = value
         
         # 设置事件，唤醒等待的线程
-        self.scene_event.set()
+        # self.scene_event.set() comment by c00894262
         
     def get_all_latest_data(self) -> Dict[str, Any]:
         """获取所有最新的数据"""
