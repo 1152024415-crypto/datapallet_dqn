@@ -35,7 +35,6 @@ from dqn_engine.constants import (
     ID_TO_ACTION,
     Gate,
     TruthStep,
-    _fmt_hhmm,
 )
 from dqn_engine.aod_env_v3 import AODRecommendationEnv
 
@@ -166,7 +165,7 @@ def _map_scene(raw: Any) -> str:
 
 def _map_light(raw: Any) -> str:
     mapping = {
-        "moderate_brightness": "moderate",
+        "moderate": "moderate",
         "bright": "bright",
         "dim": "dim",
         "dark": "extremely_dark",
@@ -342,11 +341,16 @@ class AODDemoEnv(AODRecommendationEnv):
         self.episode_steps = min(self.episode_steps, len(self._day))
 
         # Reset observation state
-        self._loc_obs = self.unknown_loc
+        if self.loc_always_available:
+            self._loc_obs = self._day[self._t].loc
+        else:
+            self._loc_obs = self.unknown_loc
         self._scene_obs = self.unknown_scene
         self._sound_obs = self._day[self._t].sound
         self._light_obs = self._day[self._t].light
         self._age_loc = self._age_scene = self._age_sound = self._age_light = 999
+        if self.loc_always_available:
+            self._age_loc = 0
         self._age_sound = 0
         self._age_light = 0
         self._loc_hist = [(0, 0)] * (self.history_len + 1)
@@ -355,6 +359,9 @@ class AODDemoEnv(AODRecommendationEnv):
         self._last_scene_value = None
         self._loc_run_dur = 0
         self._scene_run_dur = 0
+        self._walk_run_secs = 0
+        self._stationary_secs = 0
+        self._last_tod_s = None
         self._update_observed_history()
 
         for k in self.gates:
