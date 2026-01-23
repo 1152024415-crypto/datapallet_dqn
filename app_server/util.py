@@ -14,7 +14,7 @@ import os
 from io import BytesIO
 
 
-def image_to_base64(image_path, size=(120, 120)):
+def image_to_base64(image_path, size=(480, 480)):
     """
     将图片文件转换为base64 data URL
 

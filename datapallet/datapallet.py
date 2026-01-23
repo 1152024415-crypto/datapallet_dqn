@@ -187,19 +187,25 @@ class DataPallet:
                 value = (previous_value, value)
             # 对于Scece，确保值是SceneData类型
             elif data_id == "Scene":
+                print(f"[Debug-2] DataPallet 接收到 Key='{data_id}'")
+                print(f"[Debug-2] 原始 Value: {value}")
                 # 如果value已经是SceneData对象，直接使用
                 if isinstance(value, SceneData):
-                    pass  # 已经是SceneData，不需要转换
+                    print(f"[Debug-2] 已是 SceneData 对象: {value.scene_type}")
+                    # pass  # 已经是SceneData，不需要转换
                 # 如果value是字典，使用from_dict转换
                 elif isinstance(value, dict):
                     value = SceneData.from_dict(value)
+                    print(f"[Debug-2] 字典转为 SceneData 成功: {value.scene_type}")
                 # 如果value是整数或SceneType，转换为SceneData
                 elif isinstance(value, int) or isinstance(value, SceneType):
                     scene_type = SceneType(value) if isinstance(value, int) else value
                     value = SceneData.from_scene_type(scene_type)
+                    print(f"[Debug-2] 枚举/整数转为 SceneData: {value.scene_type}")
                 else:
                     # 其他情况，创建默认的SceneData
                     value = SceneData.from_scene_type(SceneType.NULL)
+                    print(f"[Debug-2] 无法识别的数据类型，重置为 NULL")
             
             # 创建新的数据项
             data_item = DataItem(

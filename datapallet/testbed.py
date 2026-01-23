@@ -442,24 +442,35 @@ class TestBed:
             }
 
     def receive_and_transmit_data(self, data_id: str, value: Any, timestamp: datetime):
-            """
-            接收数据并透传给datapallet
-            
-            Args:
-                data_id: 数据ID
-                value: 数据值
-                timestamp: 时间戳
-            """
+        """
+        接收数据并透传给datapallet
+        """
+        # 1. 统一更新本地状态 (TestBed State)
+        # 如果是 Scene，还需要做对象转换
+        data_to_send = value
 
-            # 如果是Scene数据，设置事件
-            if data_id == "Scene":
-                scene_data = SceneData(scene_type = value['scene_type'], image_path = value['image_path'])
-                self.update_scene_value(scene_data)
+        if data_id == "Scene":
+            # 兼容 value 可能是 dict 或 SceneData 对象
+            if isinstance(value, dict):
+                scene_data = SceneData(
+                    scene_type=value.get('scene_type'),
+                    image_path=value.get('image_path')
+                )
             else:
-                # 直接调用send_data方法发送数据到datapallet
-                with self.lock:
-                    self.current_state[data_id] = value
-                self.send_data(data_id, value, timestamp)
+                scene_data = value
+
+            # 更新 TestBed 内部状态 (用于唤醒阻塞线程)
+            self.update_scene_value(scene_data)
+
+            # 准备发送给 DataPallet 的数据
+            data_to_send = scene_data
+        else:
+            with self.lock:
+                self.current_state[data_id] = value
+
+        # 2. 【关键修复】无论是什么数据，必须发送给 DataPallet
+        print(f"[TestBed] 透传数据给 DataPallet: ID={data_id}")
+        self.send_data(data_id, data_to_send, timestamp)
 
 # ==================== 工具函数 ====================
 

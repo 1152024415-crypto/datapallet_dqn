@@ -125,9 +125,12 @@ class DQNEngineAdapter:
     def update_and_predict(self, dp: DataPallet) -> str:
         _, raw_act = dp.get("activity_mode")
         _, raw_loc = dp.get("Location")
-        _, raw_scene = dp.get("Scence")
+        # raw_loc = "Work"
+        success, raw_scene = dp.get("Scene")
         _, raw_light = dp.get("Light_Intensity")
-
+        print(f"[Debug-3] dp.get('Scene') -> Success: {success}, Value: {raw_scene}")
+        if hasattr(raw_scene, 'scene_type'):
+            print(f"[Debug-3] SceneData.scene_type: {raw_scene.scene_type}")
         display_act = raw_act
         if isinstance(raw_act, tuple):
             raw_act = raw_act[1]
@@ -138,6 +141,9 @@ class DQNEngineAdapter:
             raw_scene = raw_scene.scene_type
         else:
             display_scene = raw_scene
+
+        mapped_scene_idx = self._map_val("scene", raw_scene)
+        print(f"[Debug-3] 映射结果: Enum={raw_scene} -> DQN_Index={mapped_scene_idx}")
 
         new_indices = {
             "act": self._map_val("act", raw_act),

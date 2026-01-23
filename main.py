@@ -52,7 +52,7 @@ class ApplicationManager:
         sType = scene_val.scene_type if isinstance(scene_val, SceneData) else scene_val
 
         mapping = {
-            SceneType.MEETINGROOM: "work",
+            SceneType.MEETINGROOM: "meetingroom",
             SceneType.WORKSPACE: "work",
             SceneType.DINING: "food",
             SceneType.OUTDOOR_PARK: "transportation",
@@ -60,13 +60,13 @@ class ApplicationManager:
             SceneType.OTHER: "home",
             SceneType.NULL: "unknown"
         }
-        return mapping.get(sType, "work")
+        return mapping.get(sType, "meetingroom")
 
     def send_to_app_server(self, action_name: str):
         action_type = "probe" if action_name in PROBE_ACTIONS else "recommend"
         current_time = int(time.time())
 
-        success, scene_val = self.dp.get("Scence")
+        success, scene_val = self.dp.get("Scene")
         scene_category = self._map_scene_to_category(scene_val)
 
         image_data = None
@@ -76,9 +76,12 @@ class ApplicationManager:
                 raw_path = scene_val.image_path
                 if raw_path and not os.path.isabs(raw_path):
                     base_dir = os.path.dirname(os.path.abspath(__file__))
+                    filename = os.path.basename(raw_path)
                     possible_paths = [
                         raw_path,
                         os.path.join(base_dir, raw_path),
+                        os.path.join(base_dir, "destineData", filename),
+                        os.path.join(base_dir, "destineData", raw_path),
                         os.path.join(base_dir, "datapallet", raw_path),
                         os.path.join(base_dir, "sceneclassify", raw_path)
                     ]
@@ -161,6 +164,8 @@ class ApplicationManager:
             scene_data = self.process_scene_data(img_path, img_timestamp)
             if self.tb:
                 self.tb.receive_and_transmit_data("Scene", scene_data, img_timestamp)
+            print("[Callback] 正在将新图片推送到 APP...")
+            self.send_to_app_server("QUERY_VISUAL")
                 
         set_upload_complete_callback(on_upload_complete)
         
@@ -236,13 +241,13 @@ class ApplicationManager:
     def start_dqn_inference_loop(self):
         print("[DQN] 启动推理线程...")
         while self.running:
-            is_event_triggered = self.inference_trigger_event.wait(timeout=10.0)
+            is_event_triggered = self.inference_trigger_event.wait(timeout=5.0)
 
             if is_event_triggered:
                 print("[DQN] 触发源: 姿态变化")
                 self.inference_trigger_event.clear()
             else:
-                print("[DQN] 触发源: 定时周期 (10s)")
+                print("[DQN] 触发源: 定时周期 (5s)")
                 pass
 
             if self.dqn_engine and self.dp:

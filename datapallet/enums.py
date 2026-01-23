@@ -293,7 +293,7 @@ def to_str(data_id: str, value: Any) -> str:
         return SoundIntensity.to_string(value) # type: ignore
     elif data_id == "Location":
         return LocationType.to_string(value) # type: ignore
-    elif data_id == "Scence":
+    elif data_id == "Scene":
         # 处理SceneData或SceneType
         if isinstance(value, SceneData):
             # 对于SceneData，返回包含图像信息的字符串
@@ -332,7 +332,7 @@ def from_str(data_id: str, value: Any) -> Any:
     elif data_id == "Location":
         if isinstance(value, str):
             return LocationType.from_string(value) # type: ignore
-    elif data_id == "Scence":
+    elif data_id == "Scene":
         if isinstance(value, str):
             return SceneType.from_string(value) # type: ignore
     
