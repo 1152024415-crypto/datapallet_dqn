@@ -17,12 +17,9 @@ Key properties:
 
 from __future__ import annotations
 from typing import Dict, List, Tuple, Optional, Any
+from logging import Logger
 from types import SimpleNamespace
-from collections import Counter
-from copy import deepcopy
-from datetime import datetime
 import json
-import csv
 import os
 
 import numpy as np
@@ -48,82 +45,6 @@ from dqn_engine.constants import (
     EVAL_EPISODES,
 )
 
-def _attach_recent_history(steps: List[Any], history_len: int = 3) -> List[Any]:
-    """
-    Transition-based history for act/loc/scene/light.
-
-    For each attribute:
-      - Track segments (runs where id constant).
-      - For current segment at time i: duration = step.<dur> (from file)  [0,1,2,...]
-      - For *ended* segments: duration = final length of that segment (fixed)
-
-    History order: [current_segment, prev_segment, prev2, prev3]
-    If fewer segments exist: pad with (0, 0).
-    """
-    if not steps:
-        return steps
-
-    PAD: Tuple[int, int] = (0, 0)
-
-    def _hist_for(attr_id: str, attr_dur: str) -> List[List[Tuple[int, int]]]:
-        out: List[List[Tuple[int, int]]] = []
-
-        # ended segments in chronological order: [(id, final_len), ...]
-        ended: List[Tuple[int, int]] = []
-
-        cur_id: Optional[int] = None
-        cur_last_dur: int = 0
-
-        for i, step in enumerate(steps):
-            sid = int(getattr(step, attr_id, 0) or 0)
-            sdur = int(getattr(step, attr_dur, 0) or 0)
-
-            if cur_id is None:
-                cur_id = sid
-                cur_last_dur = sdur
-            elif sid != cur_id:
-                # finalize previous segment (0-based dur => length = last_dur + 1)
-                ended.append((int(cur_id), int(cur_last_dur) + 1))
-                cur_id = sid
-                cur_last_dur = sdur
-            else:
-                cur_last_dur = sdur
-
-            hist: List[Tuple[int, int]] = [(int(cur_id), int(cur_last_dur))]
-            # append last ended segments (most recent first)
-            for seg in reversed(ended[-(history_len - 1):]):
-                hist.append(seg)
-
-            if len(hist) < history_len:
-                hist.extend([PAD] * (history_len - len(hist)))
-
-            out.append(hist)
-
-        return out
-
-    act_hist = _hist_for("act", "act_dur")
-    loc_hist = _hist_for("loc", "loc_dur")
-    scene_hist = _hist_for("scene", "scene_dur")
-    light_hist = _hist_for("light", "light_dur")
-
-    for i, step in enumerate(steps):
-        step.activities = act_hist[i]
-        step.locations = loc_hist[i]
-        step.scenes = scene_hist[i]
-        step.lights = light_hist[i]
-
-    return steps
-
-
-def log_step_with_history(step, idx: int | None = None, logger: Logger = None):
-    prefix = f"[step {idx}] " if idx is not None else ""
-    logger.info(prefix + f"t={step.t}")
-    logger.info(f"  act   : id={step.act}, dur={step.act_dur}, hist={step.activities}")
-    logger.info(f"  loc   : id={step.loc}, dur={step.loc_dur}, hist={step.locations}")
-    logger.info(f"  scene : id={step.scene}, dur={step.scene_dur}, hist={step.scenes}")
-    logger.info(f"  light : id={step.light}, dur={step.light_dur}, hist={step.lights}")
-    logger.info(f"  gt    : {step.gt_id}")
-
 def _parse_hhmmss_to_seconds(s: Any) -> int:
     """
     "08:00:10" -> 28810
@@ -139,10 +60,7 @@ def generate_day(
     rng: Optional[np.random.Generator] = None,
     day_id: int = 0,
     logger=None,
-    history_len: int = 0,
-    # jsonl_dir: str = "trajectories",
-    jsonl_dir: str = "/home/mohan/SFM/SFM_HQ_demo/10k_demo_samples_1sec_inteval_split"
-    # jsonl_dir: str = "/data/richie/traj_v5"
+    jsonl_dir: str = "trajectories"
 ) -> List["TruthStep"]:
     """
     Loads one jsonl file (day_id selects file in directory) with format:
@@ -280,11 +198,11 @@ def generate_day(
         step.scene = scene
         step.light = light
 
-        # durations from jsonl (already correct per-step)
-        step.act_dur = int(rec.get("activity_dur", 0) or 0)
-        step.loc_dur = int(rec.get("location_dur", 0) or 0)
-        step.scene_dur = int(rec.get("scene_dur", 0) or 0)
-        step.light_dur = int(rec.get("light_dur", 0) or 0)
+        # durations from jsonl: support activity_duration (CLIP10K) or activity_dur
+        step.act_dur = int(rec.get("activity_duration") or rec.get("activity_dur", 0) or 0)
+        step.loc_dur = int(rec.get("location_duration") or rec.get("location_dur", 0) or 0)
+        step.scene_dur = int(rec.get("scene_duration") or rec.get("scene_dur", 0) or 0)
+        step.light_dur = int(rec.get("light_duration") or rec.get("light_dur", 0) or 0)
 
         step.sound = normal_sound
 
@@ -309,9 +227,6 @@ def generate_day(
     # Sort by actual time-of-day seconds (or by step_idx if you prefer)
     steps.sort(key=lambda s: int(getattr(s, "tod_s", getattr(s, "t", 0)) or 0))
 
-    # Attach transition history for truth activities/lights (loc/scene handled by env observation)
-    steps = _attach_recent_history(steps, history_len=history_len+1)
-
     return steps
 
 
@@ -320,10 +235,7 @@ def generate_day_v2(
     rng: Optional[np.random.Generator] = None,
     day_id: int = 0,
     logger=None,
-    history_len: int = 0,
-    # jsonl_dir: str = "trajectories",
-    # jsonl_dir: str = "/home/richie/SFM_demo_HQ/tracj_jsonl"
-    jsonl_dir: str = "/home/mohan/SFM/SFM_HQ_demo/10k_demo_samples_1sec_inteval_split",
+    jsonl_dir: str = "10k_demo_individual_samples_1sec_with_gt_probes_interval_split",
     jsonl_path: Optional[str] = None,
 ) -> List["TruthStep"]:
     """
@@ -348,8 +260,11 @@ def generate_day_v2(
     elif jsonl_dir and os.path.isfile(jsonl_dir):
         chosen_jsonl_path = str(jsonl_dir)
     else:
+        # chosen_jsonl_path = os.path.join(
+        #     jsonl_dir, f"traj_{day_id:05d}_DEMO10K_R_{day_id:05d}.jsonl"
+        # )
         chosen_jsonl_path = os.path.join(
-            jsonl_dir, f"traj_{day_id:05d}_DEMO10K_R_{day_id:05d}.jsonl"
+            jsonl_dir, f"CLIP10K_{day_id:05d}.jsonl"
         )
 
     # -------- load jsonl --------
@@ -431,6 +346,7 @@ def generate_day_v2(
         return mapping.get(_normalize(raw), "moderate")
 
     def _map_gt_action(raw: Any) -> str:
+
         mapping = {
             "none": "NONE",
             "aod_steps": "step_count",
@@ -439,6 +355,8 @@ def generate_day_v2(
             "open_music": "Play Music/news",
             "open_news": "Play Music/news",
             "relaxation": "relax",
+            "query_visual": "QUERY_VISUAL",
+            "query_loc_gps": "QUERY_LOC_GPS",
         }
         
         return mapping.get(_normalize(raw), "NONE")
@@ -470,11 +388,11 @@ def generate_day_v2(
         step.scene = scene
         step.light = light
 
-        # durations from jsonl (already correct per-step)
-        step.act_dur = int(rec.get("activity_dur", 0) or 0)
-        step.loc_dur = int(rec.get("location_dur", 0) or 0)
-        step.scene_dur = int(rec.get("scene_dur", 0) or 0)
-        step.light_dur = int(rec.get("light_dur", 0) or 0)
+        # durations from jsonl: support activity_duration (CLIP10K) or activity_dur
+        step.act_dur = int(rec.get("activity_duration") or rec.get("activity_dur", 0) or 0)
+        step.loc_dur = int(rec.get("location_duration") or rec.get("location_dur", 0) or 0)
+        step.scene_dur = int(rec.get("scene_duration") or rec.get("scene_dur", 0) or 0)
+        step.light_dur = int(rec.get("light_duration") or rec.get("light_dur", 0) or 0)
 
         step.sound = normal_sound
 
@@ -500,9 +418,6 @@ def generate_day_v2(
     steps.sort(key=lambda s: int(getattr(s, "tod_s", getattr(s, "t", 0)) or 0))
     
 
-    # Attach transition history for truth activities/lights (loc/scene handled by env observation)
-    steps = _attach_recent_history(steps, history_len=history_len+1)
-
     return steps
 
 # ============================================================================
@@ -524,19 +439,19 @@ class AODRecommendationEnv:
         gate_reset_hysteresis_min: int = 3,
         seed: int = 0,
         r_success: float = 1.0,
-        r_wrong: float = -2.0,
+        r_wrong: float = -1.0,
         r_miss: float = -1.0,
         r_delay: float = 0,  # Increased from -0.01 to encourage action
         r_redundant: float = 0,
-        history_len: int = 0,
         loc_always_available: bool = False,
+        include_act_light_changed: int = 0,
         jsonl_dir: Optional[str] = None,
         jsonl_path: Optional[str] = None,
     ):
         configure_loc_always_available(bool(loc_always_available))
         self.episode_steps = int(episode_steps)
         self.loc_always_available = bool(loc_always_available)
-        
+        self.include_act_light_changed = int(include_act_light_changed)
         # Reliability and gate settings
         self.reliability = float(reliability)
         self.reset_hyst = int(gate_reset_hysteresis_min)
@@ -563,11 +478,6 @@ class AODRecommendationEnv:
         self.n_sound = len(SOUND_LEVELS)
         self.n_light = len(LIGHT_LEVELS)
         
-        # self.unknown_loc = self.n_loc
-        # self.unknown_scene = self.n_scene
-        # self.unknown_sound = self.n_sound
-        # self.unknown_light = self.n_light
-
         self.unknown_loc = 0
         self.unknown_scene = 0
         self.unknown_sound = 0
@@ -575,23 +485,26 @@ class AODRecommendationEnv:
         
         # Observation vector (must match `_make_obs` exactly):
         # - time: 2
-        # - activity history (t..t-3): 4 * (n_act + 1)
-        # - location history (t..t-3): 4 * (n_loc + 1)
-        # - light history (t..t-3): 4 * (n_light + 1)
-        # - scene history (t..t-3): 4 * (n_scene + 1)
+        # - activity id + dur: n_act + 1
+        # - location id + age: n_loc + 1
+        # - light id + dur: n_light + 1
+        # - scene id + age: n_scene + 1
         # - walk/run >= 60s flag: 1
-        # - stationary >= 600s flag: 1
-        self.history_len = history_len
+        # - stationary >= 60s at Work flag: 1
+        # - activity or light changed (vs previous step): 1
         self.jsonl_dir = jsonl_dir
         self.jsonl_path = jsonl_path
         self.obs_dim = (
             2
-            + (self.history_len+1) * (self.n_act + 1)
-            + (self.history_len+1) * (self.n_loc + 1)
-            + (self.history_len+1) * (self.n_light + 1)
-            + (self.history_len+1) * (self.n_scene + 1)
+            + (self.n_act + 1)
+            + (self.n_loc + 1)
+            + (self.n_light + 1)
+            + (self.n_scene + 1)
             + 2
         )
+        
+        if self.include_act_light_changed:
+            self.obs_dim += 1
 
         self.action_n = len(ALL_ACTIONS)
         
@@ -609,16 +522,12 @@ class AODRecommendationEnv:
         self._age_scene = 999
         self._age_sound = 999
         self._age_light = 999
-        self._loc_hist: List[Tuple[int, int]] = [(0, 0)] * (self.history_len+1)
-        self._scene_hist: List[Tuple[int, int]] = [(0, 0)] * (self.history_len+1)
-        self._last_loc_value: Optional[int] = None
-        self._last_scene_value: Optional[int] = None
-        self._loc_run_dur = 0
-        self._scene_run_dur = 0
         self._walk_run_secs = 0
         self._stationary_secs = 0
         self._last_tod_s: Optional[int] = None
-        
+        self._last_act: Optional[int] = None
+        self._last_light: Optional[int] = None
+
         # Gate state
         self.gates: Dict[str, Gate] = {k: Gate() for k in PRIORITY}
         self.stats: Dict[str, float] = {}
@@ -649,8 +558,7 @@ class AODRecommendationEnv:
             rng=self._rng,
             day_id=day_id,
             logger=logger,
-            history_len=self.history_len,
-            jsonl_dir=self.jsonl_dir or "/home/mohan/SFM/SFM_HQ_demo/10k_demo_samples_1sec_inteval_split",
+            jsonl_dir=self.jsonl_dir or "10k_demo_individual_samples_1sec_with_gt_probes_interval_split",
             jsonl_path=self.jsonl_path,
         )
 
@@ -672,16 +580,12 @@ class AODRecommendationEnv:
             self._age_loc = 0
         self._age_sound = 0
         self._age_light = 0
-        self._loc_hist = [(0, 0)] * (self.history_len+1)
-        self._scene_hist = [(0, 0)] * (self.history_len+1)
-        self._last_loc_value = None
-        self._last_scene_value = None
-        self._loc_run_dur = 0
-        self._scene_run_dur = 0
         self._walk_run_secs = 0
         self._stationary_secs = 0
         self._last_tod_s = None
-        self._update_observed_history()
+        if self.include_act_light_changed:
+            self._last_act = None
+            self._last_light = None
 
         # Reset gates
         for k in self.gates:
@@ -722,17 +626,32 @@ class AODRecommendationEnv:
         if invoke:
             if action in PROBE_ACTIONS:
                 # Probe action: cost and update observation
-                c = PROBE_COST[action]
-                reward -= c
-                self.stats["sensor_cost"] += c
-                
-                self._apply_probe(action, truth)
-                
-                # Track this probe for potential future reward
-                self._recent_probes.append((0, action))
-                
-                reward += self.r_miss
-                self.stats["miss"] += 1.0
+                # if oracle_action in PROBE_ACTIONS:
+                #     print(f"Probe: {action} {oracle_action}!!!!!!!!!!!1")
+                if action == oracle_action:
+                    reward += self.r_success
+                    self.stats["success"] += 1. 
+
+                    print(f"Success: {action} {oracle_action}")
+
+                    self._apply_probe(action, truth)
+
+                    # Track this probe for potential future reward
+                    self._recent_probes.append((0, action))
+                else:
+                    # reward += self.r_wrong
+                    # self.stats["wrong"] += 1.0
+                    c = PROBE_COST[action]
+                    reward -= c
+                    self.stats["sensor_cost"] += c
+                    
+                    self._apply_probe(action, truth)
+                    
+                    # Track this probe for potential future reward
+                    self._recent_probes.append((0, action))
+                    
+                    reward += self.r_miss
+                    self.stats["miss"] += 1.0
             else:
                 # Recommend action: check against oracle
                 if oracle_action == "NONE":
@@ -787,7 +706,6 @@ class AODRecommendationEnv:
         if self.loc_always_available:
             self._loc_obs = next_truth.loc
 
-        self._update_observed_history()
         obs = self._make_obs(next_truth)
 
         return obs, float(reward), terminated, truncated, {"profile": self._profile.name, "oracle": oracle_action}
@@ -811,14 +729,6 @@ class AODRecommendationEnv:
 
     def _make_obs(self, truth: TruthStep) -> np.ndarray:
         """Construct observation vector from truth step."""
-        def _encode_history(pairs: List[Tuple[int, int]], size: int, max_dur: int) -> List[float]:
-            encoded: List[float] = []
-            for idx, dur in pairs[:self.history_len+1]:
-                encoded.extend(self._one_hot(idx, size).tolist())
-                encoded.append(float(min(dur, max_dur)) / float(max_dur))
-                # encoded.append(float(dur))
-            return encoded
-
         time_sin, time_cos = self._time_features(truth.t)
         walk_act_ids = {
             ACTIVITIES.index("slow walk"),
@@ -827,80 +737,55 @@ class AODRecommendationEnv:
         }
         stationary_id = ACTIVITIES.index("stationary")
 
-        if self.history_len > 0:
-            act_hist = _encode_history(truth.activities, self.n_act, 180 * 60)
-            light_hist = _encode_history(truth.lights, self.n_light, 180 * 60)
-            loc_hist = _encode_history(self._loc_hist, self.n_loc, 180 * 60)
-            scene_hist = _encode_history(self._scene_hist, self.n_scene, 180 * 60)
-            cur_act_id = int(truth.activities[0][0]) if truth.activities else int(truth.act)
-            cur_act_dur = int(truth.activities[0][1]) if truth.activities else int(truth.act_dur)
-            step_seconds = 1
-            if self._last_tod_s is not None:
-                step_seconds = max(1, int(truth.t - self._last_tod_s))
-            self._last_tod_s = int(truth.t)
+        act_hist = self._one_hot(truth.act, self.n_act)
+        act_dur = min(truth.act_dur, 180) / (180.0)
+        step_seconds = 1
+        if self._last_tod_s is not None:
+            step_seconds = max(1, int(truth.t - self._last_tod_s))
+        self._last_tod_s = int(truth.t)
 
-            if cur_act_id in walk_act_ids:
-                self._walk_run_secs += step_seconds
-            else:
-                self._walk_run_secs = 0
-
-            if cur_act_id == stationary_id:
-                self._stationary_secs += step_seconds
-            else:
-                self._stationary_secs = 0
-
-            walk_run_flag = 1.0 if self._walk_run_secs >= 60 else 0.0
-            relax_flag = 1.0 if self._stationary_secs >= 600 else 0.0
-
-            obs = np.concatenate([
-                np.array([time_sin, time_cos], dtype=np.float32),
-                np.array(act_hist, dtype=np.float32),
-                np.array(loc_hist, dtype=np.float32),
-                np.array(light_hist, dtype=np.float32),
-                np.array(scene_hist, dtype=np.float32),
-                np.array([walk_run_flag, relax_flag], dtype=np.float32),
-            ]).astype(np.float32)
-
+        if truth.act in walk_act_ids:
+            self._walk_run_secs += step_seconds
         else:
-            act_hist = self._one_hot(truth.act, self.n_act)
-            act_dur = min(truth.act_dur, 180 * 60) / (180.0 * 60)
-            step_seconds = 1
-            if self._last_tod_s is not None:
-                step_seconds = max(1, int(truth.t - self._last_tod_s))
-            self._last_tod_s = int(truth.t)
+            self._walk_run_secs = 0
 
-            if truth.act in walk_act_ids:
-                self._walk_run_secs += step_seconds
-            else:
-                self._walk_run_secs = 0
+        if truth.act == stationary_id:
+            self._stationary_secs += step_seconds
+        else:
+            self._stationary_secs = 0
 
-            if truth.act == stationary_id:
-                self._stationary_secs += step_seconds
-            else:
-                self._stationary_secs = 0
+        walk_run_flag = 1.0 if self._walk_run_secs >= 60 and truth.loc not in [LOCATIONS.index("Work"), LOCATIONS.index("Subway Station")] else 0.0
+        relax_flag = 1.0 if self._stationary_secs >= 60 and truth.loc == LOCATIONS.index("Work") else 0.0
+        flags = [walk_run_flag, relax_flag]
+        if self.include_act_light_changed:
+            act_light_changed = 1.0 if (
+                (self._last_act is not None and truth.act != self._last_act)
+                or (self._last_light is not None and truth.light != self._last_light)
+            ) else 0.0
+            self._last_act = truth.act
+            self._last_light = truth.light
+            flags.append(act_light_changed)
 
-            walk_run_flag = 1.0 if self._walk_run_secs >= 60 else 0.0
-            relax_flag = 1.0 if self._stationary_secs >= 600 else 0.0
-            light_hist = self._one_hot(truth.light, self.n_light)
-            light_dur = min(truth.light_dur, 180 * 60) / (180.0 * 60)
+        light_hist = self._one_hot(truth.light, self.n_light)
+        light_dur = min(truth.light_dur, 180) / 180.0
 
-            loc_hist = self._one_hot(self._loc_obs, self.n_loc)
-            loc_dur = min(self._age_loc, 180 * 60) / (180.0 * 60)
-            scene_hist = self._one_hot(self._scene_obs, self.n_scene)
-            scene_dur = min(self._age_scene, 180 * 60) / (180.0 * 60)
+        loc_hist = self._one_hot(self._loc_obs, self.n_loc)
+        loc_dur = min(self._age_loc, 180) / 180.0
+        scene_hist = self._one_hot(self._scene_obs, self.n_scene)
+        scene_dur = min(self._age_scene, 180) / 180.0
 
-            obs = np.concatenate([
-                np.array([time_sin, time_cos], dtype=np.float32),
-                np.array(act_hist, dtype=np.float32),
-                np.array([act_dur], dtype=np.float32),
-                np.array(loc_hist, dtype=np.float32),
-                np.array([loc_dur], dtype=np.float32),
-                np.array(light_hist, dtype=np.float32),
-                np.array([light_dur], dtype=np.float32),
-                np.array(scene_hist, dtype=np.float32),
-                np.array([scene_dur], dtype=np.float32),
-                np.array([walk_run_flag, relax_flag], dtype=np.float32),
-            ]).astype(np.float32)
+        obs = np.concatenate([
+            np.array([time_sin, time_cos], dtype=np.float32),
+            np.array(act_hist, dtype=np.float32),
+            np.array([act_dur], dtype=np.float32),
+            np.array(loc_hist, dtype=np.float32),
+            np.array([loc_dur], dtype=np.float32),
+            np.array(light_hist, dtype=np.float32),
+            np.array([light_dur], dtype=np.float32),
+            np.array(scene_hist, dtype=np.float32),
+            np.array([scene_dur], dtype=np.float32),
+            np.array(flags, dtype=np.float32),
+        ]).astype(np.float32)
         
         if obs.shape[0] != self.obs_dim:
             raise RuntimeError(f"obs_dim mismatch: {obs.shape[0]} vs {self.obs_dim}")
@@ -909,62 +794,6 @@ class AODRecommendationEnv:
         return obs
 
     
-
-    def _update_observed_history(self) -> None:
-        # unknown is 0 by your vocab definition
-        loc_value = 0 if self._loc_obs == self.unknown_loc else int(self._loc_obs)
-        scene_value = 0 if self._scene_obs == self.unknown_scene else int(self._scene_obs)
-
-        target_len = self.history_len + 1
-
-        # ---------- LOC ----------
-        if loc_value == 0:
-            # unknown: reset run tracking, don't push transition
-            self._last_loc_value = None
-            self._loc_run_dur = 0
-        else:
-            if self._last_loc_value is None:
-                # first known observation => start new segment
-                self._last_loc_value = loc_value
-                self._loc_run_dur = 0
-                self._loc_hist = [(loc_value, 0)] + self._loc_hist[: self.history_len]
-            elif self._last_loc_value == loc_value:
-                # same segment => increment run duration AND update head in-place
-                self._loc_run_dur += 1
-                self._loc_hist[0] = (loc_value, self._loc_run_dur)
-            else:
-                # transition => start new segment at head
-                self._last_loc_value = loc_value
-                self._loc_run_dur = 0
-                self._loc_hist = [(loc_value, 0)] + self._loc_hist[: self.history_len]
-
-        # ---------- SCENE ----------
-        if scene_value == 0:
-            self._last_scene_value = None
-            self._scene_run_dur = 0
-        else:
-            if self._last_scene_value is None:
-                self._last_scene_value = scene_value
-                self._scene_run_dur = 0
-                self._scene_hist = [(scene_value, 0)] + self._scene_hist[: self.history_len]
-            elif self._last_scene_value == scene_value:
-                self._scene_run_dur += 1
-                self._scene_hist[0] = (scene_value, self._scene_run_dur)
-            else:
-                self._last_scene_value = scene_value
-                self._scene_run_dur = 0
-                self._scene_hist = [(scene_value, 0)] + self._scene_hist[: self.history_len]
-
-        # pad/truncate to fixed length
-        if len(self._loc_hist) < target_len:
-            self._loc_hist += [(0, 0)] * (target_len - len(self._loc_hist))
-        else:
-            self._loc_hist = self._loc_hist[:target_len]
-
-        if len(self._scene_hist) < target_len:
-            self._scene_hist += [(0, 0)] * (target_len - len(self._scene_hist))
-        else:
-            self._scene_hist = self._scene_hist[:target_len]
 
 
     def _apply_probe(self, probe_action: str, truth: TruthStep) -> None:
@@ -994,12 +823,17 @@ class AODRecommendationEnv:
         r_relax = truth.gt_id == "relax"
         r_play = truth.gt_id == "Play Music/news"
 
+        r_visual = truth.gt_id == "QUERY_VISUAL"
+        r_loc = truth.gt_id == "QUERY_LOC_GPS"
+
         return {
             "TRANSIT_QR_CODE": r_transit,
             "SILENT_DND": r_silent,
             "STEP_COUNT": r_step,
             "RELAX": r_relax,
             "PLAY_MUSIC/NEWS": r_play,
+            "QUERY_VISUAL": r_visual,
+            "QUERY_LOC_GPS": r_loc,
         }
 
     def _gate_to_action(self, gate_key: str) -> str:
@@ -1010,6 +844,8 @@ class AODRecommendationEnv:
             "STEP_COUNT": "step_count",
             "RELAX": "relax",
             "PLAY_MUSIC/NEWS": "Play Music/news",
+            "QUERY_VISUAL": "QUERY_VISUAL",
+            "QUERY_LOC_GPS": "QUERY_LOC_GPS",
         }
         return mapping[gate_key]
 
@@ -1017,7 +853,10 @@ class AODRecommendationEnv:
         """Update all gates based on predicates and return oracle action."""
 
         pred = self._predicates(truth)
-        
+
+        if truth.gt_id in PROBE_ACTIONS:
+            return truth.gt_id, None
+    
         # Update gate states
         for k in PRIORITY:
             is_active = bool(pred.get(k, False))

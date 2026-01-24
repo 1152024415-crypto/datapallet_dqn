@@ -36,7 +36,7 @@ from dqn_engine.constants import (
     Gate,
     TruthStep,
 )
-from dqn_engine.aod_env_v3 import AODRecommendationEnv
+from dqn_engine.aod_env_v5 import AODRecommendationEnv
 
 
 def _fmt_hhmmss(seconds: int) -> str:
@@ -274,10 +274,11 @@ def generate_demo_steps(
         step.scene = scene_ids[i]
         step.light = light_ids[i]
         step.sound = sound_ids[i]
-        step.act_dur = act_durs[i]
-        step.loc_dur = loc_durs[i]
-        step.scene_dur = scene_durs[i]
-        step.light_dur = light_durs[i]
+        # Durations in seconds (bucket_seconds per step) to match aod_env_v5 _make_obs
+        step.act_dur = act_durs[i] * bucket_seconds
+        step.loc_dur = loc_durs[i] * bucket_seconds
+        step.scene_dur = scene_durs[i] * bucket_seconds
+        step.light_dur = light_durs[i] * bucket_seconds
 
         step.bt = 0
         step.low_density = 0
@@ -303,7 +304,8 @@ def generate_demo_steps(
 
 class AODDemoEnv(AODRecommendationEnv):
     """
-    AODRecommendationEnv variant that reads meeting.json instead of jsonl trajectories.
+    AODRecommendationEnv variant that reads meeting.json (event list) instead of jsonl.
+    Builds TruthStep sequence via generate_demo_steps and uses aod_env_v5's _make_obs.
     """
 
     def __init__(
@@ -311,12 +313,14 @@ class AODDemoEnv(AODRecommendationEnv):
         meeting_path: str,
         step_seconds: int = 10,
         bucket_seconds: int = 10,
+        history_len: int = 0,
         **kwargs: Any,
     ):
         super().__init__(**kwargs)
         self.meeting_path = str(meeting_path)
         self.step_seconds = int(step_seconds)
         self.bucket_seconds = int(bucket_seconds)
+        self.history_len = int(history_len)
 
     def reset(
         self,
@@ -340,7 +344,7 @@ class AODDemoEnv(AODRecommendationEnv):
         self._t = 0
         self.episode_steps = min(self.episode_steps, len(self._day))
 
-        # Reset observation state
+        # Reset observation state (match aod_env_v5)
         if self.loc_always_available:
             self._loc_obs = self._day[self._t].loc
         else:
@@ -353,16 +357,12 @@ class AODDemoEnv(AODRecommendationEnv):
             self._age_loc = 0
         self._age_sound = 0
         self._age_light = 0
-        self._loc_hist = [(0, 0)] * (self.history_len + 1)
-        self._scene_hist = [(0, 0)] * (self.history_len + 1)
-        self._last_loc_value = None
-        self._last_scene_value = None
-        self._loc_run_dur = 0
-        self._scene_run_dur = 0
         self._walk_run_secs = 0
         self._stationary_secs = 0
         self._last_tod_s = None
-        self._update_observed_history()
+        if self.include_act_light_changed:
+            self._last_act = None
+            self._last_light = None
 
         for k in self.gates:
             self.gates[k] = Gate(active=False, fired=False, off_counter=999)

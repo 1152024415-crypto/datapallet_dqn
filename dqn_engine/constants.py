@@ -46,6 +46,7 @@ LIGHT_LEVELS = ["unknown", "extremely_dark", "dim", "moderate", "bright", "harsh
 # Probe Actions and Costs
 LOC_ALWAYS_AVAILABLE = False
 PROBE_ACTIONS = ["QUERY_LOC_GPS", "QUERY_VISUAL"]
+# PROBE_COST = {"QUERY_LOC_GPS": 0.5, "QUERY_VISUAL": 2.00}
 PROBE_COST = {"QUERY_LOC_GPS": 0.25, "QUERY_VISUAL": 1.00}
 
 
@@ -61,6 +62,8 @@ RECOMMEND_ACTIONS = [
 
 # Scenario Priority Order (higher priority = checked first)
 PRIORITY = [
+    "QUERY_VISUAL",
+    "QUERY_LOC_GPS",
     "TRANSIT_QR_CODE",
     "SILENT_DND",
     "STEP_COUNT",
@@ -127,7 +130,7 @@ def configure_loc_always_available(loc_always_available: bool) -> None:
     ID_TO_ACTION.update({i: a for a, i in ACTION_TO_ID.items()})
 
 
-TRAJ_JSONL_DIR = os.environ.get("AOD_TRAJ_DIR", "/home/mohan/SFM/SFM_HQ_demo/10k_demo_samples_1sec_inteval_split")
+TRAJ_JSONL_DIR = os.environ.get("AOD_TRAJ_DIR", "10k_demo_individual_samples_1sec_with_gt_probes_interval_split")
 
 
 def _count_traj_files(jsonl_dir: str) -> int:

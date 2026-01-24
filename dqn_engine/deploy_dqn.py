@@ -16,9 +16,10 @@ from dqn_engine.constants import (
     LIGHT_LEVELS,
     TruthStep,
 )
-from dqn_engine.train_dqn_tensorboard_v4 import QNetwork as QNet
+from dqn_engine.train_dqn_tensorboard_v5 import QNetwork as QNet
 
-MAX_DUR_SECONDS = 180 * 60  # must match env _make_obs max_dur (seconds)
+
+MAX_DUR_SECONDS = 180  # match aod_env_v5: min(dur, 180)/180
 UNK_IDX = 0
 
 
@@ -30,11 +31,17 @@ def _fmt_time_from_seconds(seconds: int) -> str:
     return f"{h:02d}:{m:02d}:{s:02d}"
 
 
-def decode_obs(obs: np.ndarray, history_len: int, step_seconds: int) -> Dict[str, Any]:
+def decode_obs(
+    obs: np.ndarray,
+    history_len: int,
+    step_seconds: int,
+    include_act_light_changed: int = 0,
+) -> Dict[str, Any]:
     o = obs.astype(float)
     idx = 0
     time_sin, time_cos = o[idx], o[idx + 1]
     idx += 2
+    act_light_changed = None
 
     def decode_onehot(vec: np.ndarray, labels: List[str], unknown_index: int = UNK_IDX) -> str:
         j = int(np.argmax(vec))
@@ -126,13 +133,16 @@ def decode_obs(obs: np.ndarray, history_len: int, step_seconds: int) -> Dict[str
         idx += 1
         relax_flag = int(round(float(o[idx]))) if idx < len(o) else 0
         idx += 1
+        act_light_changed = int(round(float(o[idx]))) if include_act_light_changed and idx < len(o) else None
+        if include_act_light_changed and idx < len(o):
+            idx += 1
 
         act_hist = []
         loc_hist = []
         light_hist = []
         scene_hist = []
 
-    return {
+    out = {
         "time_sin": time_sin,
         "time_cos": time_cos,
         "activity": act_label,
@@ -151,25 +161,41 @@ def decode_obs(obs: np.ndarray, history_len: int, step_seconds: int) -> Dict[str
         "walk_run_flag": int(walk_run_flag),
         "relax_flag": int(relax_flag),
     }
+    if include_act_light_changed:
+        out["act_light_changed"] = act_light_changed
+    return out
+
+
+def obs_dim_aod_v5(include_act_light_changed: int = 0) -> int:
+    """Observation dim for aod_env_v5 flat obs (no history)."""
+    return (
+        2
+        + len(ACTIVITIES) + 1
+        + len(LOCATIONS) + 1
+        + len(LIGHT_LEVELS) + 1
+        + len(SCENES) + 1
+        + 2
+        + (1 if include_act_light_changed else 0)
+    )
 
 
 def obs_dim_from_history(history_len: int) -> int:
     if history_len > 0:
         return (
-                2
-                + (history_len + 1) * (len(ACTIVITIES) + 1)
-                + (history_len + 1) * (len(LOCATIONS) + 1)
-                + (history_len + 1) * (len(LIGHT_LEVELS) + 1)
-                + (history_len + 1) * (len(SCENES) + 1)
-                + 2
+            2
+            + (history_len + 1) * (len(ACTIVITIES) + 1)
+            + (history_len + 1) * (len(LOCATIONS) + 1)
+            + (history_len + 1) * (len(LIGHT_LEVELS) + 1)
+            + (history_len + 1) * (len(SCENES) + 1)
+            + 2
         )
     return (
-            2
-            + len(ACTIVITIES) + 1
-            + len(LOCATIONS) + 1
-            + len(LIGHT_LEVELS) + 1
-            + len(SCENES) + 1
-            + 2
+        2
+        + len(ACTIVITIES) + 1
+        + len(LOCATIONS) + 1
+        + len(LIGHT_LEVELS) + 1
+        + len(SCENES) + 1
+        + 2
     )
 
 
@@ -198,45 +224,45 @@ def _get_walk_relax_flags(env: Any) -> Tuple[Optional[int], Optional[int]]:
         stationary_secs = getattr(env, "_stationary_secs", None)
         if walk_run_secs is None or stationary_secs is None:
             return None, None
-        return int(walk_run_secs >= 60), int(stationary_secs >= 600)
+        return int(walk_run_secs >= 60), int(stationary_secs >= 60)
     except Exception:
         return None, None
 
 
 def _should_invoke(
-        step_idx: int,
-        interval_steps: int,
-        last_act: Optional[int],
-        last_light: Optional[int],
-        last_loc: Optional[int],
-        last_scene: Optional[int],
-        last_walk_flag: Optional[int],
-        last_relax_flag: Optional[int],
-        cur_act: Optional[int],
-        cur_light: Optional[int],
-        cur_loc: Optional[int],
-        cur_scene: Optional[int],
-        cur_walk_flag: Optional[int],
-        cur_relax_flag: Optional[int],
-        invoke_mode: str,
+    step_idx: int,
+    interval_steps: int,
+    last_act: Optional[int],
+    last_light: Optional[int],
+    last_loc: Optional[int],
+    last_scene: Optional[int],
+    last_walk_flag: Optional[int],
+    last_relax_flag: Optional[int],
+    cur_act: Optional[int],
+    cur_light: Optional[int],
+    cur_loc: Optional[int],
+    cur_scene: Optional[int],
+    cur_walk_flag: Optional[int],
+    cur_relax_flag: Optional[int],
+    invoke_mode: str,
 ) -> bool:
     if interval_steps <= 0:
         return True
     on_interval = (step_idx % interval_steps) == 0
     if (
-            last_act is None
-            or last_light is None
-            or last_walk_flag is None
-            or last_relax_flag is None
+        last_act is None
+        or last_light is None
+        or last_walk_flag is None
+        or last_relax_flag is None
     ):
         return True
     changed = (
-            (cur_act != last_act)
-            or (cur_light != last_light)
-            or (cur_loc != last_loc)
-            or (cur_scene != last_scene)
-            or (cur_walk_flag != last_walk_flag)
-            or (cur_relax_flag != last_relax_flag)
+        (cur_act != last_act)
+        or (cur_light != last_light)
+        or (cur_loc != last_loc)
+        or (cur_scene != last_scene)
+        or (cur_walk_flag != last_walk_flag)
+        or (cur_relax_flag != last_relax_flag)
     )
     mode = (invoke_mode or "both").lower()
     if mode == "interval":
@@ -275,17 +301,20 @@ def select_action_greedy(q: QNet, obs: np.ndarray, device: torch.device) -> int:
     return int(torch.argmax(q(s), dim=1).item())
 
 
+
+
 def deploy_replay_env(
-        stream_path: Path,
-        step_seconds: int,
-        bucket_seconds: int,
-        history_len: int,
-        invoke_interval_seconds: int,
-        invoke_mode: str,
-        q: QNet,
-        device: torch.device,
-        out_dir: Path,
-        logger: logging.Logger,
+    stream_path: Path,
+    step_seconds: int,
+    bucket_seconds: int,
+    history_len: int,
+    invoke_interval_seconds: int,
+    invoke_mode: str,
+    include_act_light_changed: int,
+    q: QNet,
+    device: torch.device,
+    out_dir: Path,
+    logger: logging.Logger,
 ) -> None:
     out_dir.mkdir(parents=True, exist_ok=True)
     jsonl_path = out_dir / "deploy_actions.jsonl"
@@ -298,9 +327,10 @@ def deploy_replay_env(
         step_seconds=step_seconds,
         bucket_seconds=bucket_seconds,
         history_len=history_len,
-        episode_steps=10 ** 9,
+        include_act_light_changed=include_act_light_changed,
+        episode_steps=10**9,
     )
-
+    
     obs, info = env.reset(seed=0)
     profile = info.get("profile", stream_path.stem)
 
@@ -359,8 +389,7 @@ def deploy_replay_env(
             obs2, reward, terminated, truncated, info2 = env.step(action_id, invoke=invoke)
             done = bool(terminated or truncated)
 
-            time_str = getattr(truth, "time_str",
-                               _fmt_time_from_seconds(int(getattr(truth, "t", 0)))) if truth else "unknown"
+            time_str = getattr(truth, "time_str", _fmt_time_from_seconds(int(getattr(truth, "t", 0)))) if truth else "unknown"
             rec = {
                 "t": t,
                 "time": time_str,
@@ -369,7 +398,7 @@ def deploy_replay_env(
                 "action": action_name,
                 "oracle": info2.get("oracle", "NONE"),
                 "reward": float(reward),
-                "obs": decode_obs(obs, history_len=history_len, step_seconds=step_seconds),
+                "obs": decode_obs(obs, history_len=history_len, step_seconds=step_seconds, include_act_light_changed=include_act_light_changed),
             }
             jf.write(json.dumps(rec, ensure_ascii=False) + "\n")
             tf.write(
@@ -385,13 +414,12 @@ def deploy_replay_env(
 
 def main() -> None:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--ckpt", type=str, default="/Users/cannkit/Downloads/c00894262/datapallet/dqn_engine/dqn_aod_ckpt_episode_7500.pt")
-    parser.add_argument("--stream_path", type=str, default="demo/testing_trajectory.json")
+    parser.add_argument("--ckpt", type=str, default="logs_v5/dqn_aod_ckpt_episode_2200.pt")
+    parser.add_argument("--stream_path", type=str, default="demo/meeting.json")
     parser.add_argument("--step_seconds", type=int, default=1)
-    parser.add_argument("--bucket_seconds", type=int, default=10,
-                        help="Bucket size for event grouping (should match step_seconds)")
+    parser.add_argument("--bucket_seconds", type=int, default=1, help="Bucket size for event grouping (should match step_seconds)")
     parser.add_argument("--history_len", type=int, default=0)
-    parser.add_argument("--invoke_interval_seconds", type=int, default=10)
+    parser.add_argument("--invoke_interval_seconds", type=int, default=1)
     parser.add_argument(
         "--invoke_mode",
         type=str,
@@ -401,6 +429,7 @@ def main() -> None:
     )
     parser.add_argument("--out_dir", type=str, default="test_runs_meeting")
     parser.add_argument("--cuda", type=int, default=0)
+    parser.add_argument("--include_act_light_changed", type=int, default=1, help="Match aod_env_v5 obs (1=include act/light-changed flag)")
 
     args = parser.parse_args()
 
@@ -416,7 +445,7 @@ def main() -> None:
         device = "cpu"
     logger.info("Using device: %s", device)
 
-    obs_dim = obs_dim_from_history(args.history_len)
+    obs_dim = obs_dim_aod_v5(include_act_light_changed=args.include_act_light_changed)
     q = load_checkpoint(Path(args.ckpt), obs_dim, len(ALL_ACTIONS), torch.device(device))
 
     stream_path = Path(args.stream_path)
@@ -428,6 +457,7 @@ def main() -> None:
         history_len=args.history_len,
         invoke_interval_seconds=args.invoke_interval_seconds,
         invoke_mode=args.invoke_mode,
+        include_act_light_changed=args.include_act_light_changed,
         q=q,
         device=torch.device(device),
         out_dir=Path(args.out_dir),

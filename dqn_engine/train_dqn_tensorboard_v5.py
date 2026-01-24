@@ -1,22 +1,3 @@
-"""
-Deep Q-Network (DQN) Training Script for AOD Recommendation Environment
-
-This script trains a DQN agent to learn when to probe sensors and when to make
-recommendations in the Always-On-Display (AOD) recommendation environment.
-
-Features:
-- TensorBoard logging for training metrics
-- Random baseline comparisons during training and evaluation
-- Configurable hyperparameters via command-line arguments
-- Checkpoint saving for model persistence
-
-Usage:
-    python train_dqn_tensorboard_v2.py [--seed 0] [--train_episodes 5000] ...
-
-TensorBoard:
-    tensorboard --logdir logs
-"""
-
 from __future__ import annotations
 
 # Standard library imports
@@ -24,7 +5,6 @@ import argparse
 import logging
 from logging import Logger
 import random
-import sys
 import time
 from collections import deque
 from dataclasses import asdict, dataclass
@@ -40,7 +20,7 @@ import torch.optim as optim
 from torch.utils.tensorboard import SummaryWriter
 
 # Local imports
-from dqn_engine.aod_env_v3 import (
+from dqn_engine.aod_env_v5 import (
     AODRecommendationEnv,
     ALL_ACTIONS,
     PROBE_ACTIONS,
@@ -74,8 +54,8 @@ class DQNConfig:
     train_every: int = 4  # Train every N steps
     target_update_every: int = 5_000  # Update target network every N steps
     grad_clip: float = 10.0  # Gradient clipping threshold
-    history_len: int = 0
     loc_always_available: bool = False
+    include_act_light_changed: int = 0  # 1: add activity/light-changed flag to obs
 
     # Invocation control (data step = 10s)
     step_seconds: int = 10
@@ -98,9 +78,10 @@ class DQNConfig:
     
     # Logging settings
     random_train_every: int = 10  # Log random baseline every N episodes (0 to disable)
+    skip_random_policy: int = 0  # If 1, skip random policy eval/logging
     logdir: str = "logs"
     run_name: str = "run"
-    log_file: str = "train_dqn_tensorboard_v2_balancedbf.log"
+    log_file: str = "train_dqn_tensorboard_v5.log"
     debug_invoke_episodes: int = 0  # If >0, run invoke debug and exit
 
 
@@ -148,7 +129,7 @@ def _get_walk_relax_flags(env: AODRecommendationEnv) -> Tuple[Optional[int], Opt
         stationary_secs = getattr(env, "_stationary_secs", None)
         if walk_run_secs is None or stationary_secs is None:
             return None, None
-        return int(walk_run_secs >= 60), int(stationary_secs >= 600)
+        return int(walk_run_secs >= 60), int(stationary_secs >= 60)
     except Exception:
         return None, None
 
@@ -201,8 +182,8 @@ def debug_invoke_logic(config: DQNConfig, logger: Logger) -> None:
     """Run random episodes and log invoke decision details."""
     env = AODRecommendationEnv(
         seed=config.seed + 123,
-        history_len=config.history_len,
         loc_always_available=config.loc_always_available,
+        include_act_light_changed=config.include_act_light_changed,
     )
     interval_steps = max(1, int(config.step_seconds and config.invoke_interval_seconds // config.step_seconds))
     total_steps = 0
@@ -286,7 +267,7 @@ def debug_invoke_logic(config: DQNConfig, logger: Logger) -> None:
             walk_run_secs = int(getattr(env, "_walk_run_secs", -1))
             stationary_secs = int(getattr(env, "_stationary_secs", -1))
             walk_run_flag = int(walk_run_secs >= 60) if walk_run_secs >= 0 else -1
-            relax_flag = int(stationary_secs >= 600) if stationary_secs >= 0 else -1
+            relax_flag = int(stationary_secs >= 60) if stationary_secs >= 0 else -1
 
             logger.info(
                 "ep=%03d t=%05d invoke=%s interval=%s changed=%s "
@@ -375,26 +356,10 @@ class QNetwork(nn.Module):
             num_actions: Number of possible actions
         """
         super().__init__()
-        # self.net = nn.Sequential(
-        #     nn.Linear(observation_dim, 256),
-        #     nn.LayerNorm(256),
-        #     nn.ReLU(),
-        #     nn.Linear(256, 512),
-        #     # nn.LayerNorm(512),
-        #     nn.ReLU(),
-        #     nn.Linear(512, 256),
-        #     nn.ReLU(),
-        #     nn.Linear(256, num_actions),
-        # )
         self.net = nn.Sequential(
             nn.Linear(observation_dim, 256),
-            # nn.LayerNorm(256),
             nn.ReLU(),
             nn.Linear(256, 256),
-            # nn.Linear(256, 512),
-            # # nn.LayerNorm(512),
-            # nn.ReLU(),
-            # nn.Linear(512, 256),
             nn.ReLU(),
             nn.Linear(256, num_actions),
         )
@@ -553,9 +518,9 @@ def evaluate_greedy_policy(
             done = terminated or truncated
             
             # Track oracle action changes
-            if prev_oracle_action != info["oracle"]:
-                action_statistics[info["oracle"]] += 1
-            prev_oracle_action = info["oracle"]
+            # if prev_oracle_action != info["oracle"]:
+            #     action_statistics[info["oracle"]] += 1
+            # prev_oracle_action = info["oracle"]
         
         # Aggregate statistics
         for key, value in env.stats.items():
@@ -564,8 +529,8 @@ def evaluate_greedy_policy(
     # Average statistics
     for key in aggregated_stats:
         aggregated_stats[key] /= float(num_episodes)
-    for action in action_statistics:
-        action_statistics[action] /= float(num_episodes)
+    # for action in action_statistics:
+    #     action_statistics[action] /= float(num_episodes)
     
     q_network.train()
     return aggregated_stats, action_statistics
@@ -751,10 +716,8 @@ def train(config: DQNConfig) -> None:
     )   
     logger.info(f"Training on device: {config.device}")
     logger.info(f"Config: {config}")
-    logger.info(f"History length: {config.history_len}")
     logger.info(f"Run name: {config.run_name}")
     logger.info(f"Seed: {config.seed}")
-    logger.info(f"NONE action probability: {1}")
 
     if config.debug_invoke_episodes > 0:
         debug_invoke_logic(config, logger)
@@ -763,9 +726,9 @@ def train(config: DQNConfig) -> None:
     # Initialize environment
     env = AODRecommendationEnv(
         seed=config.seed,
-        history_len=config.history_len,
         episode_steps=config.train_episode_steps,
         loc_always_available=config.loc_always_available,
+        include_act_light_changed=config.include_act_light_changed,
     )
     observation_dim = env.obs_dim
     num_actions = env.action_n
@@ -792,14 +755,14 @@ def train(config: DQNConfig) -> None:
     logger.info(f"TensorBoard logdir: {run_dir}")
     
     # Training state
-    global_step = 0
     epislon_step = 0
+    global_step = 0
     episode_returns = deque(maxlen=20)  # Moving average window
     start_time = time.time()
     env_random = AODRecommendationEnv(
         seed=config.seed + 12345,
-        history_len=config.history_len,
         loc_always_available=config.loc_always_available,
+        include_act_light_changed=config.include_act_light_changed,
     )
     
     # Training loop
@@ -868,18 +831,14 @@ def train(config: DQNConfig) -> None:
 
             # Store transition in replay buffer only when DQN was invoked
             if invoke:
-                if info["oracle"] == "NONE":
-                    if random.random() < 1:
-                        replay_buffer.add(observation, action, reward, next_observation, truncated)
-                else:
-                    replay_buffer.add(observation, action, reward, next_observation, truncated)
-
+                replay_buffer.add(observation, action, reward, next_observation, truncated)
+                global_step += 1
+                
             observation = next_observation
             episode_return += float(reward)
-            global_step += 1
 
             # Train network if ready
-            if len(replay_buffer) >= config.warmup_steps and (global_step % config.train_every == 0) and invoke:
+            if len(replay_buffer) >= config.warmup_steps and invoke:
                 # Sample batch from replay buffer
                 states, actions, rewards, next_states, dones = replay_buffer.sample(config.batch_size)
 
@@ -927,7 +886,11 @@ def train(config: DQNConfig) -> None:
         log_statistics(writer, "train/trained", env.stats, episode)
 
         # Log random baseline
-        if config.random_train_every > 0 and (episode % config.random_train_every == 0):
+        if (
+            config.skip_random_policy != 1
+            and config.random_train_every > 0
+            and (episode % config.random_train_every == 0)
+        ):
             random_stats, _ = run_random_episode(
                 env_random,
                 config.train_episode_steps,
@@ -956,13 +919,14 @@ def train(config: DQNConfig) -> None:
         if episode % config.eval_every == 0:
             env_eval = AODRecommendationEnv(
                 seed=config.seed + 1,
-                history_len=config.history_len,
                 loc_always_available=config.loc_always_available,
+                include_act_light_changed=config.include_act_light_changed,
             )
+            
             env_rand = AODRecommendationEnv(
                 seed=config.seed + 1,
-                history_len=config.history_len,
                 loc_always_available=config.loc_always_available,
+                include_act_light_changed=config.include_act_light_changed,
             )
 
             # Evaluate trained agent
@@ -979,21 +943,25 @@ def train(config: DQNConfig) -> None:
                 logger=logger,
             )
 
-            # Evaluate random baseline
-            random_stats, random_action_stats = evaluate_random_policy(
-                env_rand,
-                config.eval_episodes,
-                config.eval_episode_steps,
-                config.seed + 20_000 + episode,
-                config.step_seconds,
-                config.invoke_interval_seconds,
-                config.invoke_mode,
-                logger=logger,
-            )
+            random_stats = {}
+            random_action_stats = {}
+            if config.skip_random_policy != 1:
+                # Evaluate random baseline
+                random_stats, random_action_stats = evaluate_random_policy(
+                    env_rand,
+                    config.eval_episodes,
+                    config.eval_episode_steps,
+                    config.seed + 10_000 + episode,
+                    config.step_seconds,
+                    config.invoke_interval_seconds,
+                    config.invoke_mode,
+                    logger=logger,
+                )
 
             # Log evaluation results
             log_statistics(writer, "eval/trained", trained_stats, episode)
-            log_statistics(writer, "eval/random", random_stats, episode)
+            if config.skip_random_policy != 1:
+                log_statistics(writer, "eval/random", random_stats, episode)
 
             # Print evaluation summary
             logger.info("--- Eval (avg) ---")
@@ -1005,14 +973,16 @@ def train(config: DQNConfig) -> None:
                 f"Cost {trained_stats.get('sensor_cost', 0):6.2f}"
             )
             logger.info(f"Statistics for trained episodes {episode}: {trained_action_stats}")
-            logger.info(
-                f"Random  | Return {random_stats.get('return', 0):7.2f} | "
-                f"Succ {random_stats.get('success', 0):6.2f} | "
-                f"Wrong {random_stats.get('wrong', 0):6.2f} | "
-                f"Miss {random_stats.get('miss', 0):6.2f} | "
-                f"Cost {random_stats.get('sensor_cost', 0):6.2f}"
-            )
-            logger.info(f"Statistics for random episodes {episode}: {random_action_stats}")
+            
+            if config.skip_random_policy != 1:
+                logger.info(
+                    f"Random  | Return {random_stats.get('return', 0):7.2f} | "
+                    f"Succ {random_stats.get('success', 0):6.2f} | "
+                    f"Wrong {random_stats.get('wrong', 0):6.2f} | "
+                    f"Miss {random_stats.get('miss', 0):6.2f} | "
+                    f"Cost {random_stats.get('sensor_cost', 0):6.2f}"
+                )
+                logger.info(f"Statistics for random episodes {episode}: {random_action_stats}")
             logger.info("----------------\n")
 
             checkpoint = {
@@ -1064,12 +1034,18 @@ def parse_arguments() -> DQNConfig:
     parser.add_argument("--lr", type=float, default=5e-4, help="Learning rate")
     parser.add_argument("--gamma", type=float, default=0.99, help="Discount factor")
     parser.add_argument("--grad_clip", type=float, default=10.0, help="Gradient clipping threshold")
-    parser.add_argument("--history_len", type=int, default=0, help="Has history")
     parser.add_argument(
         "--loc_always_available",
         action="store_true",
         default=False,
         help="Expose location without probe (reduces action space)",
+    )
+    parser.add_argument(
+        "--include_act_light_changed",
+        type=int,
+        choices=[0, 1],
+        default=0,
+        help="1: include activity/light-changed flag in obs (default); 0: disable",
     )
     parser.add_argument("--eps_decay_steps", type=int, default=3600*60, help="Steps to decay epsilon")
     parser.add_argument("--invoke_interval_seconds", type=int, default=60, help="Invoke DQN every N seconds")
@@ -1094,6 +1070,12 @@ def parse_arguments() -> DQNConfig:
         default=25,
         help="Log random baseline every N episodes (0 to disable)"
     )
+    parser.add_argument(
+        "--skip_random_policy",
+        type=int,
+        default=1,
+        help="If 1, skip random policy eval/logging",
+    )
 
     args = parser.parse_args()
 
@@ -1105,6 +1087,7 @@ def parse_arguments() -> DQNConfig:
         eval_episodes=args.eval_episodes,
         eval_episode_steps=args.eval_episode_steps,
         random_train_every=args.random_train_every,
+        skip_random_policy=args.skip_random_policy,
         logdir=args.logdir,
         run_name=args.run_name,
         log_file=args.log_file,
@@ -1115,8 +1098,8 @@ def parse_arguments() -> DQNConfig:
         lr=args.lr,
         gamma=args.gamma,
         grad_clip=args.grad_clip,
-        history_len=args.history_len,
         loc_always_available=args.loc_always_available,
+        include_act_light_changed=args.include_act_light_changed,
         eps_decay_steps=args.eps_decay_steps,
         invoke_interval_seconds=args.invoke_interval_seconds,
         invoke_mode=args.invoke_mode,

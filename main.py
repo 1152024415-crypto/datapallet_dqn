@@ -24,7 +24,7 @@ from sceneclassify.predict_scene_type import predict_scene
 from dqn_engine.dqn_realtime_adapter import DQNEngineAdapter
 from app_server.util import create_test_image_data
 from dqn_engine.constants import PROBE_ACTIONS
-from datapallet.enums import SceneType, SceneData
+from datapallet.enums import SceneType, SceneData, LocationType
 from app_server.server import run_server as run_app_server
 
 APP_UI_SERVER_URL = "http://127.0.0.1:8002/update-recommendation"
@@ -220,17 +220,18 @@ class ApplicationManager:
     def initialize_components(self):
         """初始化所有组件"""
         print("[初始化] 正在初始化组件...")
-        self.dp = create_datapallet()
+        self.dp = create_datapallet(ttl=10)
         self.dp.setup(self.test_callback)
         self.tb = TestBed(self.dp)
         self.dp.connect_testbed(self.tb)
         print("[初始化] 加载 DQN 模型...")
-        ckpt_path = r"D:\c00894262\datapallet\dqn_engine\dqn_aod_ckpt_episode_1100.pt"
+        ckpt_path = r"D:\c00894262\datapallet\dqn_engine\dqn_aod_ckpt_episode_2200.pt"
         try:
             self.dqn_engine = DQNEngineAdapter(
-                ckpt_path=Path(ckpt_path),
+                ckpt_path=str(Path(ckpt_path)),
                 history_len=0, # TODO now is 0
-                device="cpu"
+                device="cpu",
+                include_act_light_changed=1 # 0124 newer version add
             )
             print("[初始化] DQN 模型加载完成")
         except Exception as e:
@@ -258,6 +259,11 @@ class ApplicationManager:
                     print(f"  ├── {debug_info}")  # 打印物理输入
                     print(f"  └── Output Action: [{action}]")  # 打印输出动作
                     print("-" * 60)
+
+                    # TODO 要不要过滤NONE的动作？
+                    self.send_to_app_server(action)
+
+
                     if action == "QUERY_VISUAL":
                         print("DQN Action is QUERY_VISUAL, trigger take picture")
                         threading.Thread(
@@ -265,9 +271,15 @@ class ApplicationManager:
                             name="Visual-Query-Worker",
                             daemon=True
                         ).start()
-
-                    # TODO 要不要过滤NONE的动作？
-                    self.send_to_app_server(action)
+                    elif action == "QUERY_LOC_GPS":
+                        print("DQN Action is QUERY_LOC_GPS")
+                        mock_location = LocationType.WORK
+                        self.tb.receive_and_transmit_data(
+                            data_id="Location",
+                            value=mock_location,
+                            timestamp=datetime.now(),
+                        )
+                        print("模拟的GPS位置已上报")
 
                 except Exception as e:
                     print(f"[DQN 错误] 推理过程异常: {e}")
