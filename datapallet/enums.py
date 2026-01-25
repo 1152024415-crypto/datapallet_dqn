@@ -65,7 +65,7 @@ ActivityMode = add_string_methods(ActivityMode, {
     ActivityMode.SITTING: "坐着",
     ActivityMode.STROLLING: "慢走",
     ActivityMode.RUNNING: "跑步",
-    ActivityMode.STANDING: "站立",
+    ActivityMode.STANDING: "静止",
     ActivityMode.BUS: "公交车",
     ActivityMode.CAR: "小汽车",
     ActivityMode.SUBWAY: "地铁",

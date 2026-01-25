@@ -72,64 +72,79 @@ class ApplicationManager:
         return mapping.get(sType, "meetingroom")
 
     def send_to_app_server(self, action_name: str):
+        """
+        将DQN推理结果及完整的中文输入状态发送到 App Server
+        """
         action_type = "probe" if action_name in PROBE_ACTIONS else "recommend"
         current_time = int(time.time())
 
-        success, scene_val = self.dp.get("Scene")
-        scene_category = self._map_scene_to_category(scene_val)
+        state_values = {}
+        state_strings = {}
+        state_keys = ["activity_mode", "Location", "Light_Intensity", "Scene"]
+
+        for key in state_keys:
+            success, val = self.dp.get(key, only_valid=True)
+            state_values[key] = val if success else None
+            state_strings[key] = self.dp.format_value(key, val) if success else "未知"
+
+
+        # "SceneType: 会议室 (has_image...)" -> "会议室"
+        raw_scene_str = state_strings.get("Scene", "未知")
+        clean_scene_str = raw_scene_str.split(" (")[0].replace("SceneType: ", "")
+
+        # "(站立, 慢走)" -> "慢走"
+        raw_act_str = state_strings.get("activity_mode", "未知")
+        clean_act_str = raw_act_str.split(",")[1].strip().replace(")", "") if raw_act_str.startswith(
+            "(") else raw_act_str
+
+        # 获取场景分类和处理图片
+        # 使用从 DataPallet 获取到的 SceneData 对象
+        success_scene_for_img, scene_val_for_img = self.dp.get("Scene")
+        scene_category = self._map_scene_to_category(scene_val_for_img)
 
         image_data = None
-
-        if success and isinstance(scene_val, SceneData) and scene_val.has_image:
+        if success_scene_for_img and isinstance(scene_val_for_img, SceneData) and scene_val_for_img.has_image:
             try:
-                raw_path = scene_val.image_path
+                raw_path = scene_val_for_img.image_path
                 if raw_path and not os.path.isabs(raw_path):
                     base_dir = os.path.dirname(os.path.abspath(__file__))
                     filename = os.path.basename(raw_path)
                     possible_paths = [
                         raw_path,
-                        os.path.join(base_dir, raw_path),
                         os.path.join(base_dir, "destineData", filename),
-                        os.path.join(base_dir, "destineData", raw_path),
-                        os.path.join(base_dir, "datapallet", raw_path),
-                        os.path.join(base_dir, "sceneclassify", raw_path)
                     ]
-                else:
-                    possible_paths = [raw_path]
-
-                real_path = None
-                for p in possible_paths:
-                    if p and os.path.exists(p):
-                        real_path = p
-                        break
-
-                if real_path:
-                    image_data = create_test_image_data(real_path)
-                else:
-                    print(f"[AppPush-Error] DataPallet有记录但文件找不到: {possible_paths}")
-
+                    real_path = next((p for p in possible_paths if p and os.path.exists(p)), None)
+                    if real_path:
+                        image_data = create_test_image_data(real_path)
+                    else:
+                        print(f"[AppPush-Error] 找不到真实图片文件: {possible_paths}")
             except Exception as e:
                 print(f"[AppPush-Error] 真实图片读取异常: {e}")
 
+        # 如果没有真实图片且动作是 QUERY_VISUAL，使用默认图
         if image_data is None and action_name == "QUERY_VISUAL":
             base_dir = os.path.dirname(os.path.abspath(__file__))
             test_img_path = os.path.join(base_dir, "app_server", "test.png")
-
             if os.path.exists(test_img_path):
                 image_data = create_test_image_data(str(test_img_path))
-                print("[AppPush] 暂无真实照片，使用默认测试图片 (QUERY_VISUAL)")
-            else:
-                print(f"[AppPush-Error] 默认测试图片不存在: {test_img_path}")
 
+        # === Payload ===
         payload = {
             "id": f"rec_{current_time}_{random.randint(100, 999)}",
             "timestamp": current_time,
             "action_type": action_type,
             "action_name": action_name,
             "scene_category": scene_category,
-            "image": image_data
+            "image": image_data,
+            "dqn_state": {
+                "activity": clean_act_str,
+                "location": state_strings.get("Location", "未知"),
+                "light": state_strings.get("Light_Intensity", "未知"),
+                "scene": clean_scene_str
+            }
         }
 
+        # print(payload)
         try:
             response = requests.post(APP_UI_SERVER_URL, json=payload, headers={"Content-Type": "application/json"},
                                      timeout=0.5)
@@ -164,7 +179,6 @@ class ApplicationManager:
                 self.is_querying_visual = False
         
     def register_callbacks(self):
-        """注册所有回调函数"""
         if self.callbacks_registered:
             return
             
@@ -299,7 +313,7 @@ class ApplicationManager:
     def start_dqn_inference_loop(self):
         print("[DQN] 启动推理线程...")
         while self.running:
-            is_event_triggered = self.inference_trigger_event.wait(timeout=20.0)
+            is_event_triggered = self.inference_trigger_event.wait(timeout=2.0)
 
             if is_event_triggered:
                 print("[DQN] 触发源: 姿态变化")
