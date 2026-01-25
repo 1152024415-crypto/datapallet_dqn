@@ -26,6 +26,7 @@ from app_server.util import create_test_image_data
 from dqn_engine.constants import PROBE_ACTIONS
 from datapallet.enums import SceneType, SceneData, LocationType
 from app_server.server import run_server as run_app_server
+from datapallet.enums import ActivityMode, LightIntensity
 
 APP_UI_SERVER_URL = "http://127.0.0.1:8002/update-recommendation"
 
@@ -44,6 +45,14 @@ class ApplicationManager:
         self.last_activity_mode = None
         self.is_querying_visual = False
         self.visual_query_lock = threading.Lock()
+        # DQN 触发源修改
+        self.last_states = {
+            "activity_mode": None,
+            "Light_Intensity": None,
+            "Sound_Intensity": None,
+            "Location": None,
+            "Scene": None
+        }
 
     def _map_scene_to_category(self, scene_val) -> str:
         if not scene_val:
@@ -174,22 +183,41 @@ class ApplicationManager:
             self.request_image_capture()
             
         set_on_image_request_callback(on_image_request)
-        
+
         # 传感器数据回调
         def on_get_sensor_data(data_id, value, timestamp):
+            # 统一到Scene，测试床bug
+            if data_id == "Scence": data_id = "Scene"
+
+            # 传输给 TestBed
             if self.tb:
                 self.tb.receive_and_transmit_data(data_id, value, timestamp)
-                # === 检测姿态变化触发推理 ===
-                if data_id == "activity_mode" and self.dqn_engine:
-                    current_act = value
-                    if isinstance(value, tuple):
-                        current_act = value[1]
 
-                    if current_act != self.last_activity_mode:
-                        print(f"[Trigger] 姿态变化: {self.last_activity_mode} -> {current_act}")
-                        self.last_activity_mode = current_act
-                        self.inference_trigger_event.set()  # 立即触发事件
-                
+            # 全维度变化检测逻辑，用于触发DQN
+            if self.dqn_engine:
+                # 提取实际用于比对的值
+                current_val = value
+
+                # 处理 Activity (tuple -> current)
+                if data_id == "activity_mode" and isinstance(value, tuple):
+                    current_val = value[1]
+
+                # 处理 Scene (SceneData -> scene_type enum)
+                if data_id == "Scene" and isinstance(value, SceneData):
+                    current_val = value.scene_type
+
+                # 检查是否发生变化
+                last_val = self.last_states.get(data_id)
+
+                if current_val != last_val:
+                    # 过滤掉初始化时的 None -> Value，避免启动时瞬间触发多次
+                    if last_val is not None:
+                        print(f"[Trigger] 状态变化 ({data_id}): {last_val} -> {current_val}")
+                        self.inference_trigger_event.set()  # 立即触发 DQN 推理
+
+                    # 更新缓存
+                    self.last_states[data_id] = current_val
+
         set_on_get_sensor_data_callback(on_get_sensor_data)
         
         # Datapallet回调
@@ -201,11 +229,40 @@ class ApplicationManager:
         self.test_callback = test_callback
         self.callbacks_registered = True
         
+    # def process_scene_data(self, img_path: str, img_timestamp) -> Dict[str, Any]:
+    #     """处理场景数据"""
+    #     scene_data = {
+    #         "image_path": img_path,
+    #         "scene_type": predict_scene(img_path)
+    #     }
+    #     print(f"[Scene处理] 图片路径: {img_path}")
+    #     print(f"[Scene处理] 时间戳: {img_timestamp}")
+    #     print(f"[Scene处理] scene_type: {scene_data['scene_type']}")
+    #     return scene_data
+
+    # add loc process
     def process_scene_data(self, img_path: str, img_timestamp) -> Dict[str, Any]:
         """处理场景数据"""
+        prediction = predict_scene(img_path)
+        if prediction in [SceneType.MEETINGROOM, SceneType.WORKSPACE]:
+            print(f"场景理解结果：{prediction}, 添加位置信息为Work")
+            self.tb.receive_and_transmit_data("Location", LocationType.WORK, datetime.now())
+
+        if prediction in [SceneType.SUBWAY_STATION]:
+            print(f"场景理解结果：{prediction}, 添加位置信息为SubwayStation")
+            self.tb.receive_and_transmit_data("Location", LocationType.SUBWAY_STATION, datetime.now())
+
+        if prediction in [SceneType.OUTDOOR_PARK]:
+            print(f"场景理解结果：{prediction}, 添加位置信息为PARK")
+            self.tb.receive_and_transmit_data("Location", LocationType.PARK, datetime.now())
+
+        if prediction in [SceneType.DINING]:
+            print(f"场景理解结果：{prediction}, 添加位置信息为DINING")
+            self.tb.receive_and_transmit_data("Location", LocationType.DINING, datetime.now())
+
         scene_data = {
             "image_path": img_path,
-            "scene_type": predict_scene(img_path)
+            "scene_type": prediction
         }
         print(f"[Scene处理] 图片路径: {img_path}")
         print(f"[Scene处理] 时间戳: {img_timestamp}")
@@ -220,7 +277,7 @@ class ApplicationManager:
     def initialize_components(self):
         """初始化所有组件"""
         print("[初始化] 正在初始化组件...")
-        self.dp = create_datapallet(ttl=10)
+        self.dp = create_datapallet(ttl=60)
         self.dp.setup(self.test_callback)
         self.tb = TestBed(self.dp)
         self.dp.connect_testbed(self.tb)
@@ -242,26 +299,64 @@ class ApplicationManager:
     def start_dqn_inference_loop(self):
         print("[DQN] 启动推理线程...")
         while self.running:
-            is_event_triggered = self.inference_trigger_event.wait(timeout=5.0)
+            is_event_triggered = self.inference_trigger_event.wait(timeout=20.0)
 
             if is_event_triggered:
                 print("[DQN] 触发源: 姿态变化")
                 self.inference_trigger_event.clear()
             else:
-                print("[DQN] 触发源: 定时周期 (5s)")
+                print("[DQN] 触发源: 定时周期 (20s)")
                 pass
 
             if self.dqn_engine and self.dp:
                 try:
-                    action, debug_info = self.dqn_engine.update_and_predict(self.dp)
-                    print("-" * 60)
-                    print(f"[DQN 推理] {datetime.now().strftime('%H:%M:%S')}")
-                    print(f"  ├── {debug_info}")  # 打印物理输入
-                    print(f"  └── Output Action: [{action}]")  # 打印输出动作
-                    print("-" * 60)
+                    # # 在调用 DQN 之前，先检查基础特征是否有效
+                    # # 如果过期或不存在，返回 Success=False
+                    # suc_act, val_act = self.dp.get("activity_mode", only_valid=True)
+                    # suc_light, val_light = self.dp.get("Light_Intensity", only_valid=True)
+                    # curr_act = val_act[1] if isinstance(val_act, tuple) else val_act
+                    # # 检查是否为有效状态
+                    # # 1. DataPallet 获取成功
+                    # # 2. 值不是 NULL/Unknown
+                    # is_act_valid = suc_act and curr_act != ActivityMode.NULL
+                    # is_light_valid = suc_light and val_light != LightIntensity.NULL
+                    # if not (is_act_valid and is_light_valid):
+                    #     # 如果基础特征缺失，直接跳过推理，相当于输出 NONE
+                    #     # 避免了 DQN 在未知状态下产生幻觉 (如 Relax)
+                    #     print(f"[DQN] 基础特征缺失 (Act={curr_act}, Light={val_light})，跳过推理")
+                    #     continue
 
-                    # TODO 要不要过滤NONE的动作？
-                    self.send_to_app_server(action)
+                    action, debug_info = self.dqn_engine.update_and_predict(self.dp)
+                    if action == "NONE" and "[Skipped]" in debug_info:
+                        print(f"DQN {debug_info}")
+                        pass
+                    else:
+                        print("-" * 60)
+                        print(f"[DQN 推理] {datetime.now().strftime('%H:%M:%S')}")
+                        print(f"  ├── {debug_info}")  # 打印物理输入
+                        print(f"  └── Output Action: [{action}]")  # 打印输出动作
+                        print("-" * 60)
+
+                    # 输出去重逻辑修复 - Mohai 的意见
+                    # 如果是推荐类动作 (Recommend)，且与上次相同，则抑制
+                    # 探测类动作 (Probe, 如 QUERY_VISUAL) 通常需要允许重试，直到成功
+                    final_action_to_send = action
+
+                    if action in ["NONE"]:
+                        self.last_sent_action = None  # 重置
+                    elif action in PROBE_ACTIONS:
+                        # 探测动作允许重复， 直到拿到数据
+                        pass
+                    else:
+                        # 推荐动作 (Relax, Silent 等)
+                        if action == self.last_sent_action:
+                            print(f"[DQN] 抑制重复推荐: {action}")
+                            final_action_to_send = "NONE"  # 这一次不发送
+                        else:
+                            self.last_sent_action = action  # 记录新动作
+
+
+                    self.send_to_app_server(final_action_to_send)
 
 
                     if action == "QUERY_VISUAL":

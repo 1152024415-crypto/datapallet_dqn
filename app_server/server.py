@@ -136,7 +136,8 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
                 "POST /update-recommendation - 400 Bad Request - Invalid JSON"
             )
         except Exception as e:
-            self.send_error(500, f"Internal server error: {str(e)}")
+            print(f"error details: {e}")
+            self.send_error(500, f"Internal server error")
             self.log_message("POST /update-recommendation - 500 - Error: %s", str(e))
 
 

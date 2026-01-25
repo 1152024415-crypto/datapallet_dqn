@@ -4,6 +4,8 @@ import time
 from datetime import datetime
 from typing import Any, Tuple, Optional
 from pathlib import Path
+from collections import deque
+from typing import Dict, Any, Tuple, List, Optional
 
 from dqn_engine.constants import (
     ACTIVITIES, LOCATIONS, SCENES, SOUND_LEVELS, LIGHT_LEVELS, ALL_ACTIONS
@@ -75,9 +77,31 @@ class DQNEngineAdapter:
         self.stationary_secs = 0.0
         self.last_update_time = time.time()
 
-        # 用于计算 act_light_changed
+        # 记录上一次有效的原始值
+        self.last_valid_raw_act: Any = None
+        self.last_valid_raw_light: Any = None
+
+        # 记录上一次有效值的时间戳 (用于计算是否过期)
+        self.last_valid_act_time: float = 0.0
+        self.last_valid_light_time: float = 0.0
+
         self.last_act_idx: Optional[int] = None
         self.last_light_idx: Optional[int] = None
+
+        # 历史队列 (即使 history_len=0 也要初始化防止报错)
+        self.hist_queues = {
+            "act": deque(maxlen=max(1, history_len + 1)),
+            "loc": deque(maxlen=max(1, history_len + 1)),
+            "scene": deque(maxlen=max(1, history_len + 1)),
+            "light": deque(maxlen=max(1, history_len + 1))
+        }
+
+        for k in self.hist_queues:
+            for _ in range(self.hist_queues[k].maxlen):
+                self.hist_queues[k].append((0, 0))
+
+        # TODO 当前比数据托盘多10s
+        self.PERSISTENCE_TIMEOUT = 70.0
 
         self._init_mappings()
         self._init_special_indices()
@@ -169,28 +193,58 @@ class DQNEngineAdapter:
 
     def update_and_predict(self, dp: DataPallet) -> Tuple[str, str]:
         """
-        执行一步实时推理
+        执行实时推理
+        1. Pre-process: 如果当前数据 Unknown，尝试使用"最近一次有效值"进行补全
+        2. 只有在补全后依然无效(超时)，才跳过推理。
         """
-        # 1. 计算时间差 (用于精确累加 Duration)
+        # 1. 计算时间差
         now = time.time()
         elapsed = now - self.last_update_time
-        self.last_update_time = now
-        # 保护逻辑：防止断点调试等导致的过大时间跳跃，超过60秒按1秒算
         if elapsed > 60: elapsed = 1.0
 
-        # 2. 获取数据 (only_valid=True 防止僵尸数据)
+        # 2. 获取数据
         success_act, raw_act = dp.get("activity_mode", only_valid=True)
         success_loc, raw_loc = dp.get("Location", only_valid=True)
         success_scene, raw_scene = dp.get("Scene", only_valid=True)
         success_light, raw_light = dp.get("Light_Intensity", only_valid=True)
 
-        # 处理获取失败的情况
-        if not success_act: raw_act = ActivityMode.NULL
+        # 状态保持与补全逻辑 (Activity)
+        if success_act:
+            # 当前数据有效，更新缓存
+            self.last_valid_raw_act = raw_act
+            self.last_valid_act_time = now
+        else:
+            # 当前数据无效，检查缓存是否可用
+            if self.last_valid_raw_act is not None and (now - self.last_valid_act_time < self.PERSISTENCE_TIMEOUT):
+                raw_act = self.last_valid_raw_act
+                success_act = True  # 标记为补全成功
+                print(f"[DQN] Activity 补全: 使用旧值 {raw_act}")
+
+        # 状态保持与补全逻辑 (Light)
+        if success_light:
+            self.last_valid_raw_light = raw_light
+            self.last_valid_light_time = now
+        else:
+            if self.last_valid_raw_light is not None and (now - self.last_valid_light_time < self.PERSISTENCE_TIMEOUT):
+                raw_light = self.last_valid_raw_light
+                success_light = True  # 标记为补全成功
+                print(f"[DQN] Light 补全: 使用旧值 {raw_light}")
+
+        # 如果补全失败，则必须停止
+        # 仍然需要门控，因为如果系统刚启动或者断连太久，确实无法推理
+        if not success_act or not success_light:
+            self.last_update_time = now
+            print("[Skipped] Data Unknown & Persistence Expired")
+            return "NONE", "[Skipped] Data Unknown & Persistence Expired"
+
+        self.last_update_time = now
+
+        # 处理 Loc 和 Scene
         if not success_loc: raw_loc = LocationType.NULL
         if not success_scene: raw_scene = SceneType.NULL
-        if not success_light: raw_light = LightIntensity.NULL
 
-        # 处理 SceneData 对象
+        if isinstance(raw_act, tuple): raw_act = raw_act[1]
+
         raw_scene_enum = SceneType.NULL
         if hasattr(raw_scene, 'scene_type'):
             raw_scene_enum = raw_scene.scene_type
@@ -199,7 +253,7 @@ class DQNEngineAdapter:
         elif isinstance(raw_scene, int):
             raw_scene_enum = raw_scene
 
-        # 3. 映射到 DQN Index
+        # 3. 映射
         new_indices = {
             "act": self._map_val("act", raw_act),
             "loc": self._map_val("loc", raw_loc),
@@ -207,52 +261,46 @@ class DQNEngineAdapter:
             "light": self._map_val("light", raw_light)
         }
 
-        # 4. 更新 act_light_changed 标志 (参考 aod_env_v5.py 逻辑)
+        # 4. Changed Flag 计算
         act_light_changed = 0.0
         if self.include_act_light_changed:
-            if self.last_act_idx is not None and self.last_light_idx is not None:
-                if (new_indices["act"] != self.last_act_idx) or \
-                   (new_indices["light"] != self.last_light_idx):
-                    act_light_changed = 1.0
+            if self.last_act_idx is None: self.last_act_idx = new_indices["act"]
+            if self.last_light_idx is None: self.last_light_idx = new_indices["light"]
 
-            # 更新上次状态
+            if (new_indices["act"] != self.last_act_idx) or \
+                    (new_indices["light"] != self.last_light_idx):
+                act_light_changed = 1.0
+
             self.last_act_idx = new_indices["act"]
             self.last_light_idx = new_indices["light"]
 
-        # 5. 更新基本状态持续时间 (Duration)
+        # 5. 更新 Duration
         for k in new_indices:
             if new_indices[k] == self.current_state[k]:
-                # 累加时间，上限截断
                 self.current_state[f"{k}_dur"] = min(self.current_state[f"{k}_dur"] + elapsed, MAX_DUR_SECONDS)
             else:
-                # 状态改变，重置
+                self.hist_queues[k].append((self.current_state[k], self.current_state[f"{k}_dur"]))
                 self.current_state[k] = new_indices[k]
                 self.current_state[f"{k}_dur"] = 0.0
 
-        # 6. 更新 Flags 相关的计数器 (Walk / Relax)
+        # 6. Flags 计算
         curr_act_idx = new_indices["act"]
-        curr_loc_idx = new_indices["loc"]
-
-        # 判定 Walk/Run (连续)
         if curr_act_idx in self.walk_run_ids:
             self.walk_run_secs += elapsed
         else:
-            self.walk_run_secs = 0.0 # 中断归零
+            self.walk_run_secs = 0.0
 
-        # 判定 Stationary (连续)
         if curr_act_idx == self.idx_act_stationary:
             self.stationary_secs += elapsed
         else:
-            self.stationary_secs = 0.0 # 中断归零
+            self.stationary_secs = 0.0
 
-        # 7. 构建 Observation Vector
+        # 7. 构建 & 推理
         obs = self._make_obs(act_light_changed)
-
-        # 8. 推理
         action_id = select_action_greedy(self.q_net, obs, self.device)
         action_name = ALL_ACTIONS[action_id]
 
-        # 9. 调试信息
+        # 8. Debug Info
         try:
             str_act = ACTIVITIES[self.current_state['act']]
             str_loc = LOCATIONS[self.current_state['loc']]
@@ -261,10 +309,15 @@ class DQNEngineAdapter:
         except IndexError:
             str_act, str_loc, str_scene, str_light = "err", "err", "err", "err"
 
+        # 在 Debug 信息中标记是否使用了补全值
+        is_patched = "(Patched)" if (
+                    not dp.get("activity_mode", only_valid=True)[0] or not dp.get("Light_Intensity", only_valid=True)[
+                0]) else ""
+
         debug_info = (
-            f"State: Act={str_act}({int(self.current_state['act_dur'])}s) | "
-            f"Loc={str_loc} | Light={str_light} | Scene={str_scene} | "
-            f"Flags: Walk={int(self.walk_run_secs)}s, Relax={int(self.stationary_secs)}s, Changed={int(act_light_changed)}"
+            f"State{is_patched}: Act={str_act}({int(self.current_state['act_dur'])}s) | "
+            f"Loc={str_loc} | Light={str_light} | "
+            f"Flags: Walk={int(self.walk_run_secs)}s, Relax={int(self.stationary_secs)}s"
         )
 
         return action_name, debug_info
