@@ -654,6 +654,7 @@ def parse_gnss_data(data):
         dict类型数据, 包含date time和识别到的位置数据
     """
     global _last_result
+    global _last_gnss_query
 
     longitude = None
     latitude = None
@@ -682,6 +683,29 @@ def parse_gnss_data(data):
     if longitude is None or latitude is None:
         print("longitude or latitude is None")
         return _last_result
+
+    # ================= 缓存策略 (新增逻辑) =================
+    current_time = time.time()
+
+    # 简单的距离估算 (欧氏距离)，阈值约 0.0005 度 (大概50米)
+    dist_sq = (longitude - _last_gnss_query["longitude"]) ** 2 + (latitude - _last_gnss_query["latitude"]) ** 2
+    time_diff = current_time - _last_gnss_query["timestamp"]
+
+    # 如果距离变化很小 且 距离上次查询不足 60 秒，直接使用缓存
+    # 这样避免了频繁启动 MCP 子进程导致阻塞
+    if dist_sq < (0.0005 ** 2) and time_diff < 60.0:
+        if _last_gnss_query["cached_result"]:
+            # print("Using cached GPS address info")
+            return _last_gnss_query["cached_result"]
+        elif _last_result["Location type"]:
+            # 如果缓存也没有，但 _last_result 有值，用 _last_result
+            return _last_result
+
+    # ======================================================
+
+
+
+
     results = None
     results = asyncio.run(get_address_info(str(longitude), str(latitude)))
     if results is None:
@@ -719,6 +743,19 @@ def parse_gnss_data(data):
         "Longitude": longitude,
         "Latitude": latitude
     }
+
+
+    # =======
+
+    # 更新缓存
+    _last_gnss_query["timestamp"] = current_time
+    _last_gnss_query["longitude"] = longitude
+    _last_gnss_query["latitude"] = latitude
+    _last_gnss_query["cached_result"] = _last_result
+
+    # ======
+
+
     return _last_result
 
 def parse_ts(ts: str) -> datetime:
