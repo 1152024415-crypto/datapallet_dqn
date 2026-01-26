@@ -2,6 +2,7 @@ import json
 import os
 import threading
 import time
+import math
 import asyncio
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from datetime import datetime, timedelta
@@ -645,6 +646,13 @@ _last_result = {
     "Latitude": 0.0
 }
 
+_last_gnss_query = {
+    "timestamp": 0,
+    "longitude": 0.0,
+    "latitude": 0.0,
+    "cached_result": None
+}
+
 def parse_gnss_data(data):
     """
     从传入的传感器数据中解析位置信息
@@ -686,19 +694,27 @@ def parse_gnss_data(data):
 
     # ================= 缓存策略 (新增逻辑) =================
     current_time = time.time()
+    print(">>> _last_gnss_query 内容:", globals().get('_last_gnss_query', '变量未定义'))
+    print(">>> _last_result 内容:", globals().get('_last_result', '变量未定义'))
+
 
     # 简单的距离估算 (欧氏距离)，阈值约 0.0005 度 (大概50米)
     dist_sq = (longitude - _last_gnss_query["longitude"]) ** 2 + (latitude - _last_gnss_query["latitude"]) ** 2
     time_diff = current_time - _last_gnss_query["timestamp"]
 
+    print(f">>> 3. 计算完成: dist_sq={dist_sq}, time_diff={time_diff}")  # 检查计算是否正常
+
+
     # 如果距离变化很小 且 距离上次查询不足 60 秒，直接使用缓存
     # 这样避免了频繁启动 MCP 子进程导致阻塞
     if dist_sq < (0.0005 ** 2) and time_diff < 60.0:
+        print(">>> 4. 进入缓存判断分支")
         if _last_gnss_query["cached_result"]:
             print("Using cached GPS address info")
             return _last_gnss_query["cached_result"]
         elif _last_result["Location type"]:
             # 如果缓存也没有，但 _last_result 有值，用 _last_result
+            print("Using cached GPS address _last_result")
             return _last_result
 
     # ======================================================
