@@ -679,8 +679,16 @@ def parse_gnss_data(data):
         longitude_h = cur_gnss_data[2]
         longitude_l = cur_gnss_data[3]
         if latitude_h == 0 and latitude_l == 0 and longitude_h == 0 and longitude_l == 0:
-            print(" GNSS data is None\n")
-            continue
+            print(" [GPS] Signal Lost (All Zeros). Reporting NULL to trigger Vision.")
+
+            # 构造一个 NULL 的结果，告诉上层位置丢了
+            null_result = {
+                "Specific address": "",
+                "Location type": LocationType.NULL,
+                "Longitude": 0.0,
+                "Latitude": 0.0
+            }
+            return null_result
         wgs_longitude = longitude_h * (2 ** -23) + longitude_l * (2 ** -37)
         wgs_latitude = latitude_h * (2 ** -23) + latitude_l * (2 ** -37)
         
@@ -1060,53 +1068,83 @@ class SensorHTTPRequestHandler(BaseHTTPRequestHandler):
         self.send_header('Content-type', 'application/json')
         self.end_headers()
 
-    def do_POST(self):
-        
-        # 解析headers 若为image则独立处理
-        print(self.headers)
-        print(f"HTTP headers : {self.headers}")
-        content_type = self.headers.get('Content-Type', '')
-        # if content_type.startswith('image/'):
-        # if content_type == 'application/jpeg':
-        #     parse_picture_data(self)
-        #     return
-        
-        content_length = int(self.headers.get('Content-Length', 0))
-        post_data = self.rfile.read(content_length)
+    # 将耗时的数据处理逻辑剥离到独立方法中
+    def _process_data_logic(self, data):
+        """后台线程执行的数据处理逻辑"""
         try:
-            data = json.loads(post_data)
-            # print(data) # 调整成save to file
-            print(f"Sensor data : {data}")
-
             if isinstance(data, list):
                 swings = {item.get("swing") for item in data}
-                if not swings or swings <= {None, ""}:
+                # 过滤掉 None 类型的 swing
+                clean_swings = {s for s in swings if s is not None and s != ""}
+
+                if not clean_swings:
+                    # 普通传感器数据处理 (包含耗时的 GPS 解析)
                     for item in data:
                         processed = process_sensor_data([item])
 
                         data_id = processed.get("data_id")
                         value = processed.get("value")
                         timestamp_str = processed.get("timestamp")
-                        if data_id and value and timestamp_str:
+
+                        # gps 为空的时候，触发视觉服务
+                        if data_id and (value is not None) and timestamp_str:
                             timestamp = datetime.strptime(timestamp_str, DATE_TIME_FORMAT)
                             if _on_get_sensor_data_callback:
                                 _on_get_sensor_data_callback(data_id, value, timestamp)
-
-                            
-
-                        response = {'status': 'received', 'processed': 'ok'}
-                        self._set_headers(200)
-                # else:
-                #     # 处理swing：faceid & photoid; 并更新到活动日志
-                #     process_person_data_from_sensorhub(self, data)
-                #     return
-            else:
-                response = {'status': 'received', 'processed': 'not json list'}
-                self._set_headers(400)
-            self.wfile.write(json.dumps(response).encode('utf-8'))
+                else:
+                    # 图片/FaceID 数据处理
+                    # 注意：process_person_data_from_sensorhub 依赖 self (RequestHandler实例)
+                    # 但在线程中直接调用 self 可能不太安全，不过如果是静态逻辑则无妨。
+                    # 如果该方法内部有 send_response 逻辑，需要重构。
+                    # 鉴于该场景较少，且图片通常走 /picture 接口，这里暂且保留
+                    pass
         except Exception as e:
-            self._set_headers(400)
-            self.wfile.write(json.dumps({'error': str(e)}).encode('utf-8'))
+            print(f"[Async Process Error] {e}")
+            import traceback
+            traceback.print_exc()
+
+    def do_POST(self):
+        # 读取数据
+        try:
+            content_length = int(self.headers.get('Content-Length', 0))
+            post_data = self.rfile.read(content_length)
+
+            # 特殊处理图片类型 (如果你的架构中图片走这个接口)
+            content_type = self.headers.get('Content-Type', '')
+            if content_type.startswith('image/') or content_type == 'application/jpeg':
+                parse_picture_data(self)
+                return
+
+            data = json.loads(post_data)
+            print(data)
+            # print(f"Sensor data received: {len(str(data))} bytes") # 减少刷屏
+
+            # 立即向客户端(sensorhub)返回成功响应
+            # 无论数据处理是否成功，只要 JSON 格式对，就先由服务端签收
+            response = {'status': 'received', 'processed': 'async'}
+            self._set_headers(200)
+            self.wfile.write(json.dumps(response).encode('utf-8'))
+
+            # 启动新线程进行耗时处理
+            # 主线程结束，连接正常关闭，不会触发 ConnectionResetError
+            process_thread = threading.Thread(
+                target=self._process_data_logic,
+                args=(data,),
+                daemon=True
+            )
+            process_thread.start()
+
+        except json.JSONDecodeError:
+            # JSON 解析失败，这通常是客户端数据错误，可以立即返回 400
+            try:
+                self._set_headers(400)
+                self.wfile.write(json.dumps({'error': 'Invalid JSON'}).encode('utf-8'))
+            except:
+                pass
+        except ConnectionResetError:
+            print("[Warning] Client disconnected before response could be sent.")
+        except Exception as e:
+            print(f"[Server Error] {e}")
 
 def run_sensor_server(server_class=HTTPServer, handler_class=SensorHTTPRequestHandler, port=8000):
     def run_http_server():

@@ -54,6 +54,10 @@ class ApplicationManager:
             "Scene": None
         }
 
+        # 视觉兜底的冷却时间（防止 GPS 没信号时疯狂拍照）
+        self.last_visual_fallback_time = 0
+        self.VISUAL_FALLBACK_COOLDOWN = 60.0 # 60秒内最多因掉 GPS 触发一次拍照
+
     def _map_scene_to_category(self, scene_val) -> str:
         if not scene_val:
             return "unknown"
@@ -239,6 +243,23 @@ class ApplicationManager:
             if self.tb:
                 self.tb.receive_and_transmit_data(data_id, value, timestamp)
 
+            if data_id == "Location" and value == LocationType.NULL:
+                now = time.time()
+                # 检查冷却时间，并且确保当前没有正在进行的视觉查询
+                if (now - self.last_visual_fallback_time > self.VISUAL_FALLBACK_COOLDOWN) and \
+                        not self.is_querying_visual:
+                    print(f"检测到 GPS 信号丢失，尝试触发视觉定位...")
+                    self.last_visual_fallback_time = now
+
+                    # 启动视觉查询线程
+                    threading.Thread(
+                        target=self.execute_visual_query,
+                        name="Visual-Fallback-Worker",
+                        daemon=True
+                    ).start()
+                else:
+                    print(f"检测到 GPS 信号丢失，但视觉触发被抑制")
+
             # 全维度变化检测逻辑，用于触发DQN
             if self.dqn_engine:
                 # 提取实际用于比对的值
@@ -414,13 +435,13 @@ class ApplicationManager:
                         ).start()
                     elif action == "QUERY_LOC_GPS":
                         print("DQN Action is QUERY_LOC_GPS")
-                        mock_location = LocationType.WORK
-                        self.tb.receive_and_transmit_data(
-                            data_id="Location",
-                            value=mock_location,
-                            timestamp=datetime.now(),
-                        )
-                        print("模拟的GPS位置已上报")
+                        # mock_location = LocationType.WORK
+                        # self.tb.receive_and_transmit_data(
+                        #     data_id="Location",
+                        #     value=mock_location,
+                        #     timestamp=datetime.now(),
+                        # )
+                        # print("模拟的GPS位置已上报")
 
                 except Exception as e:
                     print(f"[DQN 错误] 推理过程异常: {e}")
