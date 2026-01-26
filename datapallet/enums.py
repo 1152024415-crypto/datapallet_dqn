@@ -194,7 +194,7 @@ SceneType = add_string_methods(SceneType, {
     SceneType.NULL: "未知",
     SceneType.OTHER: "其他",
     SceneType.MEETINGROOM: "会议室",
-    SceneType.WORKSPACE: "工位办公",
+    SceneType.WORKSPACE: "办公",
     SceneType.DINING: "餐厅",
     SceneType.OUTDOOR_PARK: "室外园区",
     SceneType.SUBWAY_STATION: "地铁站",

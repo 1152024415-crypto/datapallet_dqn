@@ -75,7 +75,39 @@ class ApplicationManager:
         """
         将DQN推理结果及完整的中文输入状态发送到 App Server
         """
-        action_type = "probe" if action_name in PROBE_ACTIONS else "recommend"
+        # 保留原始 action_name 用于逻辑判断
+        raw_action_name = action_name
+
+        # 定义动作名称的中英文映射字典
+        ACTION_CN_MAP = {
+            # 探测动作 (Probe)
+            "QUERY_LOC_GPS": "GPS位置感知",
+            "QUERY_VISUAL": "场景感知",
+            "QUERY_LOC_NET": "网络位置感知",
+            "QUERY_SOUND_INTENSITY": "环境音感知",
+            "QUERY_LIGHT_INTENSITY": "光照感知",
+
+            # 推荐动作 (Recommend)
+            "transit_QR_code": "打开乘车码",
+            "step_count": "查看步数",
+            "step_count_and_map": "步数与地图",
+            "silent_DND": "推荐打开静音模式",
+            "relax": "放松一下",
+            "Play Music/news": "播放新闻音乐",
+            "payment_QR_code": "打开付款码",
+            "navigation": "开始导航",
+            "audio_record": "开启录音",
+            "arrived": "到达提醒",
+            "parking": "停车记录",
+            "preferred_APP": "常用应用",
+
+            "NONE": "无推荐"
+        }
+
+        # 3. 获取中文显示名称
+        display_action_name = ACTION_CN_MAP.get(raw_action_name, raw_action_name)
+
+        action_type = "probe" if raw_action_name in PROBE_ACTIONS else "recommend"
         current_time = int(time.time())
 
         state_values = {}
@@ -133,7 +165,7 @@ class ApplicationManager:
             "id": f"rec_{current_time}_{random.randint(100, 999)}",
             "timestamp": current_time,
             "action_type": action_type,
-            "action_name": action_name,
+            "action_name": display_action_name,
             "scene_category": scene_category,
             "image": image_data,
             "dqn_state": {
@@ -313,13 +345,13 @@ class ApplicationManager:
     def start_dqn_inference_loop(self):
         print("[DQN] 启动推理线程...")
         while self.running:
-            is_event_triggered = self.inference_trigger_event.wait(timeout=2.0)
+            is_event_triggered = self.inference_trigger_event.wait(timeout=5.0)
 
             if is_event_triggered:
                 print("[DQN] 触发源: 姿态变化")
                 self.inference_trigger_event.clear()
             else:
-                print("[DQN] 触发源: 定时周期 (20s)")
+                print("[DQN] 触发源: 定时周期 (5s)")
                 pass
 
             if self.dqn_engine and self.dp:

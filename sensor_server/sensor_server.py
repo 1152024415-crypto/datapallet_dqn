@@ -695,7 +695,7 @@ def parse_gnss_data(data):
     # 这样避免了频繁启动 MCP 子进程导致阻塞
     if dist_sq < (0.0005 ** 2) and time_diff < 60.0:
         if _last_gnss_query["cached_result"]:
-            # print("Using cached GPS address info")
+            print("Using cached GPS address info")
             return _last_gnss_query["cached_result"]
         elif _last_result["Location type"]:
             # 如果缓存也没有，但 _last_result 有值，用 _last_result
