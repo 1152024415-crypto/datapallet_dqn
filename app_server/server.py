@@ -62,6 +62,16 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
         data = recommendation_data.get()
 
         if data:
+            # 加入调试日志：打印 action_name 和 dqn_state 的四个动作
+            action_name = data.get("action_name", "N/A")
+            dqn_state = data.get("dqn_state", {})
+            activity = dqn_state.get("activity", "N/A")
+            location = dqn_state.get("location", "N/A")
+            light = dqn_state.get("light", "N/A")
+            scene = dqn_state.get("scene", "N/A")
+
+            print(f">>> [GET /latest-recommendation] Action: {action_name}")
+            print(f">>> [GET /latest-recommendation] dqn_state -> activity: {activity}, location: {location}, light: {light}, scene: {scene}")
             self.send_response(200)
             self.send_header("Content-Type", "application/json; charset=utf-8")
             self.send_header("Access-Control-Allow-Origin", "*")
