@@ -32,7 +32,7 @@ SCENE_TYPE_MAPPING = {
     "crosswalk": SceneType.OUTDOOR_PARK,
 
     # 地铁站 (适配细粒度分类结果：对应 labels.txt 中的 subway_station/platform)
-    "subway_station/platform": SceneType.SUBWAY_STATION,
+    "platform": SceneType.SUBWAY_STATION,
 }
 def predict_scene(image_path, server_url="http://127.0.0.1:8200/predict/"):
     """
