@@ -349,7 +349,8 @@ class ApplicationManager:
         self.tb = TestBed(self.dp)
         self.dp.connect_testbed(self.tb)
         print("[初始化] 加载 DQN 模型...")
-        ckpt_path = r"D:\c00894262\datapallet\dqn_engine\dqn_aod_ckpt_episode_2200.pt"
+        path = os.path.dirname(os.path.abspath(__file__))
+        ckpt_path = os.path.join(path, "dqn_engine", "dqn_aod_ckpt_episode_2200.pt")
         try:
             self.dqn_engine = DQNEngineAdapter(
                 ckpt_path=str(Path(ckpt_path)),
