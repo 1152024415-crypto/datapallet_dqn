@@ -1,0 +1,1223 @@
+=== 应用启动 ===
+[初始化] 正在初始化组件...
+数据托盘已启动
+从目录 scene_images 加载缓存图像...
+从目录 scene_images 加载缓存图像...
+[初始化] 加载 DQN 模型...
+[DQN Adapter] Loading model from D:\c00894262\datapallet\dqn_engine\dqn_aod_ckpt_episode_2200.pt
+[DQN Adapter] Config: obs_dim=48, device=cpu, changed_flag=1
+[OK] Loaded checkpoint: D:\c00894262\datapallet\dqn_engine\dqn_aod_ckpt_episode_2200.pt
+[初始化] DQN 模型加载完成
+[初始化] 组件初始化完成
+[服务启动] 正在启动服务...
+[DQN] 启动推理线程...[服务启动] 所有服务已启动
+
+=== 应用启动完成 ===
+Starting sensor server http server on port 8000...
+============================================================
+HTTP轮询服务器启动 (新统一格式)
+============================================================
+监听地址: http://0.0.0.0:8002
+GET 接口: http://0.0.0.0:8002/latest-recommendation
+POST 接口: http://0.0.0.0:8002/update-recommendation
+============================================================
+数据格式 (POST /update-recommendation):
+```json
+{
+  "id": "rec_<timestamp>_001",
+  "timestamp": <unix_timestamp>,
+  "action_type": "probe|recommend|none",
+  "action_name": "动作名称",
+  "scene_category": "场景类别",
+  "image": "data:image/jpeg;base64,..."  # 或 null
+}
+```
+============================================================
+============================================================
+服务器运行中... (按 Ctrl+C 停止)
+============================================================
+INFO:     Started server process [20664]
+INFO:     Started server process [20664]
+INFO:     Waiting for application startup.
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+--- 正在初始化模型 ---
+INFO:     Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
+[27/Jan/2026 15:01:55.0719 INFO fs_ops.py:540 ] Loading model from models\rope_vit_reg4_b14_capi-places365.pt on device cpu...
+
+
+INFO:     192.168.43.26:61223 - "GET /api/client_status HTTP/1.1" 200 OK
+INFO:     192.168.43.26:61224 - "WebSocket /ws" [accepted]
+INFO:     connection open
+[Server] 客户端已连接: Address(host='192.168.43.26', port=61224)
+INFO:     Application startup complete.
+--- 模型加载完成，服务已就绪 ---
+INFO:     Uvicorn running on http://0.0.0.0:8200 (Press CTRL+C to quit)
+
+
+
+
+[DQN] 触发源: 定时周期 (5s)
+[Skipped] Data Unknown & Persistence Expired
+DQN [Skipped] Data Unknown & Persistence Expired
+[127.0.0.1] "POST /update-recommendation HTTP/1.1" 200 -
+[127.0.0.1] POST /update-recommendation - 200 OK - Action: recommend (无推荐)
+[192.168.43.26] "GET /latest-recommendation HTTP/1.1" 200 -
+
+[192.168.43.26] "GET /latest-recommendation HTTP/1.1" 200 -
+
+[DQN] 触发源: 定时周期 (5s)
+[Skipped] Data Unknown & Persistence Expired
+DQN [Skipped] Data Unknown & Persistence Expired
+
+[127.0.0.1] POST /update-recommendation - 200 OK - Action: recommend (无推荐)
+[DQN] 触发源: 定时周期 (5s)
+[Skipped] Data Unknown & Persistence Expired
+DQN [Skipped] Data Unknown & Persistence Expired
+
+[127.0.0.1] POST /update-recommendation - 200 OK - Action: recommend (无推荐)
+192.168.43.26 - - [27/Jan/2026 15:02:11] "POST / HTTP/1.0" 200 -
+[{'sensor': 'acc', 'duration': 1000, 'timestamp': '2026-1-27 7:2:10', 'data': [[69561, 986003, 222144], [220653, 657534, 194609], [80495, 782133, 137587], [394178, 845779, 153118], [399902, 1254506, 216908]]}, {'sensor': 'gyro', 'duration': 1000, 'timestamp': '2026-1-27 7:2:10', 'data': [[-37347, -57154, 7509], [16586, -719, -18461], [-11149, -2600, -25774], [20274, -47770, -3450], [-3588, 1686, -1808]]}, {'sensor': 'mag', 'duration': 1000, 'timestamp': '2026-1-27 7:2:10', 'data': [[-684, -625, -598, 3], [-800, -441, -674, 3], [-740, -681, -582, 3], [-748, -697, -698, 3], [-768, -809, -726, 3]]}, {'sensor': 'airpress', 'duration': 1000, 'timestamp': '2026-1-27 7:2:10', 'data': [[2098593, -95408, 1041], [2098656, -95664, 1041], [2098659, -95677, 1040], [2098630, -95559, 1040], [2098655, -95660, 1041]]}, {'sensor': 'als', 'duration': 4000, 'timestamp': '2026-1-27 7:2:8', 'data': [[76391], [79330], [67890], [71386]]}, {'gnss': 'gps', 'duration': 1, 'timestamp': '2026-1-27 7:2:10', 'data': [268256961, 4121, 996300894, 2793, 3006131, 37721, -1063, 3368151, 698, 762, 1912, 4691, 8679, 255]}, {'audio': 'noise', 'duration': 1, 'timestamp': '2000-0-0 0:0:0', 'data': 0}]
+[TestBed] 透传数据给 DataPallet: ID=Light_Intensity
+wgs_lon: 118.76832177286997, wgs_lat: 31.978721767845855 gcj_lon: 118.77353382945991, gcj_lat: 31.97669673370996
+回调: Light_Intensity = 刺眼
+>>> _last_gnss_query 内容: {'timestamp': 0, 'longitude': 0.0, 'latitude': 0.0, 'cached_result': None}
+>>> _last_result 内容: {'Specific address': '', 'Location type': '', 'Longitude': 0.0, 'Latitude': 0.0}
+>>> 3. 计算完成: dist_sq=15129.661472337515, time_diff=1769497331.8306634
+[INFO] 修正路径 amap-mcp-server: amap_mcp_server.py -> D:\c00894262\datapallet\sensor_server\amap_mcp_server.pySuccess to initialize server: <sensor_server.mcp_client.Server object at 0x0000014EE1854CE0>
+[01/27/26 15:02:13] INFO     Processing request of type           server.py:709
+                             ListToolsRequest                                  
+Executing tool: maps_regeo
+With arguments: {'location': '118.77353382945991,31.97669673370996', 'radius': '500'}
+Executing maps_regeo...
+                                                   INFO     Warning: InsecureRequestWarning:     server.py:699
+                             Unverified HTTPS request is being                 
+                             made to host 'restapi.amap.com'.                  
+                             Adding certificate verification is                
+                             strongly advised. See:                            
+                             https://urllib3.readthedocs.io/en/la              
+                             test/advanced-usage.html#tls-warning              
+                             s                                                 
+####status= True, json_str= {
+  "results": [
+    {
+      "country": "中国",
+      "province": "江苏省",
+      "city": "南京市",
+      "district": "雨花台区",
+      "township": "铁心桥街道",
+      "neighborhood_name": [],
+      "neighborhood_type": [],
+      "building_name": [],
+      "building_type": [],
+      "street": "软件大道",
+      "number": "248号",
+      "distance": "69.7503",
+      "location": "118.773166,31.977241",
+      "ori_location": "118.77353382945991,31.97669673370996",
+      "poi_address": "软件大道101号",
+      "poi_name": "华为南京研究所",
+      "poi_distance": "422.39",
+      "poi_type": "科教文化服务;科研机构;科研机构",
+      "poi_loc": "118.770068,31.979102",
+      "aoi_name": "华为南京研究所",
+      "aoi_distance": "0",
+      "aoi_type": "141300",
+      "aoi_loc": "118.770068,31.979102"
+    }
+  ]
+}
+Success to cleanup all servers
+[TestBed] 透传数据给 DataPallet: ID=Location
+[TestBed] 透传数据给 DataPallet: ID=Sound_Intensity
+回调: Location = 科研机构
+回调: Sound_Intensity = 安静
+[DQN] 触发源: 定时周期 (5s)
+[Skipped] Data Unknown & Persistence Expired
+DQN [Skipped] Data Unknown & Persistence Expired
+
+[127.0.0.1] POST /update-recommendation - 200 OK - Action: recommend (无推荐)
+[DQN] 触发源: 定时周期 (5s)
+[Skipped] Data Unknown & Persistence Expired
+DQN [Skipped] Data Unknown & Persistence Expired
+
+[127.0.0.1] POST /update-recommendation - 200 OK - Action: recommend (无推荐)[DQN] 触发源: 定时周期 (5s)
+[Skipped] Data Unknown & Persistence Expired
+DQN [Skipped] Data Unknown & Persistence Expired
+
+[127.0.0.1] POST /update-recommendation - 200 OK - Action: recommend (无推荐)
+[DQN] 触发源: 定时周期 (5s)
+[Skipped] Data Unknown & Persistence Expired
+DQN [Skipped] Data Unknown & Persistence Expired
+
+[127.0.0.1] POST /update-recommendation - 200 OK - Action: recommend (无推荐)
+[{'sensor': 'acc', 'duration': 1000, 'timestamp': '2026-1-27 7:2:30', 'data': [[13900, 773044, 29964], [-8272, 881327, -299222], [-84330, 1227796, -145066], [121541, 1265870, -189633], [10645, 867100, 66450]]}, {'sensor': 'gyro', 'duration': 1000, 'timestamp': '2026-1-27 7:2:30', 'data': [[-20909, 34332, 7321], [-20826, -3671, 2048], [7792, 15815, -3341], [-8697, 15128, -432], [21174, -18473, -17783]]}, {'sensor': 'mag', 'duration': 1000, 'timestamp': '2026-1-27 7:2:30', 'data': [[-216, -729, -346, 3], [-228, -745, -278, 3], [-212, -761, -326, 3], [-260, -713, -406, 3], [-292, -681, -454, 3]]}, {'sensor': 'airpress', 'duration': 1000, 'timestamp': '2026-1-27 7:2:30', 'data': [[2098595, -95416, 1033], [2098588, -95388, 1032], [2098612, -95485, 1032], [2098552, -95241, 1029], [2098524, -95127, 1030]]}, {'sensor': 'als', 'duration': 4000, 'timestamp': '2026-1-27 7:2:28', 'data': [[68387], [66362], [74315], [64884], [70228]]}, {'gnss': 'gps', 'duration': 1, 'timestamp': '2026-1-27 7:2:30', 'data': [268258346, -6665, 996302660, -5914, 3162422, 42216, -193, 3732659, 626, 648, 1591, 6811, 12029, 255]}, {'audio': 'noise', 'duration': 1, 'timestamp': '2000-0-0 0:0:0', 'data': 0}]
+192.168.43.26 - - [27/Jan/2026 15:02:31] "POST / HTTP/1.0" 200 -
+[TestBed] 透传数据给 DataPallet: ID=Light_Intensity
+wgs_lon: 118.76853223312355, wgs_lat: 31.978886794233404 gcj_lon: 118.77374414995349, gcj_lat: 31.97686158120631回调: Light_Intensity = 刺眼
+
+>>> _last_gnss_query 内容: {'timestamp': 1769497331.8306634, 'longitude': 118.77353382945991, 'latitude': 31.97669673370996, 'cached_result': {'Specific address': '中国江苏省南京市雨花台区铁心桥街道 华为南京研究所', 'Location type': <LocationType.Research_Institution: 22>, 'Longitude': 118.77353382945991, 'Latitude': 31.97669673370996}}
+>>> _last_result 内容: {'Specific address': '中国江苏省南京市雨花台区铁心桥街道 华为南京研究所', 'Location type': <LocationType.Research_Institution: 22>, 'Longitude': 118.77353382945991, 'Latitude': 31.97669673370996}
+>>> 3. 计算完成: dist_sq=7.140940707237941e-08, time_diff=20.00826644897461
+>>> 4. 进入缓存判断分支
+Using cached GPS address info
+[TestBed] 透传数据给 DataPallet: ID=Location
+[TestBed] 透传数据给 DataPallet: ID=Sound_Intensity
+回调: Location = 科研机构
+回调: Sound_Intensity = 安静[DQN] 触发源: 定时周期 (5s)
+[Skipped] Data Unknown & Persistence Expired
+DQN [Skipped] Data Unknown & Persistence Expired
+
+[127.0.0.1] POST /update-recommendation - 200 OK - Action: recommend (无推荐)
+[DQN] 触发源: 定时周期 (5s)
+[Skipped] Data Unknown & Persistence Expired
+DQN [Skipped] Data Unknown & Persistence Expired
+
+[127.0.0.1] POST /update-recommendation - 200 OK - Action: recommend (无推荐)[DQN] 触发源: 定时周期 (5s)
+[Skipped] Data Unknown & Persistence Expired
+DQN [Skipped] Data Unknown & Persistence Expired
+
+[127.0.0.1] POST /update-recommendation - 200 OK - Action: recommend (无推荐)[DQN] 触发源: 定时周期 (5s)
+[Skipped] Data Unknown & Persistence Expired
+DQN [Skipped] Data Unknown & Persistence Expired
+
+[127.0.0.1] POST /update-recommendation - 200 OK - Action: recommend (无推荐)
+[{'sensor': 'acc', 'duration': 1000, 'timestamp': '2026-1-27 7:2:50', 'data': [[173216, 1017074, 19082], [161550, 759927, 39978], [200266, 1004376, 183532], [149046, 1335419, -59413], [50920, 1112278, -3839]]}, {'sensor': 'gyro', 'duration': 1000, 'timestamp': '2026-1-27 7:2:50', 'data': [[10063, 7992, -5666], [-2539, -34268, -29139], [-14041, -40346, -24283], [-2990, -16903, 9575], [11807, -18675, 13099]]}, {'sensor': 'mag', 'duration': 1000, 'timestamp': '2026-1-27 7:2:50', 'data': [[-246, -542, -406, 3], [-326, -574, -450, 3], [-278, -606, -366, 3], [-230, -622, -374, 3], [-190, -606, -434, 3]]}, {'sensor': 'airpress', 'duration': 1000, 'timestamp': '2026-1-27 7:2:50', 'data': [[2098444, -94802, 1023], [2098533, -95164, 1022], [2098584, -95371, 1022], [2098529, -95148, 1022], [2098473, -94920, 1022]]}, {'sensor': 'als', 'duration': 4000, 'timestamp': '2026-1-27 7:2:47', 'data': [[42043], [66366], [63292], [64940], [61364]]}, {'gnss': 'gps', 'duration': 1, 'timestamp': '2026-1-27 7:2:50', 'data': [268259603, 4031, 996304158, -2322, 3180727, 40743, 16, 2647783, 860, 824, 2196, 6242, 11510, 255]}, {'audio': 'noise', 'duration': 1, 'timestamp': '2000-0-0 0:0:0', 'data': 0}]
+[TestBed] 透传数据给 DataPallet: ID=Light_Intensity
+wgs_lon: 118.76871083477454, wgs_lat: 31.97903671813401 gcj_lon: 118.77392263248976, gcj_lat: 31.97701134977965
+回调: Light_Intensity = 刺眼
+>>> _last_gnss_query 内容: {'timestamp': 1769497331.8306634, 'longitude': 118.77353382945991, 'latitude': 31.97669673370996, 'cached_result': {'Specific address': '中国江苏省南京市雨花台区铁心桥街道 华为南京研究所', 'Location type': <LocationType.Research_Institution: 22>, 'Longitude': 118.77353382945991, 'Latitude': 31.97669673370996}}
+192.168.43.26 - - [27/Jan/2026 15:02:51] "POST / HTTP/1.0" 200 -
+>>> _last_result 内容: {'Specific address': '中国江苏省南京市雨花台区铁心桥街道 华为南京研究所', 'Location type': <LocationType.Research_Institution: 22>, 'Longitude': 118.77353382945991, 'Latitude': 31.97669673370996}
+>>> 3. 计算完成: dist_sq=2.5015106732802124e-07, time_diff=40.006638050079346
+[INFO] 修正路径 amap-mcp-server: amap_mcp_server.py -> D:\c00894262\datapallet\sensor_server\amap_mcp_server.pySuccess to initialize server: <sensor_server.mcp_client.Server object at 0x0000014EE18A2570>
+[01/27/26 15:02:53] INFO     Processing request of type           server.py:709
+                             ListToolsRequest                                  
+Executing tool: maps_regeo
+With arguments: {'location': '118.77392263248976,31.97701134977965', 'radius': '500'}
+                               
+Executing maps_regeo...
+                    INFO     Warning: InsecureRequestWarning:     server.py:699
+                             Unverified HTTPS request is being                 
+                             made to host 'restapi.amap.com'.                  
+                             Adding certificate verification is                
+                             strongly advised. See:                            
+                             https://urllib3.readthedocs.io/en/la              
+                             test/advanced-usage.html#tls-warning              
+                             s                                                 
+####status= True, json_str= {
+  "results": [
+    {
+      "country": "中国",
+      "province": "江苏省",
+      "city": "南京市",
+      "district": "雨花台区",
+      "township": "雨花街道",
+      "neighborhood_name": [],
+      "neighborhood_type": [],
+      "building_name": [],
+      "building_type": [],
+      "street": "软件大道",
+      "number": "250号",
+      "distance": "38.0691",
+      "location": "118.774271,31.977184",
+      "ori_location": "118.77392263248976,31.97701134977965",
+      "poi_address": "软件大道与文竹路交叉口西220米",
+      "poi_name": "共青广场",
+      "poi_distance": "83.1806",
+      "poi_type": "风景名胜;公园广场;城市广场",
+      "poi_loc": "118.774612,31.976545",
+      "aoi_name": "华为南京研究所",
+      "aoi_distance": "0",
+      "aoi_type": "141300",
+      "aoi_loc": "118.770068,31.979102"
+    }
+  ]
+}
+Success to cleanup all servers
+no suitable location data in {'country': '中国', 'province': '江苏省', 'city': '南京市', 'district': '雨花台区', 'township': '雨花街道', 'neighborhood_name': [], 'neighborhood_type': [], 'building_name': [], 'building_type': [], 'street': '软件大道', 'number': '250号', 'distance': '38.0691', 'location': '118.774271,31.977184', 'ori_location': '118.77392263248976,31.97701134977965', 'poi_address': '软件大道与文竹路交叉口西220米', 'poi_name': '共青广场', 'poi_distance': '83.1806', 'poi_type': '风景名胜;公园广场;城市广场', 'poi_loc': '118.774612,31.976545', 'aoi_name': '华为南京研究所', 'aoi_distance': '0', 'aoi_type': '141300', 'aoi_loc': '118.770068,31.979102'}
+[TestBed] 透传数据给 DataPallet: ID=Location
+[Trigger] 状态变化 (Location): 22 -> 
+[TestBed] 透传数据给 DataPallet: ID=Sound_Intensity
+回调: Location = 未知
+[DQN] 触发源: 姿态变化
+[Skipped] Data Unknown & Persistence Expired
+DQN [Skipped] Data Unknown & Persistence Expired
+回调: Sound_Intensity = 安静[DQN] 触发源: 定时周期 (5s)
+[Skipped] Data Unknown & Persistence Expired
+DQN [Skipped] Data Unknown & Persistence Expired
+[DQN] 触发源: 定时周期 (5s)
+[Skipped] Data Unknown & Persistence Expired
+DQN [Skipped] Data Unknown & Persistence Expired[DQN] 触发源: 定时周期 (5s)
+[Skipped] Data Unknown & Persistence Expired
+DQN [Skipped] Data Unknown & Persistence Expired[{'sensor': 'acc', 'duration': 1000, 'timestamp': '2026-1-27 7:3:10', 'data': [[173926, 1064257, 155654], [-90768, 807096, 90484], [77833, 957044, 120451], [238048, 1131625, 131670], [105406, 1043410, -116315]]}, {'sensor': 'gyro', 'duration': 1000, 'timestamp': '2026-1-27 7:3:10', 'data': [[-11173, -57, 18389], [19190, -15442, -14974], [-1708, -22554, -11258], [15689, -8001, -16803], [24636, -10445, 10374]]}, {'sensor': 'mag', 'duration': 1000, 'timestamp': '2026-1-27 7:3:10', 'data': [[-246, -458, -686, 3], [-278, -494, -678, 3], [-422, -574, -478, 3], [-390, -586, -502, 3], [-306, -646, -486, 3]]}, {'sensor': 'airpress', 'duration': 1000, 'timestamp': '2026-1-27 7:3:10', 'data': [[2098452, -94835, 1021], [2098465, -94887, 1021], [2098439, -94782, 1021], [2098423, -94717, 1022], [2098458, -94859, 1022]]}, {'sensor': 'als', 'duration': 4000, 'timestamp': '2026-1-27 7:3:7', 'data': [[58861], [47578], [33809], [37329], [37897]]}, {'gnss': 'gps', 'duration': 1, 'timestamp': '2026-1-27 7:3:10', 'data': [268260689, 3237, 996305386, -6535, 3000408, 29479, -647, 2426167, 771, 858, 2270, 7199, 14169, 255]}, {'audio': 'noise', 'duration': 1, 'timestamp': '2000-0-0 0:0:0', 'data': 0}]
+192.168.43.26 - - [27/Jan/2026 15:03:11] "POST / HTTP/1.0" 200 -
+[TestBed] 透传数据给 DataPallet: ID=Light_Intensity
+wgs_lon: 118.7688571931285, wgs_lat: 31.979166173645353 gcj_lon: 118.77406889286947, gcj_lat: 31.97714067563775
+回调: Light_Intensity = 刺眼
+>>> _last_gnss_query 内容: {'timestamp': 1769497371.8373015, 'longitude': 118.77392263248976, 'latitude': 31.97701134977965, 'cached_result': {'Specific address': '中国江苏省南京市雨花台区雨花街道 共青广场', 'Location type': '', 'Longitude': 118.77392263248976, 'Latitude': 31.97701134977965}}
+>>> _last_result 内容: {'Specific address': '中国江苏省南京市雨花台区雨花街道 共青广场', 'Location type': '', 'Longitude': 118.77392263248976, 'Latitude': 31.97701134977965}
+>>> 3. 计算完成: dist_sq=3.811727624490903e-08, time_diff=20.02803659439087
+>>> 4. 进入缓存判断分支
+Using cached GPS address info
+[TestBed] 透传数据给 DataPallet: ID=Location
+[TestBed] 透传数据给 DataPallet: ID=Sound_Intensity
+回调: Location = 未知
+回调: Sound_Intensity = 安静[DQN] 触发源: 定时周期 (5s)
+[Skipped] Data Unknown & Persistence Expired
+DQN [Skipped] Data Unknown & Persistence Expired[DQN] 触发源: 定时周期 (5s)
+[Skipped] Data Unknown & Persistence Expired
+DQN [Skipped] Data Unknown & Persistence Expired
+[DQN] 触发源: 定时周期 (5s)
+[Skipped] Data Unknown & Persistence Expired
+DQN [Skipped] Data Unknown & Persistence Expired[{'ar': 'AR_ACTIVITY_WALK_SLOW', 'duration': 0, 'timestamp': '2026-1-27 7:3:24', 'data': 2}]
+[TestBed] 透传数据给 DataPallet: ID=activity_mode
+回调: activity_mode = 慢走
+192.168.43.26 - - [27/Jan/2026 15:03:25] "POST / HTTP/1.0" 200 -192.168.43.26 - - [27/Jan/2026 15:03:28] "POST / HTTP/1.0" 200 -
+[{'ar': 'AR_ACTIVITY_STATIONARY', 'duration': 0, 'timestamp': '2026-1-27 7:3:27', 'data': 1}]
+[TestBed] 透传数据给 DataPallet: ID=activity_mode
+[Trigger] 状态变化 (activity_mode): 4 -> 6
+回调: activity_mode = 静止[DQN] 触发源: 姿态变化
+
+
+[DQN 推理] 15:03:28
+  ├── State: Act=stationary(0s) | Loc=unknown | Light=harsh | Flags: Walk=0s, Relax=4s
+  └── Output Action: [NONE]
+
+[{'sensor': 'acc', 'duration': 1000, 'timestamp': '2026-1-27 7:3:30', 'data': [[-42322, 1020308, -17950], [-13050, 1005758, -25465], [-45208, 1012553, -26841], [-24353, 1006523, -43064], [-20406, 1005506, -16829]]}, {'sensor': 'gyro', 'duration': 1000, 'timestamp': '2026-1-27 7:3:30', 'data': [[-100, 952, -649], [-213, 532, -678], [-108, -967, -1144], [263, 1740, -24], [713, 532, -1437]]}, {'sensor': 'mag', 'duration': 1000, 'timestamp': '2026-1-27 7:3:30', 'data': [[-326, -638, -422, 3], [-326, -638, -422, 3], [-342, -642, -422, 3], [-334, -654, -422, 3], [-342, -654, -422, 3]]}, {'sensor': 'airpress', 'duration': 1000, 'timestamp': '2026-1-27 7:3:30', 'data': [[2098397, -94611, 1009], [2098426, -94729, 1009], [2098426, -94729, 1009], [2098460, -94867, 1007], [2098424, -94721, 1007]]}, {'sensor': 'als', 'duration': 4000, 'timestamp': '2026-1-27 7:3:27', 'data': [[53406], [53639], [61322], [57821], [57733]]}, {'gnss': 'gps', 'duration': 1, 'timestamp': '2026-1-27 7:3:30', 'data': [268260956, -3899, 996305979, -5034, 3093042, 0, 0, 3620024, 834, 800, 2201, 6120, 11650, 255]}, {'audio': 'noise', 'duration': 1, 'timestamp': '2000-0-0 0:0:0', 'data': 0}]
+[TestBed] 透传数据给 DataPallet: ID=Light_Intensity
+wgs_lon: 118.76892789515841, wgs_lat: 31.97919795060443 gcj_lon: 118.77413954441965, gcj_lat: 31.977172396806502回调: Light_Intensity = 刺眼
+
+192.168.43.26 - - [27/Jan/2026 15:03:31] "POST / HTTP/1.0" 200 -
+>>> _last_gnss_query 内容: {'timestamp': 1769497371.8373015, 'longitude': 118.77392263248976, 'latitude': 31.97701134977965, 'cached_result': {'Specific address': '中国江苏省南京市雨花台区雨花街道 共青广场', 'Location type': '', 'Longitude': 118.77392263248976, 'Latitude': 31.97701134977965}}
+>>> _last_result 内容: {'Specific address': '中国江苏省南京市雨花台区雨花街道 共青广场', 'Location type': '', 'Longitude': 118.77392263248976, 'Latitude': 31.97701134977965}
+>>> 3. 计算完成: dist_sq=7.298693018891929e-08, time_diff=40.03735041618347
+>>> 4. 进入缓存判断分支
+Using cached GPS address info
+[TestBed] 透传数据给 DataPallet: ID=Location
+[TestBed] 透传数据给 DataPallet: ID=Sound_Intensity
+回调: Location = 未知
+回调: Sound_Intensity = 安静[DQN] 触发源: 定时周期 (5s)
+
+[DQN 推理] 15:03:33
+  ├── State: Act=stationary(5s) | Loc=unknown | Light=harsh | Flags: Walk=0s, Relax=9s
+  └── Output Action: [NONE]
+[{'ar': 'AR_ACTIVITY_STATIONARY', 'duration': 0, 'timestamp': '2026-1-27 7:3:35', 'data': 2}]
+192.168.43.26 - - [27/Jan/2026 15:03:36] "POST / HTTP/1.0" 200 -
+[TestBed] 透传数据给 DataPallet: ID=activity_mode
+回调: activity_mode = 静止[DQN] 触发源: 定时周期 (5s)
+
+[DQN 推理] 15:03:38
+  ├── State: Act=stationary(10s) | Loc=unknown | Light=harsh | Flags: Walk=0s, Relax=14s
+  └── Output Action: [NONE]
+
+192.168.43.26 - - [27/Jan/2026 15:03:41] "POST / HTTP/1.0" 200 -
+[{'ar': 'AR_ACTIVITY_STATIONARY', 'duration': 0, 'timestamp': '2026-1-27 7:3:40', 'data': 1}]
+[TestBed] 透传数据给 DataPallet: ID=activity_mode
+回调: activity_mode = 静止[DQN] 触发源: 定时周期 (5s)
+
+[DQN 推理] 15:03:43
+  ├── State: Act=stationary(15s) | Loc=unknown | Light=harsh | Flags: Walk=0s, Relax=19s
+  └── Output Action: [NONE]
+192.168.43.26 - - [27/Jan/2026 15:03:43] "POST / HTTP/1.0" 200 -
+[{'ar': 'AR_ACTIVITY_STATIONARY', 'duration': 0, 'timestamp': '2026-1-27 7:3:42', 'data': 2}]
+[TestBed] 透传数据给 DataPallet: ID=activity_mode
+回调: activity_mode = 静止[DQN] 触发源: 定时周期 (5s)
+
+[DQN 推理] 15:03:48
+  ├── State: Act=stationary(20s) | Loc=unknown | Light=harsh | Flags: Walk=0s, Relax=24s
+  └── Output Action: [NONE]
+[{'ar': 'AR_ACTIVITY_STATIONARY', 'duration': 0, 'timestamp': '2026-1-27 7:3:48', 'data': 1}]
+[TestBed] 透传数据给 DataPallet: ID=activity_mode
+192.168.43.26 - - [27/Jan/2026 15:03:49] "POST / HTTP/1.0" 200 -
+回调: activity_mode = 静止[{'sensor': 'acc', 'duration': 1000, 'timestamp': '2026-1-27 7:3:50', 'data': [[-30894, 1006114, 21746], [-45175, 1015274, 17804], [-46385, 1019221, 28091], [-43596, 1022199, 11017], [-21258, 1000191, 4919]]}, {'sensor': 'gyro', 'duration': 1000, 'timestamp': '2026-1-27 7:3:50', 'data': [[-1094, -2547, -196], [279, 357, -967], [432, -61, -1272], [288, -1915, -1596], [149, 1233, -225]]}, {'sensor': 'mag', 'duration': 1000, 'timestamp': '2026-1-27 7:3:50', 'data': [[-342, -590, -438, 3], [-326, -590, -446, 3], [-330, -574, -454, 3], [-326, -574, -454, 3], [-326, -574, -450, 3]]}, {'sensor': 'airpress', 'duration': 1000, 'timestamp': '2026-1-27 7:3:50', 'data': [[2098430, -94745, 1000], [2098406, -94647, 999], [2098382, -94550, 998], [2098363, -94473, 998], [2098405, -94643, 997]]}, {'sensor': 'als', 'duration': 4000, 'timestamp': '2026-1-27 7:3:47', 'data': [[56551], [56615], [55814], [55763], [55654]]}, {'gnss': 'gps', 'duration': 1, 'timestamp': '2026-1-27 7:3:50', 'data': [268260956, -3899, 996305979, -5034, 3093042, 0, 0, 3620024, 826, 808, 2017, 6120, 10678, 255]}, {'audio': 'noise', 'duration': 1, 'timestamp': '2000-0-0 0:0:0', 'data': 0}]
+[TestBed] 透传数据给 DataPallet: ID=Light_Intensity
+wgs_lon: 118.76892789515841, wgs_lat: 31.97919795060443 gcj_lon: 118.77413954441965, gcj_lat: 31.977172396806502回调: Light_Intensity = 刺眼
+
+>>> _last_gnss_query 内容: {'timestamp': 1769497371.8373015, 'longitude': 118.77392263248976, 'latitude': 31.97701134977965, 'cached_result': {'Specific address': '中国江苏省南京市雨花台区雨花街道 共青广场', 'Location type': '', 'Longitude': 118.77392263248976, 'Latitude': 31.97701134977965}}
+192.168.43.26 - - [27/Jan/2026 15:03:51] "POST / HTTP/1.0" 200 -
+>>> _last_result 内容: {'Specific address': '中国江苏省南京市雨花台区雨花街道 共青广场', 'Location type': '', 'Longitude': 118.77392263248976, 'Latitude': 31.97701134977965}
+>>> 3. 计算完成: dist_sq=7.298693018891929e-08, time_diff=60.13995862007141
+[INFO] 修正路径 amap-mcp-server: amap_mcp_server.py -> D:\c00894262\datapallet\sensor_server\amap_mcp_server.py[DQN] 触发源: 定时周期 (5s)
+
+[DQN 推理] 15:03:53
+  ├── State: Act=stationary(25s) | Loc=unknown | Light=harsh | Flags: Walk=0s, Relax=29s
+  └── Output Action: [QUERY_LOC_GPS]
+
+
+[127.0.0.1] POST /update-recommendation - 200 OK - Action: probe (GPS位置感知)
+DQN Action is QUERY_LOC_GPS
+Success to initialize server: <sensor_server.mcp_client.Server object at 0x0000014EE18E00B0>
+[01/27/26 15:03:53] INFO     Processing request of type           server.py:709
+                             ListToolsRequest                                  
+                    INFO     Processing request of type           server.py:709
+                             ListToolsRequest                                  
+Executing tool: maps_regeo
+With arguments: {'location': '118.77413954441965,31.977172396806502', 'radius': '500'}
+Executing maps_regeo...
+                    INFO     Processing request of type           server.py:709
+                             CallToolRequest                                   
+####status= True, json_str= {
+  "results": [
+    {
+      "country": "中国",
+      "province": "江苏省",
+      "city": "南京市",
+      "district": "雨花台区",
+      "township": "雨花街道",
+      "neighborhood_name": [],
+      "neighborhood_type": [],
+      "building_name": [],
+      "building_type": [],
+      "street": "软件大道",
+      "number": "250号",
+                    INFO     Warning: InsecureRequestWarning:     server.py:699
+      "distance": "12.484",
+                             Unverified HTTPS request is being                 
+                             made to host 'restapi.amap.com'.                  
+                             Adding certificate verification is                
+      "location": "118.774271,31.977184",
+                             strongly advised. See:                            
+                             https://urllib3.readthedocs.io/en/la              
+                             test/advanced-usage.html#tls-warning              
+      "ori_location": "118.77413954441965,31.977172396806502",
+                             s                                                 
+      "poi_address": "软件大道与文竹路交叉口西220米",
+      "poi_name": "共青广场",
+      "poi_distance": "82.7973",
+      "poi_type": "风景名胜;公园广场;城市广场",
+      "poi_loc": "118.774612,31.976545",
+      "aoi_name": "华为南京研究所",
+      "aoi_distance": "2.03648",
+      "aoi_type": "141300",
+      "aoi_loc": "118.770068,31.979102"
+    }
+  ]
+}
+Success to cleanup all servers
+no suitable location data in {'country': '中国', 'province': '江苏省', 'city': '南京市', 'district': '雨花台区', 'township': '雨花街道', 'neighborhood_name': [], 'neighborhood_type': [], 'building_name': [], 'building_type': [], 'street': '软件大道', 'number': '250号', 'distance': '12.484', 'location': '118.774271,31.977184', 'ori_location': '118.77413954441965,31.977172396806502', 'poi_address': '软件大道与文竹路交叉口西220米', 'poi_name': '共青广场', 'poi_distance': '82.7973', 'poi_type': '风景名胜;公园广场;城市广场', 'poi_loc': '118.774612,31.976545', 'aoi_name': '华为南京研究所', 'aoi_distance': '2.03648', 'aoi_type': '141300', 'aoi_loc': '118.770068,31.979102'}
+[TestBed] 透传数据给 DataPallet: ID=Location
+[TestBed] 透传数据给 DataPallet: ID=Sound_Intensity
+回调: Location = 未知
+回调: Sound_Intensity = 安静[{'ar': 'AR_ACTIVITY_STATIONARY', 'duration': 0, 'timestamp': '2026-1-27 7:3:55', 'data': 2}]
+[TestBed] 透传数据给 DataPallet: ID=activity_mode
+回调: activity_mode = 静止
+192.168.43.26 - - [27/Jan/2026 15:03:56] "POST / HTTP/1.0" 200 -[DQN] 触发源: 定时周期 (5s)
+
+[DQN 推理] 15:03:58
+  ├── State: Act=stationary(30s) | Loc=unknown | Light=harsh | Flags: Walk=0s, Relax=34s
+  └── Output Action: [QUERY_LOC_GPS]
+
+
+[127.0.0.1] POST /update-recommendation - 200 OK - Action: probe (GPS位置感知)
+DQN Action is QUERY_LOC_GPS
+[DQN] 触发源: 定时周期 (5s)
+
+[DQN 推理] 15:04:03
+  ├── State: Act=stationary(35s) | Loc=unknown | Light=harsh | Flags: Walk=0s, Relax=39s
+  └── Output Action: [QUERY_LOC_GPS]
+
+
+[127.0.0.1] POST /update-recommendation - 200 OK - Action: probe (GPS位置感知)
+DQN Action is QUERY_LOC_GPS[DQN] 触发源: 定时周期 (5s)
+
+[DQN 推理] 15:04:08
+  ├── State: Act=stationary(40s) | Loc=unknown | Light=harsh | Flags: Walk=0s, Relax=44s
+  └── Output Action: [QUERY_LOC_GPS]
+
+
+[127.0.0.1] POST /update-recommendation - 200 OK - Action: probe (GPS位置感知)
+DQN Action is QUERY_LOC_GPS192.168.43.26 - - [27/Jan/2026 15:04:12] "POST / HTTP/1.0" 200 -
+[{'sensor': 'acc', 'duration': 1000, 'timestamp': '2026-1-27 7:4:10', 'data': [[13103, 1003769, 30381], [-21553, 1021444, 6297], [12944, 1016449, -22001], [11144, 1009665, -27629], [3822, 1016151, 5626]]}, {'sensor': 'gyro', 'duration': 1000, 'timestamp': '2026-1-27 7:4:10', 'data': [[-1886, -4128, 321], [-2750, -1768, -1753], [1784, 2307, 92], [-872, -2523, -635], [-308, 527, -987]]}, {'sensor': 'mag', 'duration': 1000, 'timestamp': '2026-1-27 7:4:10', 'data': [[-326, -606, -458, 3], [-326, -622, -454, 3], [-326, -622, -466, 3], [-326, -610, -454, 3], [-326, -622, -470, 3]]}, {'sensor': 'airpress', 'duration': 1000, 'timestamp': '2026-1-27 7:4:10', 'data': [[2098426, -94729, 999], [2098413, -94676, 998], [2098394, -94599, 997], [2098409, -94660, 997], [2098448, -94818, 996]]}, {'sensor': 'als', 'duration': 4000, 'timestamp': '2026-1-27 7:4:11', 'data': [[57207], [58559], [58267], [56979], [57180]]}, {'gnss': 'gps', 'duration': 1, 'timestamp': '2026-1-27 7:4:9', 'data': [268260956, -3899, 996305979, -5034, 3093042, 0, 0, 3620024, 755, 875, 1998, 6120, 10577, 255]}, {'audio': 'noise', 'duration': 1, 'timestamp': '2000-0-0 0:0:0', 'data': 0}]
+[TestBed] 透传数据给 DataPallet: ID=Light_Intensity
+wgs_lon: 118.76892789515841, wgs_lat: 31.97919795060443 gcj_lon: 118.77413954441965, gcj_lat: 31.977172396806502
+回调: Light_Intensity = 刺眼
+>>> _last_gnss_query 内容: {'timestamp': 1769497431.97726, 'longitude': 118.77413954441965, 'latitude': 31.977172396806502, 'cached_result': {'Specific address': '中国江苏省南京市雨花台区雨花街道 共青广场', 'Location type': '', 'Longitude': 118.77413954441965, 'Latitude': 31.977172396806502}}
+>>> _last_result 内容: {'Specific address': '中国江苏省南京市雨花台区雨花街道 共青广场', 'Location type': '', 'Longitude': 118.77413954441965, 'Latitude': 31.977172396806502}
+>>> 3. 计算完成: dist_sq=0.0, time_diff=20.042755365371704
+>>> 4. 进入缓存判断分支
+Using cached GPS address info
+[TestBed] 透传数据给 DataPallet: ID=Location
+[TestBed] 透传数据给 DataPallet: ID=Sound_Intensity
+回调: Location = 未知
+回调: Sound_Intensity = 安静[DQN] 触发源: 定时周期 (5s)
+
+[DQN 推理] 15:04:13
+  ├── State: Act=stationary(45s) | Loc=unknown | Light=harsh | Flags: Walk=0s, Relax=49s
+  └── Output Action: [QUERY_LOC_GPS]
+
+
+[127.0.0.1] POST /update-recommendation - 200 OK - Action: probe (GPS位置感知)
+DQN Action is QUERY_LOC_GPS
+[{'ar': 'AR_ACTIVITY_STATIONARY', 'duration': 0, 'timestamp': '2026-1-27 7:4:12', 'data': 1}]
+[TestBed] 透传数据给 DataPallet: ID=activity_mode
+回调: activity_mode = 静止
+192.168.43.26 - - [27/Jan/2026 15:04:13] "POST / HTTP/1.0" 200 -[DQN] 触发源: 定时周期 (5s)
+
+[DQN 推理] 15:04:18
+  ├── State: Act=stationary(50s) | Loc=unknown | Light=harsh | Flags: Walk=0s, Relax=54s
+  └── Output Action: [QUERY_LOC_GPS]
+
+
+[127.0.0.1] POST /update-recommendation - 200 OK - Action: probe (GPS位置感知)
+DQN Action is QUERY_LOC_GPS192.168.43.26 - - [27/Jan/2026 15:04:21] "POST / HTTP/1.0" 200 -
+[{'ar': 'AR_ACTIVITY_STATIONARY', 'duration': 0, 'timestamp': '2026-1-27 7:4:21', 'data': 2}]
+[TestBed] 透传数据给 DataPallet: ID=activity_mode
+回调: activity_mode = 静止[DQN] 触发源: 定时周期 (5s)
+
+[DQN 推理] 15:04:23
+  ├── State: Act=stationary(55s) | Loc=unknown | Light=harsh | Flags: Walk=0s, Relax=59s
+  └── Output Action: [QUERY_LOC_GPS]
+
+
+[127.0.0.1] POST /update-recommendation - 200 OK - Action: probe (GPS位置感知)
+DQN Action is QUERY_LOC_GPS[{'ar': 'AR_ACTIVITY_STATIONARY', 'duration': 0, 'timestamp': '2026-1-27 7:4:27', 'data': 1}]
+192.168.43.26 - - [27/Jan/2026 15:04:27] "POST / HTTP/1.0" 200 -
+[TestBed] 透传数据给 DataPallet: ID=activity_mode
+回调: activity_mode = 静止
+[DQN] 触发源: 定时周期 (5s)
+
+[DQN 推理] 15:04:28
+  ├── State: Act=stationary(60s) | Loc=unknown | Light=harsh | Flags: Walk=0s, Relax=64s
+  └── Output Action: [NONE]
+
+[{'ar': 'AR_ACTIVITY_STATIONARY', 'duration': 0, 'timestamp': '2026-1-27 7:4:30', 'data': 2}]
+192.168.43.26 - - [27/Jan/2026 15:04:31] "POST / HTTP/1.0" 200 -
+[TestBed] 透传数据给 DataPallet: ID=activity_mode
+回调: activity_mode = 静止
+[{'sensor': 'acc', 'duration': 1000, 'timestamp': '2026-1-27 7:4:30', 'data': [[-7728, 1018239, -15731], [6803, 1014791, -17231], [9918, 1020251, -32241], [17310, 1007560, -55644], [-15302, 1019196, -42469]]}, {'sensor': 'gyro', 'duration': 1000, 'timestamp': '2026-1-27 7:4:30', 'data': [[-555, -537, -881], [-893, 2388, 4], [1046, 1105, 840], [604, -978, -650], [-880, 493, 46]]}, {'sensor': 'mag', 'duration': 1000, 'timestamp': '2026-1-27 7:4:30', 'data': [[-342, -606, -438, 3], [-334, -606, -438, 3], [-326, -606, -438, 3], [-326, -622, -438, 3], [-330, -630, -438, 3]]}, {'sensor': 'airpress', 'duration': 1000, 'timestamp': '2026-1-27 7:4:30', 'data': [[2098408, -94656, 993], [2098395, -94603, 992], [2098418, -94696, 992], [2098406, -94647, 992], [2098418, -94696, 992]]}, {'sensor': 'als', 'duration': 4000, 'timestamp': '2026-1-27 7:4:31', 'data': [[57653], [58113], [58399], [58677], [58287]]}, {'gnss': 'gps', 'duration': 1, 'timestamp': '2026-1-27 7:4:31', 'data': [268260956, -3899, 996305979, -5034, 3093042, 0, 0, 3620024, 814, 821, 2005, 6120, 10615, 255]}, {'audio': 'noise', 'duration': 1, 'timestamp': '2000-0-0 0:0:0', 'data': 0}]
+192.168.43.26 - - [27/Jan/2026 15:04:32] "POST / HTTP/1.0" 200 -
+[TestBed] 透传数据给 DataPallet: ID=Light_Intensity
+wgs_lon: 118.76892789515841, wgs_lat: 31.97919795060443 gcj_lon: 118.77413954441965, gcj_lat: 31.977172396806502
+回调: Light_Intensity = 刺眼
+>>> _last_gnss_query 内容: {'timestamp': 1769497431.97726, 'longitude': 118.77413954441965, 'latitude': 31.977172396806502, 'cached_result': {'Specific address': '中国江苏省南京市雨花台区雨花街道 共青广场', 'Location type': '', 'Longitude': 118.77413954441965, 'Latitude': 31.977172396806502}}
+>>> _last_result 内容: {'Specific address': '中国江苏省南京市雨花台区雨花街道 共青广场', 'Location type': '', 'Longitude': 118.77413954441965, 'Latitude': 31.977172396806502}
+>>> 3. 计算完成: dist_sq=0.0, time_diff=40.17041635513306
+>>> 4. 进入缓存判断分支
+Using cached GPS address info
+[TestBed] 透传数据给 DataPallet: ID=Location
+[TestBed] 透传数据给 DataPallet: ID=Sound_Intensity回调: Location = 未知
+
+回调: Sound_Intensity = 安静[DQN] 触发源: 定时周期 (5s)
+
+[DQN 推理] 15:04:33
+  ├── State: Act=stationary(65s) | Loc=unknown | Light=harsh | Flags: Walk=0s, Relax=69s
+  └── Output Action: [NONE]
+
+[DQN] 触发源: 定时周期 (5s)
+
+[DQN 推理] 15:04:38
+  ├── State: Act=stationary(70s) | Loc=unknown | Light=harsh | Flags: Walk=0s, Relax=74s
+  └── Output Action: [NONE]
+[DQN] 触发源: 定时周期 (5s)
+
+[DQN 推理] 15:04:43
+  ├── State: Act=stationary(75s) | Loc=unknown | Light=harsh | Flags: Walk=0s, Relax=79s
+  └── Output Action: [NONE]
+[{'ar': 'AR_ACTIVITY_STATIONARY', 'duration': 0, 'timestamp': '2026-1-27 7:4:43', 'data': 1}]
+[TestBed] 透传数据给 DataPallet: ID=activity_mode
+回调: activity_mode = 静止
+192.168.43.26 - - [27/Jan/2026 15:04:43] "POST / HTTP/1.0" 200 -192.168.43.26 - - [27/Jan/2026 15:04:46] "POST / HTTP/1.0" 200 -
+[{'ar': 'AR_ACTIVITY_STATIONARY', 'duration': 0, 'timestamp': '2026-1-27 7:4:45', 'data': 2}]
+[TestBed] 透传数据给 DataPallet: ID=activity_mode
+回调: activity_mode = 静止[DQN] 触发源: 定时周期 (5s)
+
+[DQN 推理] 15:04:48
+  ├── State: Act=stationary(80s) | Loc=unknown | Light=harsh | Flags: Walk=0s, Relax=84s
+  └── Output Action: [NONE]
+
+[{'sensor': 'acc', 'duration': 1000, 'timestamp': '2026-1-27 7:4:50', 'data': [[54578, 1006395, -804], [23116, 1006663, 27378], [13829, 1022398, 15881], [19715, 1002149, 22637], [36368, 1003132, 11404]]}, {'sensor': 'gyro', 'duration': 1000, 'timestamp': '2026-1-27 7:4:50', 'data': [[134, 4122, -3108], [-139, -864, -1801], [1112, 1387, -1463], [-960, 1760, 62], [1398, 1360, -382]]}, {'sensor': 'mag', 'duration': 1000, 'timestamp': '2026-1-27 7:4:50', 'data': [[-342, -574, -454, 3], [-326, -574, -470, 3], [-326, -574, -470, 3], [-338, -590, -462, 3], [-342, -606, -466, 3]]}, {'sensor': 'airpress', 'duration': 1000, 'timestamp': '2026-1-27 7:4:50', 'data': [[2098448, -94818, 997], [2098443, -94798, 997], [2098393, -94595, 998], [2098380, -94542, 997], [2098411, -94668, 998]]}, {'sensor': 'als', 'duration': 4000, 'timestamp': '2026-1-27 7:4:51', 'data': [[60028], [61492], [61774], [57420], [58054]]}, {'gnss': 'gps', 'duration': 1, 'timestamp': '2026-1-27 7:4:51', 'data': [268260956, -3899, 996305979, -5034, 3093042, 0, 0, 3620024, 779, 854, 2050, 6120, 10854, 255]}, {'audio': 'noise', 'duration': 1, 'timestamp': '2000-0-0 0:0:0', 'data': 0}]
+192.168.43.26 - - [27/Jan/2026 15:04:52] "POST / HTTP/1.0" 200 -
+[TestBed] 透传数据给 DataPallet: ID=Light_Intensity
+wgs_lon: 118.76892789515841, wgs_lat: 31.97919795060443 gcj_lon: 118.77413954441965, gcj_lat: 31.977172396806502回调: Light_Intensity = 刺眼
+
+>>> _last_gnss_query 内容: {'timestamp': 1769497431.97726, 'longitude': 118.77413954441965, 'latitude': 31.977172396806502, 'cached_result': {'Specific address': '中国江苏省南京市雨花台区雨花街道 共青广场', 'Location type': '', 'Longitude': 118.77413954441965, 'Latitude': 31.977172396806502}}
+>>> _last_result 内容: {'Specific address': '中国江苏省南京市雨花台区雨花街道 共青广场', 'Location type': '', 'Longitude': 118.77413954441965, 'Latitude': 31.977172396806502}
+>>> 3. 计算完成: dist_sq=0.0, time_diff=60.188698053359985
+[INFO] 修正路径 amap-mcp-server: amap_mcp_server.py -> D:\c00894262\datapallet\sensor_server\amap_mcp_server.py[DQN] 触发源: 定时周期 (5s)
+
+[DQN 推理] 15:04:53
+  ├── State: Act=stationary(85s) | Loc=unknown | Light=harsh | Flags: Walk=0s, Relax=89s
+  └── Output Action: [NONE]
+192.168.43.26 - - [27/Jan/2026 15:04:53] "POST / HTTP/1.0" 200 -
+[{'ar': 'AR_ACTIVITY_STATIONARY', 'duration': 0, 'timestamp': '2026-1-27 7:4:53', 'data': 1}]
+[TestBed] 透传数据给 DataPallet: ID=activity_mode
+回调: activity_mode = 静止
+Success to initialize server: <sensor_server.mcp_client.Server object at 0x0000014EE161A750>
+[01/27/26 15:04:53] INFO     Processing request of type           server.py:709
+                             ListToolsRequest                                  
+                               
+Executing tool: maps_regeo
+With arguments: {'location': '118.77413954441965,31.977172396806502', 'radius': '500'}
+Executing maps_regeo...
+####status= True, json_str= {
+[01/27/26 15:04:54] INFO     Warning: InsecureRequestWarning:     server.py:699
+                             Unverified HTTPS request is being                 
+                             made to host 'restapi.amap.com'.                  
+                             Adding certificate verification is                
+                             strongly advised. See:                            
+  "results": [
+    {
+      "country": "中国",
+      "province": "江苏省",
+      "city": "南京市",
+                             https://urllib3.readthedocs.io/en/la              
+                             test/advanced-usage.html#tls-warning              
+                             s                                                 
+      "district": "雨花台区",
+      "township": "雨花街道",
+      "neighborhood_name": [],
+      "neighborhood_type": [],
+      "building_name": [],
+      "building_type": [],
+      "street": "软件大道",
+      "number": "250号",
+      "distance": "12.484",
+      "location": "118.774271,31.977184",
+      "ori_location": "118.77413954441965,31.977172396806502",
+      "poi_address": "软件大道与文竹路交叉口西220米",
+      "poi_name": "共青广场",
+      "poi_distance": "82.7973",
+      "poi_type": "风景名胜;公园广场;城市广场",
+      "poi_loc": "118.774612,31.976545",
+      "aoi_name": "华为南京研究所",
+      "aoi_distance": "2.03648",
+      "aoi_type": "141300",
+      "aoi_loc": "118.770068,31.979102"
+    }
+  ]
+}
+Success to cleanup all servers
+no suitable location data in {'country': '中国', 'province': '江苏省', 'city': '南京市', 'district': '雨花台区', 'township': '雨花街道', 'neighborhood_name': [], 'neighborhood_type': [], 'building_name': [], 'building_type': [], 'street': '软件大道', 'number': '250号', 'distance': '12.484', 'location': '118.774271,31.977184', 'ori_location': '118.77413954441965,31.977172396806502', 'poi_address': '软件大道与文竹路交叉口西220米', 'poi_name': '共青广场', 'poi_distance': '82.7973', 'poi_type': '风景名胜;公园广场;城市广场', 'poi_loc': '118.774612,31.976545', 'aoi_name': '华为南京研究所', 'aoi_distance': '2.03648', 'aoi_type': '141300', 'aoi_loc': '118.770068,31.979102'}
+[TestBed] 透传数据给 DataPallet: ID=Location
+[TestBed] 透传数据给 DataPallet: ID=Sound_Intensity
+回调: Location = 未知
+回调: Sound_Intensity = 安静[DQN] 触发源: 定时周期 (5s)
+
+[DQN 推理] 15:04:58
+  ├── State: Act=stationary(90s) | Loc=unknown | Light=harsh | Flags: Walk=0s, Relax=94s
+  └── Output Action: [NONE]
+[DQN] 触发源: 定时周期 (5s)
+
+[DQN 推理] 15:05:03
+  ├── State: Act=stationary(95s) | Loc=unknown | Light=harsh | Flags: Walk=0s, Relax=99s
+  └── Output Action: [NONE]
+
+[DQN] 触发源: 定时周期 (5s)
+
+[DQN 推理] 15:05:08
+  ├── State: Act=stationary(100s) | Loc=unknown | Light=harsh | Flags: Walk=0s, Relax=104s
+  └── Output Action: [NONE]
+
+192.168.43.26 - - [27/Jan/2026 15:05:11] "POST / HTTP/1.0" 200 -
+[{'ar': 'AR_ACTIVITY_STATIONARY', 'duration': 0, 'timestamp': '2026-1-27 7:5:11', 'data': 2}]
+[TestBed] 透传数据给 DataPallet: ID=activity_mode
+回调: activity_mode = 静止
+192.168.43.26 - - [27/Jan/2026 15:05:12] "POST / HTTP/1.0" 200 -
+[{'sensor': 'acc', 'duration': 1000, 'timestamp': '2026-1-27 7:5:10', 'data': [[25882, 1008629, 13872], [9275, 1014746, 15448], [12055, 1014251, 4433], [10274, 1018047, 6533], [12533, 1018540, 10836]]}, {'sensor': 'gyro', 'duration': 1000, 'timestamp': '2026-1-27 7:5:10', 'data': [[229, 988, 17], [-163, -940, -1082], [524, 459, -257], [366, -158, -823], [-187, -1186, -1264]]}, {'sensor': 'mag', 'duration': 1000, 'timestamp': '2026-1-27 7:5:10', 'data': [[-330, -606, -470, 3], [-342, -606, -454, 3], [-326, -606, -454, 3], [-326, -618, -454, 3], [-342, -622, -454, 3]]}, {'sensor': 'airpress', 'duration': 1000, 'timestamp': '2026-1-27 7:5:11', 'data': [[2098376, -94525, 998], [2098426, -94729, 999], [2098424, -94721, 998], [2098426, -94729, 1000], [2098445, -94806, 1000]]}, {'sensor': 'als', 'duration': 4000, 'timestamp': '2026-1-27 7:5:11', 'data': [[58459], [58306], [58962], [58821], [59335]]}, {'gnss': 'gps', 'duration': 1, 'timestamp': '2026-1-27 7:5:11', 'data': [268260956, -3899, 996305979, -5034, 3093042, 0, 0, 3620024, 812, 823, 1976, 6120, 10462, 255]}, {'audio': 'noise', 'duration': 1, 'timestamp': '2000-0-0 0:0:0', 'data': 0}]
+[TestBed] 透传数据给 DataPallet: ID=Light_Intensity
+wgs_lon: 118.76892789515841, wgs_lat: 31.97919795060443 gcj_lon: 118.77413954441965, gcj_lat: 31.977172396806502
+回调: Light_Intensity = 刺眼
+>>> _last_gnss_query 内容: {'timestamp': 1769497492.1659582, 'longitude': 118.77413954441965, 'latitude': 31.977172396806502, 'cached_result': {'Specific address': '中国江苏省南京市雨花台区雨花街道 共青广场', 'Location type': '', 'Longitude': 118.77413954441965, 'Latitude': 31.977172396806502}}
+>>> _last_result 内容: {'Specific address': '中国江苏省南京市雨花台区雨花街道 共青广场', 'Location type': '', 'Longitude': 118.77413954441965, 'Latitude': 31.977172396806502}
+>>> 3. 计算完成: dist_sq=0.0, time_diff=20.187633991241455
+>>> 4. 进入缓存判断分支
+Using cached GPS address info
+[TestBed] 透传数据给 DataPallet: ID=Location
+[TestBed] 透传数据给 DataPallet: ID=Sound_Intensity
+回调: Location = 未知
+回调: Sound_Intensity = 安静[DQN] 触发源: 定时周期 (5s)
+
+[DQN 推理] 15:05:13
+  ├── State: Act=stationary(105s) | Loc=unknown | Light=harsh | Flags: Walk=0s, Relax=109s
+  └── Output Action: [NONE]
+192.168.43.26 - - [27/Jan/2026 15:05:16] "POST / HTTP/1.0" 200 -
+[{'ar': 'AR_ACTIVITY_STATIONARY', 'duration': 0, 'timestamp': '2026-1-27 7:5:16', 'data': 1}]
+[TestBed] 透传数据给 DataPallet: ID=activity_mode
+回调: activity_mode = 静止[DQN] 触发源: 定时周期 (5s)
+
+[DQN 推理] 15:05:18
+  ├── State: Act=stationary(110s) | Loc=unknown | Light=harsh | Flags: Walk=0s, Relax=114s
+  └── Output Action: [NONE]
+
+192.168.43.26 - - [27/Jan/2026 15:05:22] "POST / HTTP/1.0" 200 -
+[{'ar': 'AR_ACTIVITY_STATIONARY', 'duration': 0, 'timestamp': '2026-1-27 7:5:22', 'data': 2}]
+[TestBed] 透传数据给 DataPallet: ID=activity_mode
+回调: activity_mode = 静止[DQN] 触发源: 定时周期 (5s)
+
+[DQN 推理] 15:05:23
+  ├── State: Act=stationary(115s) | Loc=unknown | Light=harsh | Flags: Walk=0s, Relax=119s
+  └── Output Action: [NONE]
+
+[DQN] 触发源: 定时周期 (5s)
+
+[DQN 推理] 15:05:28
+  ├── State: Act=stationary(120s) | Loc=unknown | Light=harsh | Flags: Walk=0s, Relax=124s
+  └── Output Action: [NONE]
+
+192.168.43.26 - - [27/Jan/2026 15:05:32] "POST / HTTP/1.0" 200 -
+[{'sensor': 'acc', 'duration': 1000, 'timestamp': '2026-1-27 7:5:30', 'data': [[469462, 869702, 336701], [339248, 910028, 279992], [275609, 792165, 265689], [164105, 771740, 425523], [86093, 727371, 7348]]}, {'sensor': 'gyro', 'duration': 1000, 'timestamp': '2026-1-27 7:5:30', 'data': [[75800, -16336, 35861], [17071, 23303, 27081], [8305, 30426, 19171], [11328, 128775, 80638], [-32984, -7901, 29899]]}, {'sensor': 'mag', 'duration': 1000, 'timestamp': '2026-1-27 7:5:30', 'data': [[41, -814, 297, 3], [-153, -712, 504, 3], [-185, -696, 459, 3], [-665, -428, -216, 3], [-270, -494, -657, 3]]}, {'sensor': 'airpress', 'duration': 1000, 'timestamp': '2026-1-27 7:5:31', 'data': [[2098518, -95103, 1001], [2098538, -95184, 1003], [2098497, -95018, 1002], [2098521, -95115, 1003], [2098542, -95201, 1005]]}, {'sensor': 'als', 'duration': 4000, 'timestamp': '2026-1-27 7:5:30', 'data': [[58422], [60310], [36183], [78107], [37679]]}, {'gnss': 'gps', 'duration': 1, 'timestamp': '2026-1-27 7:5:31', 'data': [268260853, 5048, 996305648, -4045, 3154200, 29643, -326, 3620024, 591, 643, 1709, 7311, 14311, 255]}, {'audio': 'noise', 'duration': 1, 'timestamp': '2000-0-0 0:0:0', 'data': 0}]
+[TestBed] 透传数据给 DataPallet: ID=Light_Intensity
+wgs_lon: 118.7688884440795, wgs_lat: 31.9791857371456 gcj_lon: 118.77410012204211, gcj_lat: 31.977160213223943
+回调: Light_Intensity = 刺眼
+>>> _last_gnss_query 内容: {'timestamp': 1769497492.1659582, 'longitude': 118.77413954441965, 'latitude': 31.977172396806502, 'cached_result': {'Specific address': '中国江苏省南京市雨花台区雨花街道 共青广场', 'Location type': '', 'Longitude': 118.77413954441965, 'Latitude': 31.977172396806502}}
+>>> _last_result 内容: {'Specific address': '中国江苏省南京市雨花台区雨花街道 共青广场', 'Location type': '', 'Longitude': 118.77413954441965, 'Latitude': 31.977172396806502}
+>>> 3. 计算完成: dist_sq=1.7025635348881601e-09, time_diff=40.24935960769653
+>>> 4. 进入缓存判断分支
+Using cached GPS address info
+[TestBed] 透传数据给 DataPallet: ID=Location
+[TestBed] 透传数据给 DataPallet: ID=Sound_Intensity回调: Location = 未知
+
+回调: Sound_Intensity = 安静[DQN] 触发源: 定时周期 (5s)
+
+[DQN 推理] 15:05:33
+  ├── State: Act=stationary(125s) | Loc=unknown | Light=harsh | Flags: Walk=0s, Relax=129s
+  └── Output Action: [NONE]
+192.168.43.26 - - [27/Jan/2026 15:05:33] "POST / HTTP/1.0" 200 -
+[{'ar': 'AR_ACTIVITY_WALK_SLOW', 'duration': 0, 'timestamp': '2026-1-27 7:5:33', 'data': 1}]
+[TestBed] 透传数据给 DataPallet: ID=activity_mode
+[Trigger] 状态变化 (activity_mode): 6 -> 4
+回调: activity_mode = 慢走[DQN] 触发源: 姿态变化
+
+
+[DQN 推理] 15:05:33
+  ├── State: Act=slow walk(0s) | Loc=unknown | Light=harsh | Flags: Walk=0s, Relax=0s
+  └── Output Action: [QUERY_LOC_GPS]
+
+
+[127.0.0.1] POST /update-recommendation - 200 OK - Action: probe (GPS位置感知)
+DQN Action is QUERY_LOC_GPS[DQN] 触发源: 定时周期 (5s)
+
+[DQN 推理] 15:05:38
+  ├── State: Act=slow walk(5s) | Loc=unknown | Light=harsh | Flags: Walk=5s, Relax=0s
+  └── Output Action: [QUERY_LOC_GPS]
+
+
+[127.0.0.1] POST /update-recommendation - 200 OK - Action: probe (GPS位置感知)
+DQN Action is QUERY_LOC_GPS192.168.43.26 - - [27/Jan/2026 15:05:41] "POST / HTTP/1.0" 200 -
+[{'ar': 'AR_ACTIVITY_WALK_SLOW', 'duration': 0, 'timestamp': '2026-1-27 7:5:41', 'data': 2}]
+[TestBed] 透传数据给 DataPallet: ID=activity_mode
+回调: activity_mode = 慢走[DQN] 触发源: 定时周期 (5s)
+
+[DQN 推理] 15:05:43
+  ├── State: Act=slow walk(10s) | Loc=unknown | Light=harsh | Flags: Walk=10s, Relax=0s
+  └── Output Action: [QUERY_LOC_GPS]
+
+
+[127.0.0.1] POST /update-recommendation - 200 OK - Action: probe (GPS位置感知)
+DQN Action is QUERY_LOC_GPS[{'ar': 'AR_ACTIVITY_STATIONARY', 'duration': 0, 'timestamp': '2026-1-27 7:5:45', 'data': 1}]
+192.168.43.26 - - [27/Jan/2026 15:05:46] "POST / HTTP/1.0" 200 -
+[TestBed] 透传数据给 DataPallet: ID=activity_mode
+[Trigger] 状态变化 (activity_mode): 4 -> 6回调: activity_mode = 静止
+
+[DQN] 触发源: 姿态变化
+
+[DQN 推理] 15:05:46
+  ├── State: Act=stationary(0s) | Loc=unknown | Light=harsh | Flags: Walk=0s, Relax=2s
+  └── Output Action: [QUERY_VISUAL]
+
+图片处理成功: D:\c00894262\datapallet\app_server\test.png -> 480x480
+
+[127.0.0.1] POST /update-recommendation - 200 OK - Action: probe (场景感知)
+DQN Action is QUERY_VISUAL, trigger take picture
+[VisualQuery] DQN 触发了视觉查询请求 (QUERY_VISUAL)
+INFO:     127.0.0.1:52096 - "GET /api/client_status HTTP/1.1" 200 OK
+[拍照请求] 正在请求拍照...
+[Test] 正在尝试触发服务器...
+[Server-API] 已向客户端发送 'upload_request' 指令，等待上传结果...
+[Server-HTTP] 收到上传请求. 文件名: IMG_2026_01_27_15_05_46.jpg, 宽: 1080, 高: 1080, 数据大小: 2170638 bytes
+[Server-HTTP] 文件已保存至: destineData\IMG_2026_01_27_15_05_46.jpg
+INFO:     192.168.43.26:61371 - "POST /upload HTTP/1.1" 200 OK
+[Server] 收到客户端消息: upload_complete
+[Server] 流程结束：图片上传成功。
+[Server-API] 收到上传结果: upload_complete
+正在向服务器发送图片: destineData\IMG_2026_01_27_15_05_46.jpg ...
+
+Top 5 预测结果:
+ - street: 49.49%
+
+[192.168.43.26] GET /latest-recommendation - 200 OK - Data length: 37302
+
+[192.168.43.26] GET /latest-recommendation - 200 OK - Data length: 37302
+结果已保存: D:\c00894262\datapallet\results\19c940fc37eb434199fcc4ee0b9fbf55.png
+INFO:     127.0.0.1:52100 - "POST /predict/ HTTP/1.1" 200 OK
+成功接收到服务器响应！
+------------------------------
+预测消息: 预测成功
+服务器保存路径: D:\c00894262\datapallet\results\19c940fc37eb434199fcc4ee0b9fbf55.png
+
+Top 1 预测详情:
+street
+场景理解结果：5, 添加位置信息为PARK
+[TestBed] 透传数据给 DataPallet: ID=Location
+[Scene处理] 图片路径: destineData\IMG_2026_01_27_15_05_46.jpg
+[Scene处理] 时间戳: 2026_01_27 15_05_46
+回调: Location = 公园[Scene处理] scene_type: 5
+
+更新Scene值: SceneData(scene_type=<SceneType.OUTDOOR_PARK: 5>, image_path=WindowsPath('destineData/IMG_2026_01_27_15_05_46.jpg'), image_data=None)
+[TestBed] 透传数据给 DataPallet: ID=Scene
+[Callback] 正在将新图片推送到 APP...[Debug-2] DataPallet 接收到 Key='Scene'
+
+[Debug-2] 原始 Value: SceneData(scene_type=<SceneType.OUTDOOR_PARK: 5>, image_path=WindowsPath('destineData/IMG_2026_01_27_15_05_46.jpg'), image_data=None)
+[Debug-2] 已是 SceneData 对象: 5
+回调: Scene = SceneType: 室外园区 (has_image: True, image_size: 2170638 bytes)
+图片处理成功: destineData\IMG_2026_01_27_15_05_46.jpg -> 480x480
+
+[127.0.0.1] POST /update-recommendation - 200 OK - Action: probe (场景感知)
+INFO:     127.0.0.1:52097 - "GET /api/trigger_client HTTP/1.1" 200 OK
+[Test] 服务器响应: {'status': 'upload_complete', 'message': 'Upload completed'}
+192.168.43.26 - - [27/Jan/2026 15:05:48] "POST / HTTP/1.0" 200 -
+[{'ar': 'AR_ACTIVITY_STATIONARY', 'duration': 0, 'timestamp': '2026-1-27 7:5:48', 'data': 2}]
+[TestBed] 透传数据给 DataPallet: ID=activity_mode
+回调: activity_mode = 静止
+
+[192.168.43.26] GET /latest-recommendation - 200 OK - Data length: 94443
+[DQN] 触发源: 定时周期 (5s)
+
+[DQN 推理] 15:05:51
+  ├── State: Act=stationary(5s) | Loc=Park | Light=harsh | Flags: Walk=0s, Relax=7s
+  └── Output Action: [NONE]
+
+图片处理成功: destineData\IMG_2026_01_27_15_05_46.jpg -> 480x480[{'sensor': 'acc', 'duration': 1000, 'timestamp': '2026-1-27 7:5:50', 'data': [[32048, 1010882, 482], [33393, 1008026, 22489], [39884, 1002788, -32546], [31215, 1015502, -62974], [83648, 948391, -133434]]}, {'sensor': 'gyro', 'duration': 1000, 'timestamp': '2026-1-27 7:5:50', 'data': [[-231, 546, -1465], [1778, -2723, 75], [3150, -2755, 285], [1909, 100, 159], [1071, 2491, -2442]]}, {'sensor': 'mag', 'duration': 1000, 'timestamp': '2026-1-27 7:5:50', 'data': [[-350, -574, -433, 3], [-350, -590, -433, 3], [-350, -606, -441, 3], [-350, -606, -429, 3], [-334, -638, -401, 3]]}, {'sensor': 'airpress', 'duration': 1000, 'timestamp': '2026-1-27 7:5:51', 'data': [[2098431, -94749, 1013], [2098452, -94835, 1014], [2098454, -94843, 1017], [2098417, -94692, 1016], [2098456, -94851, 1018]]}, {'sensor': 'als', 'duration': 4000, 'timestamp': '2026-1-27 7:5:50', 'data': [[53637], [58021], [58024], [59438], [64952]]}, {'gnss': 'gps', 'duration': 1, 'timestamp': '2026-1-27 7:5:51', 'data': [268260921, 6953, 996305901, -6194, 3108511, 0, 0, 3566662, 638, 779, 1680, 2934, 4895, 255]}, {'audio': 'noise', 'duration': 1, 'timestamp': '2000-0-0 0:0:0', 'data': 0}]
+[TestBed] 透传数据给 DataPallet: ID=Light_Intensity
+wgs_lon: 118.76891858839372, wgs_lat: 31.979193857237988 gcj_lon: 118.77413024431971, gcj_lat: 31.977168310773326回调: Light_Intensity = 刺眼
+
+192.168.43.26 - - [27/Jan/2026 15:05:52] "POST / HTTP/1.0" 200 -
+>>> _last_gnss_query 内容: {'timestamp': 1769497492.1659582, 'longitude': 118.77413954441965, 'latitude': 31.977172396806502, 'cached_result': {'Specific address': '中国江苏省南京市雨花台区雨花街道 共青广场', 'Location type': '', 'Longitude': 118.77413954441965, 'Latitude': 31.977172396806502}}
+>>> _last_result 内容: {'Specific address': '中国江苏省南京市雨花台区雨花街道 共青广场', 'Location type': '', 'Longitude': 118.77413954441965, 'Latitude': 31.977172396806502}
+>>> 3. 计算完成: dist_sq=1.0318752613876026e-10, time_diff=60.279988527297974
+[INFO] 修正路径 amap-mcp-server: amap_mcp_server.py -> D:\c00894262\datapallet\sensor_server\amap_mcp_server.pySuccess to initialize server: <sensor_server.mcp_client.Server object at 0x0000014EE1913320>
+[01/27/26 15:05:54] INFO     Processing request of type           server.py:709
+                             ListToolsRequest                                  
+                    INFO     Processing request of type           server.py:709
+                             ListToolsRequest                                  
+Executing tool: maps_regeo
+With arguments: {'location': '118.77413024431971,31.977168310773326', 'radius': '500'}
+Executing maps_regeo...
+                    INFO     Processing request of type           server.py:709
+                             CallToolRequest                                   
+####status= True, json_str= {
+  "results": [
+    {
+      "country": "中国",
+      "province": "江苏省",
+      "city": "南京市",
+      "district": "雨花台区",
+      "township": "雨花街道",
+      "neighborhood_name": [],
+      "neighborhood_type": [],
+      "building_name": [],
+      "building_type": [],
+      "street": "软件大道",
+      "number": "250号",
+      "distance": "13.3964",
+      "location": "118.774271,31.977184",
+      "ori_location": "118.77413024431971,31.977168310773326",
+      "poi_address": "软件大道与文竹路交叉口西220米",
+      "poi_name": "共青广场",
+      "poi_distance": "82.8781",
+      "poi_type": "风景名胜;公园广场;城市广场",
+      "poi_loc": "118.774612,31.976545",
+      "aoi_name": "华为南京研究所",
+      "aoi_distance": "1.65458",
+      "aoi_type": "141300",
+      "aoi_loc": "118.770068,31.979102"
+    }
+  ]
+}
+                    INFO     Warning: InsecureRequestWarning:     server.py:699
+                             Unverified HTTPS request is being                 
+                             made to host 'restapi.amap.com'.                  
+                             Adding certificate verification is                
+                             strongly advised. See:                            
+                             https://urllib3.readthedocs.io/en/la              
+                             test/advanced-usage.html#tls-warning              
+                             s                                                 
+Success to cleanup all servers
+no suitable location data in {'country': '中国', 'province': '江苏省', 'city': '南京市', 'district': '雨花台区', 'township': '雨花街道', 'neighborhood_name': [], 'neighborhood_type': [], 'building_name': [], 'building_type': [], 'street': '软件大道', 'number': '250号', 'distance': '13.3964', 'location': '118.774271,31.977184', 'ori_location': '118.77413024431971,31.977168310773326', 'poi_address': '软件大道与文竹路交叉口西220米', 'poi_name': '共青广场', 'poi_distance': '82.8781', 'poi_type': '风景名胜;公园广场;城市广场', 'poi_loc': '118.774612,31.976545', 'aoi_name': '华为南京研究所', 'aoi_distance': '1.65458', 'aoi_type': '141300', 'aoi_loc': '118.770068,31.979102'}
+[TestBed] 透传数据给 DataPallet: ID=Location
+[TestBed] 透传数据给 DataPallet: ID=Sound_Intensity
+回调: Location = 未知
+回调: Sound_Intensity = 安静[DQN] 触发源: 定时周期 (5s)
+
+[DQN 推理] 15:05:56
+  ├── State: Act=stationary(10s) | Loc=unknown | Light=harsh | Flags: Walk=0s, Relax=12s
+  └── Output Action: [NONE]
+
+图片处理成功: destineData\IMG_2026_01_27_15_05_46.jpg -> 480x480
+[DQN] 触发源: 定时周期 (5s)
+
+[DQN 推理] 15:06:01
+  ├── State: Act=stationary(15s) | Loc=unknown | Light=harsh | Flags: Walk=0s, Relax=17s
+  └── Output Action: [NONE]
+
+图片处理成功: destineData\IMG_2026_01_27_15_05_46.jpg -> 480x480
+[{'ar': 'AR_ACTIVITY_STATIONARY', 'duration': 0, 'timestamp': '2026-1-27 7:6:3', 'data': 1}]
+[TestBed] 透传数据给 DataPallet: ID=activity_mode
+回调: activity_mode = 静止
+192.168.43.26 - - [27/Jan/2026 15:06:03] "POST / HTTP/1.0" 200 -
+[{'ar': 'AR_ACTIVITY_STATIONARY', 'duration': 0, 'timestamp': '2026-1-27 7:6:4', 'data': 2}]
+[TestBed] 透传数据给 DataPallet: ID=activity_mode
+回调: activity_mode = 静止
+192.168.43.26 - - [27/Jan/2026 15:06:04] "POST / HTTP/1.0" 200 -[DQN] 触发源: 定时周期 (5s)
+
+[DQN 推理] 15:06:06
+  ├── State: Act=stationary(20s) | Loc=unknown | Light=harsh | Flags: Walk=0s, Relax=22s
+  └── Output Action: [NONE]
+
+图片处理成功: destineData\IMG_2026_01_27_15_05_46.jpg -> 480x480[DQN] 触发源: 定时周期 (5s)
+
+[DQN 推理] 15:06:11
+  ├── State: Act=stationary(25s) | Loc=unknown | Light=harsh | Flags: Walk=0s, Relax=27s
+  └── Output Action: [NONE]
+
+图片处理成功: destineData\IMG_2026_01_27_15_05_46.jpg -> 480x480[{'sensor': 'acc', 'duration': 1000, 'timestamp': '2026-1-27 7:6:10', 'data': [[143467, 671073, 198873], [107663, 682110, 242726], [442162, 855503, 169045], [477872, 947087, 384673], [202833, 1258248, 384671]]}, {'sensor': 'gyro', 'duration': 1000, 'timestamp': '2026-1-27 7:6:10', 'data': [[3447, -27179, -20927], [-15022, -35938, -26700], [-22594, -34961, -12849], [-17565, -10556, 2975], [-20357, -4579, -13180]]}, {'sensor': 'mag', 'duration': 1000, 'timestamp': '2026-1-27 7:6:10', 'data': [[-318, -510, -577, 3], [-302, -558, -529, 3], [-386, -446, -593, 3], [-298, -498, -577, 3], [-222, -510, -577, 3]]}, {'sensor': 'airpress', 'duration': 1000, 'timestamp': '2026-1-27 7:6:11', 'data': [[2098451, -94831, 1023], [2098443, -94798, 1023], [2098443, -94798, 1022], [2098443, -94798, 1022], [2098443, -94798, 1023]]}, {'sensor': 'als', 'duration': 4000, 'timestamp': '2026-1-27 7:6:10', 'data': [[62020], [60264], [60413], [46204], [40732]]}, {'gnss': 'gps', 'duration': 1, 'timestamp': '2026-1-27 7:6:11', 'data': [268261502, -1917, 996306355, 6869, 3178935, 44815, -46, 2521219, 923, 988, 2569, 3828, 7273, 255]}, {'audio': 'noise', 'duration': 1, 'timestamp': '2000-0-0 0:0:0', 'data': 0}]
+192.168.43.26 - - [27/Jan/2026 15:06:12] "POST / HTTP/1.0" 200 -
+[TestBed] 透传数据给 DataPallet: ID=Light_Intensity
+wgs_lon: 118.76897280445701, wgs_lat: 31.979263053297473 gcj_lon: 118.77418442569159, gcj_lat: 31.977237453582866
+回调: Light_Intensity = 刺眼
+>>> _last_gnss_query 内容: {'timestamp': 1769497552.4459467, 'longitude': 118.77413024431971, 'latitude': 31.977168310773326, 'cached_result': {'Specific address': '中国江苏省南京市雨花台区雨花街道 共青广场', 'Location type': '', 'Longitude': 118.77413024431971, 'Latitude': 31.977168310773326}}
+>>> _last_result 内容: {'Specific address': '中国江苏省南京市雨花台区雨花街道 共青广场', 'Location type': '', 'Longitude': 118.77413024431971, 'Latitude': 31.977168310773326}
+>>> 3. 计算完成: dist_sq=7.716349169864351e-09, time_diff=20.022872924804688
+>>> 4. 进入缓存判断分支
+Using cached GPS address info
+[TestBed] 透传数据给 DataPallet: ID=Location
+[TestBed] 透传数据给 DataPallet: ID=Sound_Intensity
+回调: Location = 未知
+回调: Sound_Intensity = 安静
+[{'ar': 'AR_ACTIVITY_WALK_SLOW', 'duration': 0, 'timestamp': '2026-1-27 7:6:12', 'data': 1}]
+[TestBed] 透传数据给 DataPallet: ID=activity_mode
+[Trigger] 状态变化 (activity_mode): 6 -> 4回调: activity_mode = 慢走
+
+192.168.43.26 - - [27/Jan/2026 15:06:12] "POST / HTTP/1.0" 200 -
+[DQN] 触发源: 姿态变化
+
+[DQN 推理] 15:06:12
+  ├── State: Act=slow walk(0s) | Loc=unknown | Light=harsh | Flags: Walk=1s, Relax=0s
+  └── Output Action: [QUERY_LOC_GPS]
+
+图片处理成功: destineData\IMG_2026_01_27_15_05_46.jpg -> 480x480
+
+[127.0.0.1] POST /update-recommendation - 200 OK - Action: probe (GPS位置感知)
+DQN Action is QUERY_LOC_GPS
+[DQN] 触发源: 定时周期 (5s)
+
+[DQN 推理] 15:06:18
+  ├── State: Act=slow walk(5s) | Loc=unknown | Light=harsh | Flags: Walk=6s, Relax=0s
+  └── Output Action: [step_count]
+
+图片处理成功: destineData\IMG_2026_01_27_15_05_46.jpg -> 480x480
+
+
+
+[DQN] 触发源: 定时周期 (5s)
+
+[DQN 推理] 15:06:23
+  ├── State: Act=slow walk(10s) | Loc=unknown | Light=harsh | Flags: Walk=11s, Relax=0s
+  └── Output Action: [step_count]
+
+[DQN] 抑制重复推荐: step_count
+图片处理成功: destineData\IMG_2026_01_27_15_05_46.jpg -> 480x480192.168.43.26 - - [27/Jan/2026 15:06:27] "POST / HTTP/1.0" 200 -
+[{'ar': 'AR_ACTIVITY_WALK_SLOW', 'duration': 0, 'timestamp': '2026-1-27 7:6:27', 'data': 2}]
+[TestBed] 透传数据给 DataPallet: ID=activity_mode
+回调: activity_mode = 慢走
+[DQN] 触发源: 定时周期 (5s)
+
+[DQN 推理] 15:06:28
+  ├── State: Act=slow walk(15s) | Loc=unknown | Light=harsh | Flags: Walk=16s, Relax=0s
+  └── Output Action: [step_count]
+
+[DQN] 抑制重复推荐: step_count
+图片处理成功: destineData\IMG_2026_01_27_15_05_46.jpg -> 480x480
+192.168.43.26 - - [27/Jan/2026 15:06:32] "POST / HTTP/1.0" 200 -
+[{'sensor': 'acc', 'duration': 1000, 'timestamp': '2026-1-27 7:6:30', 'data': [[-18216, 994190, -102703], [-25497, 1009506, -83302], [-34887, 1021701, -112523], [17666, 989092, -95667], [-53067, 1045310, -21399]]}, {'sensor': 'gyro', 'duration': 1000, 'timestamp': '2026-1-27 7:6:30', 'data': [[1518, -3168, -1357], [-1309, 2654, 195], [91, -502, -4590], [907, 405, 386], [-4225, -1181, -2635]]}, {'sensor': 'mag', 'duration': 1000, 'timestamp': '2026-1-27 7:6:30', 'data': [[513, -542, 158, 3], [513, -542, 174, 3], [497, -558, 174, 3], [497, -558, 158, 3], [513, -558, 126, 3]]}, {'sensor': 'airpress', 'duration': 1000, 'timestamp': '2026-1-27 7:6:31', 'data': [[2098341, -94383, 1025], [2098332, -94347, 1025], [2098303, -94229, 1025], [2098331, -94342, 1024], [2098354, -94436, 1023]]}, {'sensor': 'als', 'duration': 4000, 'timestamp': '2026-1-27 7:6:30', 'data': [[42086], [38617], [177025], [171506], [171625]]}, {'gnss': 'gps', 'duration': 1, 'timestamp': '2026-1-27 7:6:31', 'data': [268262148, 4199, 996306978, 506, 3299910, 0, 0, 2633355, 930, 821, 1928, 4681, 7278, 255]}, {'audio': 'noise', 'duration': 1, 'timestamp': '2000-0-0 0:0:0', 'data': 0}]
+[TestBed] 透传数据给 DataPallet: ID=Light_Intensity
+wgs_lon: 118.76904702554748, wgs_lat: 31.97934010699828 gcj_lon: 118.77425859746509, gcj_lat: 31.977314438304113
+回调: Light_Intensity = 刺眼
+>>> _last_gnss_query 内容: {'timestamp': 1769497552.4459467, 'longitude': 118.77413024431971, 'latitude': 31.977168310773326, 'cached_result': {'Specific address': '中国江苏省南京市雨花台区雨花街道 共青广场', 'Location type': '', 'Longitude': 118.77413024431971, 'Latitude': 31.977168310773326}}
+>>> _last_result 内容: {'Specific address': '中国江苏省南京市雨花台区雨花街道 共青广场', 'Location type': '', 'Longitude': 118.77413024431971, 'Latitude': 31.977168310773326}
+>>> 3. 计算完成: dist_sq=3.7827785184086055e-08, time_diff=40.019309282302856
+>>> 4. 进入缓存判断分支
+Using cached GPS address info
+[TestBed] 透传数据给 DataPallet: ID=Location
+[TestBed] 透传数据给 DataPallet: ID=Sound_Intensity
+回调: Location = 未知
+回调: Sound_Intensity = 安静
+[DQN] 触发源: 定时周期 (5s)
+
+[DQN 推理] 15:06:33
+  ├── State: Act=slow walk(20s) | Loc=unknown | Light=harsh | Flags: Walk=21s, Relax=0s
+  └── Output Action: [step_count]
+
+[DQN] 抑制重复推荐: step_count
+图片处理成功: destineData\IMG_2026_01_27_15_05_46.jpg -> 480x480[DQN] 触发源: 定时周期 (5s)
+
+[DQN 推理] 15:06:38
+  ├── State: Act=slow walk(25s) | Loc=unknown | Light=harsh | Flags: Walk=26s, Relax=0s
+  └── Output Action: [step_count]
+
+[DQN] 抑制重复推荐: step_count
+图片处理成功: destineData\IMG_2026_01_27_15_05_46.jpg -> 480x480
+[DQN] 触发源: 定时周期 (5s)
+
+[DQN 推理] 15:06:43
+  ├── State: Act=slow walk(30s) | Loc=unknown | Light=harsh | Flags: Walk=31s, Relax=0s
+  └── Output Action: [step_count]
+
+[DQN] 抑制重复推荐: step_count
+图片处理成功: destineData\IMG_2026_01_27_15_05_46.jpg -> 480x480
+[{'ar': 'AR_ACTIVITY_STATIONARY', 'duration': 0, 'timestamp': '2026-1-27 7:6:46', 'data': 1}]
+[TestBed] 透传数据给 DataPallet: ID=activity_mode
+[Trigger] 状态变化 (activity_mode): 4 -> 6
+回调: activity_mode = 静止
+[DQN] 触发源: 姿态变化
+
+[DQN 推理] 15:06:47
+  ├── State: Act=stationary(0s) | Loc=unknown | Light=harsh | Flags: Walk=0s, Relax=3s
+  └── Output Action: [QUERY_LOC_GPS]
+
+192.168.43.26 - - [27/Jan/2026 15:06:47] "POST / HTTP/1.0" 200 -
+图片处理成功: destineData\IMG_2026_01_27_15_05_46.jpg -> 480x480
+
+[127.0.0.1] POST /update-recommendation - 200 OK - Action: probe (GPS位置感知)
+DQN Action is QUERY_LOC_GPS
+[DQN] 触发源: 定时周期 (5s)
+
+[DQN 推理] 15:06:52
+  ├── State: Act=stationary(5s) | Loc=unknown | Light=harsh | Flags: Walk=0s, Relax=8s
+  └── Output Action: [NONE]
+
+[Debug-2] DataPallet 接收到 Key='Scene'
+[Debug-2] 原始 Value: SceneData(scene_type=<SceneType.OUTDOOR_PARK: 5>, image_path=WindowsPath('destineData/IMG_2026_01_27_15_05_46.jpg'), image_data=None)
+[Debug-2] 已是 SceneData 对象: 5
+图片处理成功: destineData\IMG_2026_01_27_15_05_46.jpg -> 480x480
+
+[DQN] 触发源: 定时周期 (5s)
+
+[DQN 推理] 15:06:57
+  ├── State: Act=stationary(10s) | Loc=unknown | Light=harsh | Flags: Walk=0s, Relax=13s
+  └── Output Action: [NONE]
+
+图片处理成功: destineData\IMG_2026_01_27_15_05_46.jpg -> 480x480[DQN] 触发源: 定时周期 (5s)
+
+[DQN 推理] 15:07:02
+  ├── State: Act=stationary(15s) | Loc=unknown | Light=harsh | Flags: Walk=0s, Relax=18s
+  └── Output Action: [NONE]
+
+图片处理成功: destineData\IMG_2026_01_27_15_05_46.jpg -> 480x480
+[DQN] 触发源: 定时周期 (5s)
+
+[DQN 推理] 15:07:07
+  ├── State: Act=stationary(20s) | Loc=unknown | Light=harsh | Flags: Walk=0s, Relax=23s
+  └── Output Action: [NONE]
+
+图片处理成功: destineData\IMG_2026_01_27_15_05_46.jpg -> 480x480[DQN] 触发源: 定时周期 (5s)
+
+[DQN 推理] 15:07:12
+  ├── State: Act=stationary(25s) | Loc=unknown | Light=harsh | Flags: Walk=0s, Relax=29s
+  └── Output Action: [NONE]
+
+图片处理成功: destineData\IMG_2026_01_27_15_05_46.jpg -> 480x480
+[DQN] 触发源: 定时周期 (5s)
+
+[DQN 推理] 15:07:17
+  ├── State: Act=stationary(30s) | Loc=unknown | Light=harsh | Flags: Walk=0s, Relax=34s
+  └── Output Action: [NONE]
+
+图片处理成功: destineData\IMG_2026_01_27_15_05_46.jpg -> 480x480[DQN] 触发源: 定时周期 (5s)
+
+[DQN 推理] 15:07:22
+  ├── State: Act=stationary(35s) | Loc=unknown | Light=harsh | Flags: Walk=0s, Relax=39s
+  └── Output Action: [NONE]
+
+图片处理成功: destineData\IMG_2026_01_27_15_05_46.jpg -> 480x480
+[DQN] 触发源: 定时周期 (5s)
+
+[DQN 推理] 15:07:27
+  ├── State: Act=stationary(40s) | Loc=unknown | Light=harsh | Flags: Walk=0s, Relax=44s
+  └── Output Action: [NONE]
+
+图片处理成功: destineData\IMG_2026_01_27_15_05_46.jpg -> 480x480[DQN] 触发源: 定时周期 (5s)
+[DQN] Light 补全: 使用旧值 5
+
+[DQN 推理] 15:07:32
+  ├── State(Patched): Act=stationary(45s) | Loc=unknown | Light=harsh | Flags: Walk=0s, Relax=49s
+  └── Output Action: [NONE]
+
+图片处理成功: destineData\IMG_2026_01_27_15_05_46.jpg -> 480x480
+[DQN] 触发源: 定时周期 (5s)
+[DQN] Light 补全: 使用旧值 5
+
+[DQN 推理] 15:07:37
+  ├── State(Patched): Act=stationary(50s) | Loc=unknown | Light=harsh | Flags: Walk=0s, Relax=54s
+  └── Output Action: [NONE]
+
+图片处理成功: destineData\IMG_2026_01_27_15_05_46.jpg -> 480x480[DQN] 触发源: 定时周期 (5s)
+[DQN] Light 补全: 使用旧值 5
+
+[DQN 推理] 15:07:42
+  ├── State(Patched): Act=stationary(55s) | Loc=unknown | Light=harsh | Flags: Walk=0s, Relax=59s
+  └── Output Action: [NONE]
+
+图片处理成功: destineData\IMG_2026_01_27_15_05_46.jpg -> 480x480
+[DQN] 触发源: 定时周期 (5s)
+[DQN] Activity 补全: 使用旧值 (<ActivityMode.STROLLING: 4>, <ActivityMode.STANDING: 6>)
+
+[DQN] Light 补全: 使用旧值 5
+
+
+[DQN 推理] 15:07:47
+  ├── State(Patched): Act=stationary(60s) | Loc=unknown | Light=harsh | Flags: Walk=0s, Relax=64s
+  └── Output Action: [NONE]
+
+图片处理成功: destineData\IMG_2026_01_27_15_05_46.jpg -> 480x480
+[DQN] 触发源: 定时周期 (5s)
+[DQN] Activity 补全: 使用旧值 (<ActivityMode.STROLLING: 4>, <ActivityMode.STANDING: 6>)
+[DQN] Light 补全: 使用旧值 5
+
+[DQN 推理] 15:07:52
+  ├── State(Patched): Act=stationary(65s) | Loc=unknown | Light=harsh | Flags: Walk=0s, Relax=69s
+  └── Output Action: [NONE]
+
+[Debug-2] DataPallet 接收到 Key='Scene'
+[Debug-2] 原始 Value: SceneData(scene_type=<SceneType.OUTDOOR_PARK: 5>, image_path=WindowsPath('destineData/IMG_2026_01_27_15_05_46.jpg'), image_data=None)
+[Debug-2] 已是 SceneData 对象: 5
+图片处理成功: destineData\IMG_2026_01_27_15_05_46.jpg -> 480x480
+[DQN] 触发源: 定时周期 (5s)
+[DQN] Activity 补全: 使用旧值 (<ActivityMode.STROLLING: 4>, <ActivityMode.STANDING: 6>)
+[DQN] Light 补全: 使用旧值 5
+
+[DQN 推理] 15:07:58
+  ├── State(Patched): Act=stationary(70s) | Loc=unknown | Light=harsh | Flags: Walk=0s, Relax=74s
+  └── Output Action: [NONE]
+
+图片处理成功: destineData\IMG_2026_01_27_15_05_46.jpg -> 480x480
+[DQN] 触发源: 定时周期 (5s)
+[DQN] Activity 补全: 使用旧值 (<ActivityMode.STROLLING: 4>, <ActivityMode.STANDING: 6>)
+[DQN] Light 补全: 使用旧值 5
+
+[DQN 推理] 15:08:03
+  ├── State(Patched): Act=stationary(76s) | Loc=unknown | Light=harsh | Flags: Walk=0s, Relax=79s
+  └── Output Action: [NONE]
+
+图片处理成功: destineData\IMG_2026_01_27_15_05_46.jpg -> 480x480
+192.168.43.26 - - [27/Jan/2026 15:08:07] "POST / HTTP/1.0" 200 -
+[{'sensor': 'acc', 'duration': 1000, 'timestamp': '2026-1-27 7:8:6', 'data': [[-18018, 1011151, -32780], [-11917, 1005394, -42059], [-27024, 1025707, -41190], [-19874, 1021650, -50111], [-23437, 1017076, -23730]]}, {'sensor': 'gyro', 'duration': 1000, 'timestamp': '2026-1-27 7:8:6', 'data': [[148, -819, -537], [205, -91, -1118], [593, -1453, -979], [587, -1742, -1067], [-2065, -496, -169]]}, {'sensor': 'mag', 'duration': 1000, 'timestamp': '2026-1-27 7:8:6', 'data': [[529, -574, 78, 3], [525, -574, 78, 3], [529, -574, 78, 3], [513, -574, 78, 3], [529, -574, 78, 3]]}, {'sensor': 'airpress', 'duration': 1000, 'timestamp': '2026-1-27 7:8:6', 'data': [[2098349, -94416, 1031], [2098400, -94623, 1032], [2098362, -94469, 1032], [2098371, -94505, 1032], [2098401, -94627, 1032]]}, {'sensor': 'als', 'duration': 4000, 'timestamp': '2026-1-27 7:8:6', 'data': [[163417], [166205], [169176], [174076], [180492]]}, {'gnss': 'gps', 'duration': 1, 'timestamp': '2026-1-27 7:8:6', 'data': [268262148, 4199, 996306978, 506, 3299910, 0, 0, 2633355, 951, 796, 2027, 4681, 7650, 255]}, {'audio': 'noise', 'duration': 1, 'timestamp': '2000-0-0 0:0:0', 'data': 0}]
+[TestBed] 透传数据给 DataPallet: ID=Light_Intensity
+wgs_lon: 118.76904702554748, wgs_lat: 31.97934010699828 gcj_lon: 118.77425859746509, gcj_lat: 31.977314438304113
+回调: Light_Intensity = 刺眼
+>>> _last_gnss_query 内容: {'timestamp': 1769497552.4459467, 'longitude': 118.77413024431971, 'latitude': 31.977168310773326, 'cached_result': {'Specific address': '中国江苏省南京市雨花台区雨花街道 共青广场', 'Location type': '', 'Longitude': 118.77413024431971, 'Latitude': 31.977168310773326}}
+>>> _last_result 内容: {'Specific address': '中国江苏省南京市雨花台区雨花街道 共青广场', 'Location type': '', 'Longitude': 118.77413024431971, 'Latitude': 31.977168310773326}
+>>> 3. 计算完成: dist_sq=3.7827785184086055e-08, time_diff=134.71996474266052
+[INFO] 修正路径 amap-mcp-server: amap_mcp_server.py -> D:\c00894262\datapallet\sensor_server\amap_mcp_server.py[DQN] 触发源: 定时周期 (5s)
+[DQN] Activity 补全: 使用旧值 (<ActivityMode.STROLLING: 4>, <ActivityMode.STANDING: 6>)
+
+[DQN 推理] 15:08:08
+  ├── State(Patched): Act=stationary(81s) | Loc=unknown | Light=harsh | Flags: Walk=0s, Relax=84s
+  └── Output Action: [NONE]
+
+图片处理成功: destineData\IMG_2026_01_27_15_05_46.jpg -> 480x480Success to initialize server: <sensor_server.mcp_client.Server object at 0x0000014EE194F410>
+[01/27/26 15:08:08] INFO     Processing request of type           server.py:709
+                             ListToolsRequest                                  
+Executing tool: maps_regeo
+With arguments: {'location': '118.77425859746509,31.977314438304113', 'radius': '500'}
+                               
+Executing maps_regeo...
+[01/27/26 15:08:09] INFO     Warning: InsecureRequestWarning:     server.py:699
+                             Unverified HTTPS request is being                 
+                             made to host 'restapi.amap.com'.                  
+                             Adding certificate verification is                
+                             strongly advised. See:                            
+                             https://urllib3.readthedocs.io/en/la              
+                             test/advanced-usage.html#tls-warning              
+                             s                                                 
+####status= True, json_str= {
+  "results": [
+    {
+      "country": "中国",
+      "province": "江苏省",
+      "city": "南京市",
+      "district": "雨花台区",
+      "township": "雨花街道",
+      "neighborhood_name": [],
+      "neighborhood_type": [],
+      "building_name": [],
+      "building_type": [],
+      "street": "软件大道",
+      "number": "250号",
+      "distance": "14.5656",
+      "location": "118.774271,31.977184",
+      "ori_location": "118.77425859746509,31.977314438304113",
+      "poi_address": "软件大道与文竹路交叉口西220米",
+      "poi_name": "共青广场",
+      "poi_distance": "91.8243",
+      "poi_type": "风景名胜;公园广场;城市广场",
+      "poi_loc": "118.774612,31.976545",
+      "aoi_name": "华为南京研究所",
+      "aoi_distance": "0.96634",
+      "aoi_type": "141300",
+      "aoi_loc": "118.770068,31.979102"
+    }
+  ]
+}
+Success to cleanup all servers
+no suitable location data in {'country': '中国', 'province': '江苏省', 'city': '南京市', 'district': '雨花台区', 'township': '雨花街道', 'neighborhood_name': [], 'neighborhood_type': [], 'building_name': [], 'building_type': [], 'street': '软件大道', 'number': '250号', 'distance': '14.5656', 'location': '118.774271,31.977184', 'ori_location': '118.77425859746509,31.977314438304113', 'poi_address': '软件大道与文竹路交叉口西220米', 'poi_name': '共青广场', 'poi_distance': '91.8243', 'poi_type': '风景名胜;公园广场;城市广场', 'poi_loc': '118.774612,31.976545', 'aoi_name': '华为南京研究所', 'aoi_distance': '0.96634', 'aoi_type': '141300', 'aoi_loc': '118.770068,31.979102'}
+[TestBed] 透传数据给 DataPallet: ID=Location
+[TestBed] 透传数据给 DataPallet: ID=Sound_Intensity
+回调: Location = 未知
+回调: Sound_Intensity = 安静[DQN] 触发源: 定时周期 (5s)
+[DQN] Activity 补全: 使用旧值 (<ActivityMode.STROLLING: 4>, <ActivityMode.STANDING: 6>)
+
+[DQN 推理] 15:08:13
+  ├── State(Patched): Act=stationary(86s) | Loc=unknown | Light=harsh | Flags: Walk=0s, Relax=89s
+  └── Output Action: [NONE]
+
+图片处理成功: destineData\IMG_2026_01_27_15_05_46.jpg -> 480x480[DQN] 触发源: 定时周期 (5s)
+[DQN] Activity 补全: 使用旧值 (<ActivityMode.STROLLING: 4>, <ActivityMode.STANDING: 6>)
+
+[DQN 推理] 15:08:18
+  ├── State(Patched): Act=stationary(91s) | Loc=unknown | Light=harsh | Flags: Walk=0s, Relax=94s
+  └── Output Action: [NONE]
+
+图片处理成功: destineData\IMG_2026_01_27_15_05_46.jpg -> 480x480[DQN] 触发源: 定时周期 (5s)
+[DQN] Activity 补全: 使用旧值 (<ActivityMode.STROLLING: 4>, <ActivityMode.STANDING: 6>)
+
+[DQN 推理] 15:08:23
+  ├── State(Patched): Act=stationary(96s) | Loc=unknown | Light=harsh | Flags: Walk=0s, Relax=99s
+  └── Output Action: [NONE]
+
+图片处理成功: destineData\IMG_2026_01_27_15_05_46.jpg -> 480x480
+[DQN] 触发源: 定时周期 (5s)
+[DQN] Activity 补全: 使用旧值 (<ActivityMode.STROLLING: 4>, <ActivityMode.STANDING: 6>)
+
+[DQN 推理] 15:08:28
+  ├── State(Patched): Act=stationary(101s) | Loc=unknown | Light=harsh | Flags: Walk=0s, Relax=105s
+  └── Output Action: [NONE]
+
+图片处理成功: destineData\IMG_2026_01_27_15_05_46.jpg -> 480x480[DQN] 触发源: 定时周期 (5s)
+[DQN] Activity 补全: 使用旧值 (<ActivityMode.STROLLING: 4>, <ActivityMode.STANDING: 6>)
+
+[DQN 推理] 15:08:33
+  ├── State(Patched): Act=stationary(106s) | Loc=unknown | Light=harsh | Flags: Walk=0s, Relax=110s
+  └── Output Action: [NONE]
+
+图片处理成功: destineData\IMG_2026_01_27_15_05_46.jpg -> 480x480
+
+[DQN] 触发源: 定时周期 (5s)
+[DQN] Activity 补全: 使用旧值 (<ActivityMode.STROLLING: 4>, <ActivityMode.STANDING: 6>)
+
+[DQN 推理] 15:08:38
+  ├── State(Patched): Act=stationary(111s) | Loc=unknown | Light=harsh | Flags: Walk=0s, Relax=115s
+  └── Output Action: [NONE]
+
+图片处理成功: destineData\IMG_2026_01_27_15_05_46.jpg -> 480x480[DQN] 触发源: 定时周期 (5s)
+[DQN] Activity 补全: 使用旧值 (<ActivityMode.STROLLING: 4>, <ActivityMode.STANDING: 6>)
+
+[DQN 推理] 15:08:43
+  ├── State(Patched): Act=stationary(116s) | Loc=unknown | Light=harsh | Flags: Walk=0s, Relax=120s
+  └── Output Action: [NONE]
+
+图片处理成功: destineData\IMG_2026_01_27_15_05_46.jpg -> 480x480
+接收到停止信号，正在关闭...
+正在停止应用...
+应用已停止
