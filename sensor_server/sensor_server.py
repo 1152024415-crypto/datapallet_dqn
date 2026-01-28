@@ -74,6 +74,8 @@ AR_MAPPING = {
 }
 LOCATION_MAPPING = {
     "科研机构": LocationType.Research_Institution,
+    "商务住宅": LocationType.Research_Institution,
+    "商务写字楼": LocationType.Research_Institution,
 }
 
 def delayed_call(delay_seconds):
