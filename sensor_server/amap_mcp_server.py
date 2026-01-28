@@ -219,22 +219,31 @@ def maps_regeo(location: str, radius: str = "1000") -> Dict[str, Any]:
 
 
 @amap_tool()
-def maps_around_search(location: str, radius: str = "1000", keywords: str = "") -> Dict[str, Any]:
+def maps_around_search(location: str, radius: str = "1000", keywords: str = "", types: str = "") -> Dict[str, Any]:
     """周边搜，根据用户传入关键词以及坐标location，搜索出radius半径范围的POI
     :location: 中心点经度纬度，经度在前，纬度在后，经度和纬度用","分割
     :radius: 搜索半径(米)
     :keywords: 搜索关键词
+    :types: POI分类代码 (例如 150500 代表地铁站，多个类型用|分割)
     """
     try:
+        params = {
+            "key": AMAP_MAPS_API_KEY,
+            "location": location,
+            "radius": radius,
+            "sortrule": "distance",  # 按距离排序，确保最近的排前面
+            "output": "json"
+        }
+
+        if keywords:
+            params["keywords"] = keywords
+
+        if types:
+            params["types"] = types
+
         response = requests.get(
             "https://restapi.amap.com/v3/place/around",
-            params={
-                "key": AMAP_MAPS_API_KEY,
-                "location": location,
-                "radius": radius,
-                "keywords": keywords,
-                "sortrule": "weight"
-            },
+            params=params,
             verify=False
         )
         response.raise_for_status()
@@ -247,8 +256,6 @@ def maps_around_search(location: str, radius: str = "1000", keywords: str = "") 
         for poi in data.get("pois", []):
             biz_ext = poi.get("biz_ext", {})
             photos = poi.get("photos", [])
-
-            # 处理营业时间 - 优先opentime2，其次open_time
             open_time = biz_ext.get("opentime2", biz_ext.get("open_time", ""))
 
             pois.append({
@@ -256,6 +263,7 @@ def maps_around_search(location: str, radius: str = "1000", keywords: str = "") 
                 "name": poi.get("name", ""),
                 "address": poi.get("address", ""),
                 "typecode": poi.get("typecode", ""),
+                "type": poi.get("type", ""),
                 "photo": photos[0]["url"] if photos else "",
                 "phone": poi.get("tel", ""),
                 "cost": biz_ext.get("cost", ""),
@@ -267,6 +275,7 @@ def maps_around_search(location: str, radius: str = "1000", keywords: str = "") 
         return {"pois": pois}
     except requests.exceptions.RequestException as e:
         return {"pois": []}
+
 
 if __name__ == "__main__":
     # Parse command line arguments

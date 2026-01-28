@@ -614,30 +614,74 @@ def parse_activity_data(data):
         "Activity type": AR_MAPPING[latest_ar]
     }
 
+
 async def get_address_info(longitude, latitude):
+    """
+    获取位置信息：优先判断是否在地铁站附近，否则进行常规逆地理编码
+    """
     config_path = Path(__file__).parent / "servers_config.json"
-    mcp_client_session = MCPClientSession(str(config_path))    
-    await mcp_client_session.start()
+    mcp_client_session = MCPClientSession(str(config_path))
 
-    all_tools = await mcp_client_session.get_all_tools()
-    all_tools_desc = "".join([tool.format_for_llm() for tool in all_tools])
-    # print(f"#### all_tools: {all_tools_desc}\n")
+    try:
+        await mcp_client_session.start()
+        location_str = f"{longitude},{latitude}"
 
-    location = longitude + "," + latitude
-    amap_json_str = """{
-    "tool": "maps_regeo",
-    "arguments": {
-        "location": "%s",
-        "radius": "500"
-    }
-}""" % (location)
-    status, result = await mcp_client_session.process_tool_call(amap_json_str)
-    print(f"####status= {status}, json_str= {result}")
+        # 优先搜索200米内的地铁站 (Type 150500)
+        # 150500 是高德地图"地铁站"的分类代码，搜索半径设为 200米
+        subway_search_json = """{
+            "tool": "maps_around_search",
+            "arguments": {
+                "location": "%s",
+                "radius": "200", 
+                "types": "150500" 
+            }
+        }""" % (location_str)
 
-    await mcp_client_session.stop()
-    if status:
-        return result
-    return None
+        status_subway, result_subway = await mcp_client_session.process_tool_call(subway_search_json)
+
+        if status_subway:
+            try:
+                subway_data = json.loads(result_subway)
+                # 如果搜到了POI，且距离确实很近，认定为地铁站场景
+                if subway_data.get("pois") and len(subway_data["pois"]) > 0:
+                    nearest_subway = subway_data['pois'][0]
+                    # 双重确认：虽然 types 过滤了，但再检查一下 name 比较保险
+                    if "地铁" in nearest_subway['name'] or "站" in nearest_subway['name']:
+                        print(
+                            f"[SmartLocation] 命中地铁站策略: {nearest_subway['name']} (距离 {nearest_subway.get('distance', '?')}米)")
+                        return {
+                            "is_subway": True,
+                            "name": nearest_subway['name'],
+                            "raw_data": subway_data
+                        }
+            except Exception as e:
+                print(f"[SmartLocation] 解析地铁搜索结果失败: {e}")
+
+        # 如果没地铁，执行常规逆地理编码 (ReGeo)
+        amap_json_str = """{
+            "tool": "maps_regeo",
+            "arguments": {
+                "location": "%s",
+                "radius": "500"
+            }
+        }""" % (location_str)
+
+        status, result = await mcp_client_session.process_tool_call(amap_json_str)
+
+        if status:
+            return {
+                "is_subway": False,
+                "raw_result": result
+            }
+
+        return None
+
+    except Exception as e:
+        print(f"[MCP Error] {e}")
+        return None
+    finally:
+        # 关闭 session，防止子进程残留
+        await mcp_client_session.stop()
 
 _last_result = {
     "Specific address": "",
@@ -653,134 +697,148 @@ _last_gnss_query = {
     "cached_result": None
 }
 
+_gnss_lock = threading.Lock()
+
 def parse_gnss_data(data):
     """
-    从传入的传感器数据中解析位置信息
-    参数:
-        data: 传感器数据
-    返回:
-        dict类型数据, 包含date time和识别到的位置数据
+    从传入的传感器数据中解析位置信息 (带缓存 + 地铁优先策略)
     """
     global _last_result
     global _last_gnss_query
 
-    longitude = None
-    latitude = None
-    for sensor_data in data:
-        if "gnss" not in sensor_data:
-            continue
-        cur_gnss_data = sensor_data["data"]
-        if len(cur_gnss_data) < 4:
-            print(" GNSS data is None\n")
-            print("GNSS data is None")
-            return _last_result
-        latitude_h = cur_gnss_data[0]
-        latitude_l = cur_gnss_data[1]
-        longitude_h = cur_gnss_data[2]
-        longitude_l = cur_gnss_data[3]
-        if latitude_h == 0 and latitude_l == 0 and longitude_h == 0 and longitude_l == 0:
-            print(" [GPS] Signal Lost (All Zeros). Reporting NULL to trigger Vision.")
+    # 加上互斥锁，防止并发请求导致资源耗尽
+    with _gnss_lock:
+        longitude = None
+        latitude = None
 
-            # 构造一个 NULL 的结果，告诉上层位置丢了
-            null_result = {
-                "Specific address": "",
-                "Location type": LocationType.NULL,
-                "Longitude": 0.0,
-                "Latitude": 0.0
+        # 1. 遍历数据包解析经纬度
+        for sensor_data in data:
+            if "gnss" not in sensor_data:
+                continue
+            cur_gnss_data = sensor_data["data"]
+
+            if len(cur_gnss_data) < 4:
+                print(" GNSS data is None\n")
+                return _last_result
+
+            latitude_h = cur_gnss_data[0]
+            latitude_l = cur_gnss_data[1]
+            longitude_h = cur_gnss_data[2]
+            longitude_l = cur_gnss_data[3]
+
+            # 室内无信号处理：如果 GPS 全 0，返回 NULL 触发视觉
+            if latitude_h == 0 and latitude_l == 0 and longitude_h == 0 and longitude_l == 0:
+                print(" [GPS] Signal Lost (All Zeros). Reporting NULL to trigger Vision.")
+                null_result = {
+                    "Specific address": "",
+                    "Location type": LocationType.NULL,  # 返回 0
+                    "Longitude": 0.0,
+                    "Latitude": 0.0
+                }
+                return null_result
+
+            wgs_longitude = longitude_h * (2 ** -23) + longitude_l * (2 ** -37)
+            wgs_latitude = latitude_h * (2 ** -23) + latitude_l * (2 ** -37)
+
+            longitude, latitude = wgs84_to_gcj02(wgs_longitude, wgs_latitude)
+
+        if longitude is None or latitude is None:
+            return _last_result
+
+        # ================= 缓存策略 =================
+        current_time = time.time()
+        dist_sq = (longitude - _last_gnss_query["longitude"]) ** 2 + (latitude - _last_gnss_query["latitude"]) ** 2
+        time_diff = current_time - _last_gnss_query["timestamp"]
+
+        # 距离 < 50m 且 时间 < 30s，使用缓存
+        if dist_sq < (0.0005 ** 2) and time_diff < 30.0:
+            if _last_gnss_query["cached_result"]:
+                return _last_gnss_query["cached_result"]
+            elif _last_result["Location type"]:
+                return _last_result
+        # ===========================================
+
+        print(f"[GPS] Requesting MCP: {longitude:.6f}, {latitude:.6f}...")
+
+        results = None
+        try:
+            # 调用上面新的 get_address_info
+            results = asyncio.run(asyncio.wait_for(get_address_info(str(longitude), str(latitude)), timeout=5.0))
+        except Exception as e:
+            print(f"[GPS] Call gaode api error/timeout: {e}")
+            return _last_result
+
+        if results is None:
+            print(f"[GPS] Call gaode api returned None")
+            return _last_result
+
+        # ================= 结果解析策略 =================
+        try:
+            # 这里的 results 是 get_address_info 返回的字典
+
+            if results.get("is_subway"):
+                # Case A: 命中地铁站策略
+                specific_address = f"地铁站附近: {results['name']}"
+                location_type_value = LocationType.SUBWAY_STATION  # 强行修正枚举
+
+                print(f"[GPS] 判定为地铁站场景: {results['name']}")
+
+            else:
+                # Case B: 常规地址解析
+                raw_json_str = results.get("raw_result")
+                if not raw_json_str:
+                    return _last_result
+
+                result_json = json.loads(raw_json_str)
+                if not result_json.get("results"):
+                    return _last_result
+
+                data = result_json["results"][0]
+
+                parts = [
+                    data.get("country", ""), data.get("province", ""), data.get("city", ""),
+                    data.get("district", ""), data.get("township", "")
+                ]
+                poi_name = data.get("poi_name", "")
+                parts.append(f" {poi_name}")
+                specific_address = "".join(filter(None, parts))
+
+                # 解析 POI 类型
+                location_type_str = data.get("poi_type", "")
+                location_type_last = location_type_str.split(";")[-1] if location_type_str else ""
+
+                # 映射到枚举
+                location_type_value = LOCATION_MAPPING.get(location_type_last, "")
+
+                # 如果 ReGeo 名字或类型里包含“地铁”，也算地铁站
+                if "地铁" in specific_address or "地铁" in location_type_str:
+                    location_type_value = LocationType.SUBWAY_STATION
+                    print(f"[GPS] 通过关键词修正为地铁站")
+
+                if not location_type_value:
+                    print(f"[GPS] Unmapped POI Type: {location_type_last}")
+
+            # 更新全局结果
+            _last_result = {
+                "Specific address": specific_address,
+                "Location type": location_type_value,
+                "Longitude": longitude,
+                "Latitude": latitude
             }
-            return null_result
-        wgs_longitude = longitude_h * (2 ** -23) + longitude_l * (2 ** -37)
-        wgs_latitude = latitude_h * (2 ** -23) + latitude_l * (2 ** -37)
-        
-        longitude, latitude = wgs84_to_gcj02(wgs_longitude, wgs_latitude)
-        print(f"wgs_lon: {wgs_longitude}, wgs_lat: {wgs_latitude} gcj_lon: {longitude}, gcj_lat: {latitude}")
-        rec = f"[{longitude},{latitude}],"
-        append_to_jsonl("out_lg_gcj.txt", rec)
-    if longitude is None or latitude is None:
-        print("longitude or latitude is None")
-        return _last_result
 
-    # ================= 缓存策略 (新增逻辑) =================
-    current_time = time.time()
-    print(">>> _last_gnss_query 内容:", globals().get('_last_gnss_query', '变量未定义'))
-    print(">>> _last_result 内容:", globals().get('_last_result', '变量未定义'))
+            # 更新缓存
+            _last_gnss_query["timestamp"] = current_time
+            _last_gnss_query["longitude"] = longitude
+            _last_gnss_query["latitude"] = latitude
+            _last_gnss_query["cached_result"] = _last_result
 
-
-    # 简单的距离估算 (欧氏距离)，阈值约 0.0005 度 (大概50米)
-    dist_sq = (longitude - _last_gnss_query["longitude"]) ** 2 + (latitude - _last_gnss_query["latitude"]) ** 2
-    time_diff = current_time - _last_gnss_query["timestamp"]
-
-    print(f">>> 3. 计算完成: dist_sq={dist_sq}, time_diff={time_diff}")  # 检查计算是否正常
-
-
-    # 如果距离变化很小 且 距离上次查询不足 60 秒，直接使用缓存
-    # 这样避免了频繁启动 MCP 子进程导致阻塞
-    if dist_sq < (0.0005 ** 2) and time_diff < 60.0:
-        print(">>> 4. 进入缓存判断分支")
-        if _last_gnss_query["cached_result"]:
-            print("Using cached GPS address info")
-            return _last_gnss_query["cached_result"]
-        elif _last_result["Location type"]:
-            # 如果缓存也没有，但 _last_result 有值，用 _last_result
-            print("Using cached GPS address _last_result")
             return _last_result
 
-    # ======================================================
-
-
-
-
-    results = None
-    results = asyncio.run(get_address_info(str(longitude), str(latitude)))
-    if results is None:
-        print(f"Call gaode api error with longitude={longitude}, latitude={latitude}")
-        return _last_result
-
-    result = json.loads(results)
-    data = result["results"][0]  # 通常只有一条记录     
-
-    # 1. 构造 Specific address
-    parts = [
-        data.get("country", ""),
-        data.get("province", ""),
-        data.get("city", ""),
-        data.get("district", ""),
-        data.get("township", "")
-    ]
-
-    poi_name = data.get("poi_name", "")
-    parts.append(f" {poi_name}")
-
-    specific_address = "".join(filter(None, parts))
-
-    # 2. 其他字段
-    location_type = data.get("poi_type", "")
-    location_type_last = location_type.split(";")[-1] if location_type else ""
-    
-    location_type_value = LOCATION_MAPPING.get(location_type_last, "")
-    if not location_type_value:
-        print(f"no suitable location data in {data}")
-
-    _last_result = { # 含义上可能不太对应，后续可以改下
-        "Specific address": specific_address,
-        "Location type": location_type_value,
-        "Longitude": longitude,
-        "Latitude": latitude
-    }
-
-
-    # =======
-
-    # 更新缓存
-    _last_gnss_query["timestamp"] = current_time
-    _last_gnss_query["longitude"] = longitude
-    _last_gnss_query["latitude"] = latitude
-    _last_gnss_query["cached_result"] = _last_result
-
-    # ======
-
-
-    return _last_result
+        except Exception as e:
+            print(f"[GPS] Error parsing MCP result: {e}")
+            import traceback
+            traceback.print_exc()
+            return _last_result
 
 def parse_ts(ts: str) -> datetime:
     """把字符串时间转成 datetime 对象；1900-0-0 这种非法时间返回最小值"""

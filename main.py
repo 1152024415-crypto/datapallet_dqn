@@ -97,7 +97,7 @@ class ApplicationManager:
             "step_count_and_map": "步数与地图",
             "silent_DND": "推荐打开静音模式",
             "relax": "放松一下",
-            "Play Music/news": "播放新闻音乐",
+            "Play Music/news": "播放新闻/音乐",
             "payment_QR_code": "打开付款码",
             "navigation": "开始导航",
             "audio_record": "开启录音",
