@@ -74,6 +74,8 @@ AR_MAPPING = {
 }
 LOCATION_MAPPING = {
     "科研机构": LocationType.Research_Institution,
+    "商务住宅": LocationType.Research_Institution,
+    "商务写字楼": LocationType.Research_Institution,
 }
 
 def delayed_call(delay_seconds):
@@ -715,7 +717,7 @@ def parse_gnss_data(data):
 
     # 如果距离变化很小 且 距离上次查询不足 60 秒，直接使用缓存
     # 这样避免了频繁启动 MCP 子进程导致阻塞
-    if dist_sq < (0.0005 ** 2) and time_diff < 60.0:
+    if dist_sq < (0.05 ** 2) and time_diff < 60.0:
         print(">>> 4. 进入缓存判断分支")
         if _last_gnss_query["cached_result"]:
             print("Using cached GPS address info")
