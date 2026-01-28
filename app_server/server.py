@@ -20,6 +20,7 @@ class RecommendationData:
     def __init__(self):
         self.lock = threading.Lock()
         self.data: Optional[dict] = None
+        self.last_logged_data: Optional[dict] = None
 
     def update(self, data: dict):
         """更新推荐数据"""
@@ -40,8 +41,13 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
     """HTTP请求处理器"""
 
     def log_message(self, format, *args):
-        """自定义日志格式"""
-        print(f"[{self.address_string()}] {format % args}")
+        """自定义日志格式 - 增加 [AppServer] 标签并过滤重复日志"""
+        message = format % args
+        if "HTTP/" in message and (" 200 " in message or " 204 " in message):
+            if "/latest-recommendation" in message or "/update-recommendation" in message:
+                return
+        
+        print(f"[AppServer] [{self.address_string()}] {message}", flush=True)
 
     def do_GET(self):
         """处理GET请求"""
@@ -62,30 +68,55 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
         data = recommendation_data.get()
 
         if data:
-            # 加入调试日志：打印 action_name 和 dqn_state 的四个动作
-            action_name = data.get("action_name", "N/A")
-            dqn_state = data.get("dqn_state", {})
-            activity = dqn_state.get("activity", "N/A")
-            location = dqn_state.get("location", "N/A")
-            light = dqn_state.get("light", "N/A")
-            scene = dqn_state.get("scene", "N/A")
+            changed = False
+            last = recommendation_data.last_logged_data
 
-            print(f">>> [GET /latest-recommendation] Action: {action_name}")
-            print(f">>> [GET /latest-recommendation] dqn_state -> activity: {activity}, location: {location}, light: {light}, scene: {scene}")
+            if not last:
+                changed = True
+            else:
+                core_keys = ["action_type", "action_name", "scene_category"]
+                for k in core_keys:
+                    if data.get(k) != last.get(k):
+                        changed = True
+                        break
+
+                if not changed:
+                    d_state = data.get("dqn_state", {})
+                    l_state = last.get("dqn_state", {})
+                    dqn_keys = ["activity", "location", "light", "scene"]
+                    for k in dqn_keys:
+                        if d_state.get(k) != l_state.get(k):
+                            changed = True
+                            break
+
+            if changed:
+                recommendation_data.last_logged_data = data.copy()
+                dqn_state = data.get("dqn_state", {})
+                self.log_message(
+                    "GET /latest-recommendation - 200 OK - Action: %s (%s), Scene: %s, State: (Act=%s, Loc=%s, Light=%s, Scene=%s)",
+                    data.get("action_type"),
+                    data.get("action_name"),
+                    data.get("scene_category"),
+                    dqn_state.get("activity", "N/A"),
+                    dqn_state.get("location", "N/A"),
+                    dqn_state.get("light", "N/A"),
+                    dqn_state.get("scene", "N/A"),
+                )
+
             self.send_response(200)
-            self.send_header("Content-Type", "application/json; charset=utf-8")
             self.send_header("Access-Control-Allow-Origin", "*")
+            self.send_header("Content-Type", "application/json; charset=utf-8")
             self.end_headers()
             response = json.dumps(data, ensure_ascii=False)
             self.wfile.write(response.encode("utf-8"))
-            self.log_message(
-                "GET /latest-recommendation - 200 OK - Data length: %d", len(response)
-            )
         else:
             self.send_response(204)  # No Content
             self.send_header("Access-Control-Allow-Origin", "*")
             self.end_headers()
-            self.log_message("GET /latest-recommendation - 204 No Content")
+            # 仅在第一次没有数据时打印
+            if recommendation_data.last_logged_data is not None:
+                recommendation_data.last_logged_data = None
+                self.log_message("GET /latest-recommendation - 204 No Content")
 
     def handle_post_recommendation(self):
         """处理更新推荐数据请求"""
@@ -146,7 +177,7 @@ class HTTPRequestHandler(BaseHTTPRequestHandler):
                 "POST /update-recommendation - 400 Bad Request - Invalid JSON"
             )
         except Exception as e:
-            print(f"error details: {e}")
+            print(f"[AppServer] error details: {e}", flush=True)
             self.send_error(500, f"Internal server error")
             self.log_message("POST /update-recommendation - 500 - Error: %s", str(e))
 
@@ -156,33 +187,20 @@ def run_server(host="0.0.0.0", port=8002):
     server_address = (host, port)
     httpd = HTTPServer(server_address, HTTPRequestHandler)
 
-    print("=" * 60)
-    print("HTTP轮询服务器启动 (新统一格式)")
-    print("=" * 60)
-    print(f"监听地址: http://{host}:{port}")
-    print(f"GET 接口: http://{host}:{port}/latest-recommendation")
-    print(f"POST 接口: http://{host}:{port}/update-recommendation")
-    print("=" * 60)
-    print("数据格式 (POST /update-recommendation):")
-    print("```json")
-    print("{")
-    print('  "id": "rec_<timestamp>_001",')
-    print('  "timestamp": <unix_timestamp>,')
-    print('  "action_type": "probe|recommend|none",')
-    print('  "action_name": "动作名称",')
-    print('  "scene_category": "场景类别",')
-    print('  "image": "data:image/jpeg;base64,..."  # 或 null')
-    print("}")
-    print("```")
-    print("=" * 60)
-    print("=" * 60)
-    print("服务器运行中... (按 Ctrl+C 停止)")
-    print("=" * 60)
+    print("=" * 60, flush=True)
+    print("[AppServer] HTTP轮询服务器启动 (新统一格式)", flush=True)
+    print("=" * 60, flush=True)
+    print(f"[AppServer] 监听地址: http://{host}:{port}", flush=True)
+    print(f"[AppServer] GET 接口: http://{host}:{port}/latest-recommendation", flush=True)
+    print(f"[AppServer] POST 接口: http://{host}:{port}/update-recommendation", flush=True)
+    print("=" * 60, flush=True)
+    print("[AppServer] 服务器运行中... (按 Ctrl+C 停止)", flush=True)
+    print("=" * 60, flush=True)
 
     try:
         httpd.serve_forever()
     except KeyboardInterrupt:
-        print("\n\n服务器已停止")
+        print("\n\n[AppServer] 服务器已停止", flush=True)
         httpd.server_close()
 
 
