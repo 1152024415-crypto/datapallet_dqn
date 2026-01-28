@@ -191,7 +191,7 @@ class DQNEngineAdapter:
             return self.light_map.get(value, 0)
         return 0
 
-    def update_and_predict(self, dp: DataPallet) -> Tuple[str, str]:
+    def update_and_predict(self, dp: DataPallet) -> Tuple[str, str, Dict[str, Any]]:
         """
         执行实时推理
         1. Pre-process: 如果当前数据 Unknown，尝试使用"最近一次有效值"进行补全
@@ -235,7 +235,7 @@ class DQNEngineAdapter:
         if not success_act or not success_light:
             self.last_update_time = now
             print("[Skipped] Data Unknown & Persistence Expired")
-            return "NONE", "[Skipped] Data Unknown & Persistence Expired"
+            return "NONE", "[Skipped] Data Unknown & Persistence Expired", {}
 
         self.last_update_time = now
 
@@ -320,7 +320,16 @@ class DQNEngineAdapter:
             f"Flags: Walk={int(self.walk_run_secs)}s, Relax={int(self.stationary_secs)}s"
         )
 
-        return action_name, debug_info
+        # 构造用于 UI 显示的原始值字典
+        structured_state = {
+            "activity_mode": raw_act,
+            "Location": raw_loc,
+            "Light_Intensity": raw_light,
+            "Scene": raw_scene
+        }
+
+        return action_name, debug_info, structured_state
+
 
     def _one_hot(self, idx: int, size: int) -> np.ndarray:
         v = np.zeros((size,), dtype=np.float32)

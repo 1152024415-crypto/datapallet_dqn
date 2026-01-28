@@ -75,7 +75,7 @@ class ApplicationManager:
         }
         return mapping.get(sType, "meetingroom")
 
-    def send_to_app_server(self, action_name: str):
+    def send_to_app_server(self, action_name: str, external_state: Optional[Dict[str, Any]] = None):
         """
         将DQN推理结果及完整的中文输入状态发送到 App Server
         """
@@ -119,10 +119,19 @@ class ApplicationManager:
         state_keys = ["activity_mode", "Location", "Light_Intensity", "Scene"]
 
         for key in state_keys:
-            success, val = self.dp.get(key, only_valid=True)
-            state_values[key] = val if success else None
-            state_strings[key] = self.dp.format_value(key, val) if success else "未知"
+            val = None
+            success = False
 
+            if external_state and key in external_state:
+                val = external_state[key]
+                success = (val != 0)
+            else:
+                success, val = self.dp.get(key, only_valid=True)
+
+            if success or (external_state and key in external_state):
+                state_strings[key] = self.dp.format_value(key, val)
+            else:
+                state_strings[key] = "未知"
 
         # "SceneType: 会议室 (has_image...)" -> "会议室"
         raw_scene_str = state_strings.get("Scene", "未知")
@@ -394,7 +403,7 @@ class ApplicationManager:
                     #     print(f"[DQN] 基础特征缺失 (Act={curr_act}, Light={val_light})，跳过推理")
                     #     continue
 
-                    action, debug_info = self.dqn_engine.update_and_predict(self.dp)
+                    action, debug_info, current_state_dict = self.dqn_engine.update_and_predict(self.dp)
                     if action == "NONE" and "[Skipped]" in debug_info:
                         print(f"DQN {debug_info}")
                         pass
@@ -408,23 +417,23 @@ class ApplicationManager:
                     # 输出去重逻辑修复 - Mohai 的意见
                     # 如果是推荐类动作 (Recommend)，且与上次相同，则抑制
                     # 探测类动作 (Probe, 如 QUERY_VISUAL) 通常需要允许重试，直到成功
-                    final_action_to_send = action
+                    should_send = True
 
-                    if action in ["NONE"]:
-                        self.last_sent_action = None  # 重置
+                    if action == "NONE":
+                        self.last_sent_action = None
+                        # NONE 也要发，用于清除卡片上的旧动作
                     elif action in PROBE_ACTIONS:
-                        # 探测动作允许重复， 直到拿到数据
-                        pass
+                        pass  # 探测动作总是允许发送
                     else:
-                        # 推荐动作 (Relax, Silent 等)
+                        # 推荐动作
                         if action == self.last_sent_action:
-                            print(f"[DQN] 抑制重复推荐: {action}")
-                            final_action_to_send = "NONE"  # 这一次不发送
+                            print(f"[DQN] 动作未变: {action} (仅更新状态)")
+                            pass
                         else:
-                            self.last_sent_action = action  # 记录新动作
+                            self.last_sent_action = action
 
-
-                    self.send_to_app_server(final_action_to_send)
+                    if should_send:
+                        self.send_to_app_server(action, external_state=current_state_dict)
 
 
                     if action == "QUERY_VISUAL":
