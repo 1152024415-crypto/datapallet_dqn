@@ -56,7 +56,7 @@ class ApplicationManager:
 
         # 视觉兜底的冷却时间（防止 GPS 没信号时疯狂拍照）
         self.last_visual_fallback_time = 0
-        self.VISUAL_FALLBACK_COOLDOWN = 60.0 # 60秒内最多因掉 GPS 触发一次拍照
+        self.VISUAL_FALLBACK_COOLDOWN = 10.0 # 10秒内最多因掉 GPS 触发一次拍照
 
     def _map_scene_to_category(self, scene_val) -> str:
         if not scene_val:
@@ -376,13 +376,13 @@ class ApplicationManager:
     def start_dqn_inference_loop(self):
         print("[DQN] 启动推理线程...")
         while self.running:
-            is_event_triggered = self.inference_trigger_event.wait(timeout=5.0)
+            is_event_triggered = self.inference_trigger_event.wait(timeout=30.0)
 
             if is_event_triggered:
                 print("[DQN] 触发源: 姿态变化")
                 self.inference_trigger_event.clear()
             else:
-                print("[DQN] 触发源: 定时周期 (5s)")
+                print("[DQN] 触发源: 定时周期 (30s)")
                 pass
 
             if self.dqn_engine and self.dp:
@@ -445,13 +445,13 @@ class ApplicationManager:
                         ).start()
                     elif action == "QUERY_LOC_GPS":
                         print("DQN Action is QUERY_LOC_GPS")
-                        # mock_location = LocationType.WORK
-                        # self.tb.receive_and_transmit_data(
-                        #     data_id="Location",
-                        #     value=mock_location,
-                        #     timestamp=datetime.now(),
-                        # )
-                        # print("模拟的GPS位置已上报")
+                        mock_location = LocationType.WORK
+                        self.tb.receive_and_transmit_data(
+                            data_id="Location",
+                            value=mock_location,
+                            timestamp=datetime.now(),
+                        )
+                        print("模拟的GPS位置已上报")
 
                 except Exception as e:
                     print(f"[DQN 错误] 推理过程异常: {e}")
