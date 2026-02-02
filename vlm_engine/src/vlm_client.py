@@ -1,4 +1,6 @@
 # src/vlm_client.py
+import os
+from dotenv import load_dotenv
 from typing import List, Dict, Any, Optional, Tuple
 from .data_models import SceneBatch
 from .logger import get_logger
@@ -9,6 +11,8 @@ from datetime import datetime
 import warnings
 import ssl
 import time
+
+load_dotenv()
 logger = get_logger(__name__)
 
 class VLMClient:
@@ -52,10 +56,10 @@ class VLMClient:
         from openai import OpenAI
         
         # 获取API密钥
-        self.api_key = "sk-c0450be8353f48bb8f29d65b11ee7427"
+        self.api_key = os.getenv("VLM_DEEPSEEK_API_KEY", "sk-c0450be8353f48bb8f29d65b11ee7427")
             
         # 阿里云配置
-        self.api_base = "https://dashscope.aliyuncs.com/compatible-mode/v1"
+        self.api_base = os.getenv("VLM_ALIYUN_BASE_URL", "https://dashscope.aliyuncs.com/compatible-mode/v1")
         
         self.client = OpenAI(
             api_key=self.api_key,
@@ -95,8 +99,8 @@ class VLMClient:
     def _init_siliconflow_client(self):
         """初始化SiliconFlow客户端（使用requests/httpx）"""
         # SiliconFlow API配置
-        self.api_base = "https://api.siliconflow.cn/v1/chat/completions"
-        self.api_key = "sk-qrxwstofijzxgtrsypbihgvixxlbyelexdaymbkbnjlexoxi"  # 请替换为您的真实API密钥
+        self.api_base = os.getenv("VLM_SILICONFLOW_BASE_URL", "https://api.siliconflow.cn/v1/chat/completions")
+        self.api_key = os.getenv("VLM_SILICONFLOW_API_KEY", "sk-qrxwstofijzxgtrsypbihgvixxlbyelexdaymbkbnjlexoxi")  # 请替换为您的真实API密钥
 
         # 设置请求头
         self.headers = {

@@ -8,6 +8,10 @@ import requests
 from typing import Dict, Any, List, Optional
 from datetime import datetime, timedelta
 from dataclasses import dataclass
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 from datapallet.enums import (
     ActivityMode, LightIntensity, SoundIntensity,
@@ -54,7 +58,7 @@ class DataRecord:
 class LLMSimulator:
     """LLM模拟器，连接到DeepSeek API生成用户行为数据序列"""
     
-    def __init__(self, api_key: str = "sk-68cf8fad5e2e43b5a05dc960aa7e0259",
+    def __init__(self, api_key: Optional[str] = None,
                  base_url: str = "https://api.deepseek.com",
                  image_generator: Optional[ImageGenerator] = None):
         """
@@ -65,6 +69,8 @@ class LLMSimulator:
             base_url: API基础URL
             image_generator: 图像生成器实例（可选）
         """
+        if api_key is None:
+            api_key = os.getenv("LLM_API_KEY", "sk-68cf8fad5e2e43b5a05dc960aa7e0259")
         self.api_key = api_key
         self.base_url = base_url
         self.headers = {
@@ -775,7 +781,7 @@ def create_llm_simulator(api_key: Optional[str] = None,
                         image_generator: Optional[ImageGenerator] = None) -> LLMSimulator:
     """创建LLM模拟器实例"""
     if api_key is None:
-        api_key = "sk-68cf8fad5e2e43b5a05dc960aa7e0259"  # 默认使用提供的API密钥
+        api_key = os.getenv("LLM_API_KEY", "sk-68cf8fad5e2e43b5a05dc960aa7e0259")
     
     return LLMSimulator(api_key=api_key, image_generator=image_generator)
 

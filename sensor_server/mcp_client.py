@@ -6,16 +6,19 @@ from typing import Any
 
 import httpx
 from mcp import ClientSession
+import os
+from dotenv import load_dotenv
 from mcp.client.sse import sse_client
 from mcp.client.stdio import stdio_client, StdioServerParameters
+
+load_dotenv()
 
 class Configuration:
     """Manages configuration and environment variables for the MCP client."""
 
     def __init__(self) -> None:
         """Initialize configuration with environment variables."""
-        # self.api_key = os.getenv("LLM_API_KEY")
-        self.api_key = "sk-68cf8fad5e2e43b5a05dc960aa7e0259"
+        self.api_key = os.getenv("LLM_API_KEY", "sk-68cf8fad5e2e43b5a05dc960aa7e0259")
 
     @staticmethod
     def load_config(file_path: str) -> dict[str, Any]:

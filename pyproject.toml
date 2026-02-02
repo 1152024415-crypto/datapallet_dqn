@@ -12,5 +12,6 @@ dependencies = [
     "mcp>=1.26.0",
     "pandas>=3.0.0",
     "pillow>=12.1.0",
+    "python-dotenv>=1.2.1",
     "uvicorn[standard]>=0.40.0",
 ]

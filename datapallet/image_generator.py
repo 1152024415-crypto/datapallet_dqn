@@ -12,6 +12,10 @@ from typing import Dict, Any, Optional, Tuple, Union
 from datetime import datetime
 from dataclasses import dataclass
 from pathlib import Path
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
 
 from datapallet.enums import SceneType, to_str
 
@@ -59,7 +63,7 @@ class GeneratedImage:
 class ImageGenerator:
     """图像生成器，使用硅基流动的Qwen模型API，支持本地文件缓存"""
     
-    def __init__(self, api_key: str = "sk-qrxwstofijzxgtrsypbihgvixxlbyelexdaymbkbnjlexoxi", 
+    def __init__(self, api_key: Optional[str] = None, 
                  base_url: str = "https://api.siliconflow.cn/v1",
                  cache_dir: str = "scene_images"):
         """
@@ -70,6 +74,8 @@ class ImageGenerator:
             base_url: API基础URL
             cache_dir: 本地缓存目录
         """
+        if api_key is None:
+            api_key = os.getenv("VLM_SILICONFLOW_API_KEY", "sk-qrxwstofijzxgtrsypbihgvixxlbyelexdaymbkbnjlexoxi")
         self.api_key = api_key
         self.base_url = base_url
         self.cache_dir = cache_dir
@@ -386,7 +392,7 @@ def create_image_generator(api_key: Optional[str] = None,
                           cache_dir: Optional[str] = None) -> ImageGenerator:
     """创建图像生成器实例"""
     if api_key is None:
-        api_key = "sk-qrxwstofijzxgtrsypbihgvixxlbyelexdaymbkbnjlexoxi"
+        api_key = os.getenv("VLM_SILICONFLOW_API_KEY", "sk-qrxwstofijzxgtrsypbihgvixxlbyelexdaymbkbnjlexoxi")
     
     if cache_dir is None:
         cache_dir = "scene_images"

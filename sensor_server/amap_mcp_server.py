@@ -2,8 +2,12 @@ import argparse
 import inspect
 from typing import Any, Callable, Dict, Optional
 import requests
+import os
+from dotenv import load_dotenv
 from mcp.server.fastmcp import FastMCP
 from mcp.server.fastmcp.tools.base import Tool
+
+load_dotenv()
 
 class AmapTool(Tool):
     @classmethod
@@ -70,7 +74,7 @@ def amap_tool(*args, **kwargs):
 
 def get_api_key() -> str:
     """Get the Amap Maps API key from environment variables"""
-    api_key = "f958afc6d5a1d92710122ce9b0a2ddcd"
+    api_key = os.getenv("AMAP_API_KEY", "f958afc6d5a1d92710122ce9b0a2ddcd")
     return api_key
 
 AMAP_MAPS_API_KEY = get_api_key()
