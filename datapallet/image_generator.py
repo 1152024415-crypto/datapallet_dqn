@@ -75,7 +75,7 @@ class ImageGenerator:
             cache_dir: 本地缓存目录
         """
         if api_key is None:
-            api_key = os.getenv("VLM_SILICONFLOW_API_KEY", "sk-qrxwstofijzxgtrsypbihgvixxlbyelexdaymbkbnjlexoxi")
+            api_key = os.getenv("VLM_SILICONFLOW_API_KEY")
         self.api_key = api_key
         self.base_url = base_url
         self.cache_dir = cache_dir
@@ -392,7 +392,7 @@ def create_image_generator(api_key: Optional[str] = None,
                           cache_dir: Optional[str] = None) -> ImageGenerator:
     """创建图像生成器实例"""
     if api_key is None:
-        api_key = os.getenv("VLM_SILICONFLOW_API_KEY", "sk-qrxwstofijzxgtrsypbihgvixxlbyelexdaymbkbnjlexoxi")
+        api_key = os.getenv("VLM_SILICONFLOW_API_KEY")
     
     if cache_dir is None:
         cache_dir = "scene_images"

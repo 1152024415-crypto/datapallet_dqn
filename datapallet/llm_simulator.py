@@ -70,7 +70,7 @@ class LLMSimulator:
             image_generator: 图像生成器实例（可选）
         """
         if api_key is None:
-            api_key = os.getenv("LLM_API_KEY", "sk-68cf8fad5e2e43b5a05dc960aa7e0259")
+            api_key = os.getenv("LLM_API_KEY")
         self.api_key = api_key
         self.base_url = base_url
         self.headers = {
@@ -781,7 +781,7 @@ def create_llm_simulator(api_key: Optional[str] = None,
                         image_generator: Optional[ImageGenerator] = None) -> LLMSimulator:
     """创建LLM模拟器实例"""
     if api_key is None:
-        api_key = os.getenv("LLM_API_KEY", "sk-68cf8fad5e2e43b5a05dc960aa7e0259")
+        api_key = os.getenv("LLM_API_KEY")
     
     return LLMSimulator(api_key=api_key, image_generator=image_generator)
 

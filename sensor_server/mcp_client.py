@@ -18,7 +18,7 @@ class Configuration:
 
     def __init__(self) -> None:
         """Initialize configuration with environment variables."""
-        self.api_key = os.getenv("LLM_API_KEY", "sk-68cf8fad5e2e43b5a05dc960aa7e0259")
+        self.api_key = os.getenv("LLM_API_KEY")
 
     @staticmethod
     def load_config(file_path: str) -> dict[str, Any]:
